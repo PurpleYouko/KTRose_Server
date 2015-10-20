@@ -1,0 +1,264 @@
+-- Cold Fusion LUA Decompiler v1.0.0
+-- By 4E534B
+-- Date: 09-16-2008 Time: 12:35:41
+-- On error(s), send source (compiled) file to 4E534B@gmail.com
+
+
+function g_showMotion01(hID, repeatNum)
+	local iObject=IDT_Nil;
+	local iMotion=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	iMotion=GF_GetMotionUseFile("3Ddata/MOTION/NPC/inventor1/inventor1_bow.ZMO");
+	GF_SetMotion(iObject, iMotion, repeatNum);
+
+end
+
+
+function TA_checkRepeat(hEvent_ID)
+	local repeatNum=IDT_Nil;
+	repeatNum=1;
+	return 1;
+	
+
+end
+
+
+function AT_store(hID)
+	local iObject=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	local specialFlag=IDT_Nil;
+	specialFlag=1;
+	GF_openStore(iObject, specialFlag);
+
+end
+
+
+function TA_hideMenu()
+	return 0;
+	
+
+end
+
+
+function AT_setBindingPosition()
+	GF_setRevivePosition();
+
+end
+
+
+function TA_Normal()
+	if (QF_getQuestItemQuantity(5032, 13507)~=1) then
+		if (QF_findQuest(5032)==-1) then
+		end
+		
+		if (QF_findQuest(909)==-1) then
+			if (QF_findQuest(910)==-1) then
+				if (QF_findQuest(912)==-1) then
+					return 1;
+					
+				else
+					return 0;
+					
+				end
+				
+
+end
+
+
+function TA_5032_mid1()
+	if (QF_getQuestItemQuantity(5032, 13506)==1) then
+		if (QF_findQuest(909)==-1) then
+			if (QF_findQuest(910)==-1) then
+				if (QF_findQuest(912)==-1) then
+					return 1;
+					
+				else
+					return 0;
+					
+				end
+				
+
+end
+
+
+function TA_5032_mid2()
+	if (QF_getQuestItemQuantity(5032, 13507)==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_5032_End1()
+	if (QF_checkQuestCondition("5032-02")==1) then
+		QF_doQuestTrigger("5032-02");
+	end
+	
+
+end
+
+
+function TA_909_end()
+	if (QF_findQuest(909)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_909_end()
+	if (QF_checkQuestCondition("909-01")==1) then
+		QF_doQuestTrigger("909-01");
+	end
+	
+
+end
+
+
+function TA_910_yet()
+	if (QF_findQuest(910)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_912_end()
+	if (QF_findQuest(912)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_912_end1()
+	if (QF_checkQuestCondition("912-01")==1) then
+		QF_doQuestTrigger("912-01");
+	end
+	
+
+end
+
+
+function AT_912_end2()
+	if (QF_checkQuestCondition("912-02")==1) then
+		QF_doQuestTrigger("912-02");
+	end
+	
+
+end
+
+
+function AT_912_end3()
+	if (QF_checkQuestCondition("912-03")==1) then
+		QF_doQuestTrigger("912-03");
+	end
+	
+
+end
+
+
+function TA_JN()
+	if (GF_getVariable(SV_UNION)==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_JN_warp1()
+	if (QF_checkQuestCondition("JN-warp01")==1) then
+		QF_doQuestTrigger("JN-warp01");
+	end
+	
+
+end
+
+
+function TA_202_Start()
+	if (QF_checkQuestCondition("201-03")==1) then
+		QF_doQuestTrigger("201-03");
+	end
+	
+	if (QF_findQuest(202)==-1) then
+		if (QF_checkQuestCondition("202-00")==1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function AT_202_Start()
+	if (QF_checkQuestCondition("202-01")==1) then
+		QF_doQuestTrigger("202-01");
+	end
+	
+
+end
+
+
+function TA_202_214_reissue()
+	if (QF_findQuest(202)==-1) then
+		if (QF_findQuest(203)==-1) then
+			if (QF_findQuest(204)==-1) then
+				if (QF_findQuest(205)==-1) then
+					if (QF_findQuest(206)==-1) then
+						if (QF_findQuest(207)==-1) then
+							if (QF_findQuest(208)==-1) then
+								if (QF_findQuest(209)==-1) then
+									if (QF_findQuest(210)==-1) then
+										if (QF_findQuest(211)==-1) then
+											if (QF_findQuest(212)==-1) then
+												if (QF_findQuest(213)==-1) then
+													if (QF_findQuest(214)==-1) then
+														if (QF_getEpisodeVAR(1)==2) then
+															return 1;
+															
+														else
+															return 0;
+															
+														end
+														
+
+end
+
+
+function AT_202_214_reissue()
+	if (QF_checkQuestCondition("202_214-03")==1) then
+		QF_doQuestTrigger("202_214-03");
+	end
+	
+
+end
+
+

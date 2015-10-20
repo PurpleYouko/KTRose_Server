@@ -1,0 +1,277 @@
+-- Cold Fusion LUA Decompiler v1.0.0
+-- By 4E534B
+-- Date: 09-16-2008 Time: 12:36:23
+-- On error(s), send source (compiled) file to 4E534B@gmail.com
+
+
+function g_showMotion01(hID, repeatNum)
+	local iObject=IDT_Nil;
+	local iMotion=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	iMotion=GF_GetMotionUseFile("3Ddata/MOTION/NPC/inventor1/inventor1_bow.ZMO");
+	GF_SetMotion(iObject, iMotion, repeatNum);
+
+end
+
+
+function TA_checkRepeat(hEvent_ID)
+	local repeatNum=IDT_Nil;
+	repeatNum=1;
+	return 1;
+	
+
+end
+
+
+function AT_store(hID)
+	local iObject=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	local specialFlag=IDT_Nil;
+	specialFlag=1;
+	GF_openStore(iObject, specialFlag);
+
+end
+
+
+function TA_hideMenu()
+	return 0;
+	
+
+end
+
+
+function AT_openBank(hID)
+	local iObject=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	GF_openBank(iObject);
+
+end
+
+
+function AT_mileageBank()
+	GF_openDeliveryStore();
+
+end
+
+
+function TA_normal()
+	if (GF_getVariable(SV_LEVEL)<30) then
+		if (QF_findQuest(1001)==-1) then
+			if (QF_findQuest(1002)==-1) then
+				if (QF_findQuest(1003)~=-1) then
+					if (GF_getVariable(SV_LEVEL)>=30) then
+						if (QF_getJobVAR(0)~=3) then
+							if (GF_getVariable(SV_CLASS)~=411) then
+								if (GF_getVariable(SV_LEVEL)>=30) then
+									if (GF_getVariable(SV_CLASS)~=411) then
+									end
+									
+									return 1;
+									
+								else
+									return 0;
+									
+								end
+								
+
+end
+
+
+function TA_1002_start()
+	if (QF_findQuest(1001)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_1002_yet()
+	if (QF_findQuest(1002)>=0) then
+		if (QF_checkQuestCondition("1002-01")==0) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_1003_start()
+	if (QF_checkQuestCondition("1002-01")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_1003_yet()
+	if (QF_findQuest(1003)>=0) then
+		if (QF_checkQuestCondition("1003-01")==0) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_1004_start()
+	if (QF_checkQuestCondition("1003-01")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_1002_start()
+	if (QF_checkQuestCondition("1001-02")==1) then
+		QF_doQuestTrigger("1001-02");
+	end
+	
+
+end
+
+
+function AT_1003_start()
+	if (QF_checkQuestCondition("1002-01")==1) then
+		QF_doQuestTrigger("1002-01");
+	end
+	
+
+end
+
+
+function AT_1004_start()
+	if (QF_checkQuestCondition("1003-01")==1) then
+		QF_doQuestTrigger("1003-01");
+	end
+	
+
+end
+
+
+function TA_1008_start()
+	if (QF_checkQuestCondition("1008-01")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_1008_start()
+	if (QF_checkQuestCondition("1008-01")==1) then
+		QF_doQuestTrigger("1008-01");
+	end
+	
+
+end
+
+
+function TA_1008_yet()
+	local hQuest=IDT_Nil;
+	hQuest=QF_findQuest(1008);
+	if (QF_findQuest(1008)>=0) then
+		if (QF_getQuestItemQuantity(1008, 13118)<10) then
+			if (QF_getQuestSwitch(hQuest, 0)==0) then
+				return 1;
+				
+			else
+				return 0;
+				
+			end
+			
+
+end
+
+
+function TA_1008_end1()
+	if (QF_getQuestItemQuantity(1008, 13118)>=10) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_1008_mid1()
+	if (QF_checkQuestCondition("1008-02")==1) then
+		QF_doQuestTrigger("1008-02");
+	end
+	
+
+end
+
+
+function TA_1008_end2()
+	local hQuest=IDT_Nil;
+	hQuest=QF_findQuest(1008);
+	if (QF_findQuest(1008)>=0) then
+		if (QF_getQuestSwitch(hQuest, 0)==1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function AT_1008_mid2()
+	if (QF_checkQuestCondition("1008-03")==1) then
+		QF_doQuestTrigger("1008-03");
+	end
+	
+
+end
+
+
+function AT_1008_end1()
+	if (QF_checkQuestCondition("1008-04")==1) then
+		QF_doQuestTrigger("1008-04");
+	end
+	
+
+end
+
+
+function AT_1008_end2()
+	if (QF_checkQuestCondition("1008-05")==1) then
+		QF_doQuestTrigger("1008-05");
+	end
+	
+
+end
+
+

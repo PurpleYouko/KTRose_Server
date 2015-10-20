@@ -1,0 +1,3 @@
+Instructions for building this project under VS2010
+
+1) install MySQL for Visual Studios onto your computer. The download is available here. http://dev.mysql.com/downloads/file.php?id=458484

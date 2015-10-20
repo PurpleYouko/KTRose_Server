@@ -1,0 +1,92 @@
+-- Cold Fusion LUA Decompiler v1.0.0
+-- By 4E534B
+-- Date: 02-11-2009 Time: 13:40:43
+-- On error(s), send source (compiled) file to 4E534B@gmail.com
+
+
+function TA_checkRepeat(hEvent_ID)
+	local repeatNum=IDT_Nil;
+	repeatNum=1;
+	return 1;
+	
+
+end
+
+
+function TA_hideMenu()
+	return 0;
+	
+
+end
+
+
+function AT_store(hID)
+	local iObject=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	local specialFlag=IDT_Nil;
+	specialFlag=1;
+	GF_openStore(iObject, specialFlag);
+
+end
+
+
+function TA_not_KTR()
+	if (GF_getVariable(SV_UNION)~=9) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_already_KTR()
+	if (GF_getVariable(SV_UNION)==9) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_already_join()
+	if (GF_getVariable(SV_UNION)>0) then
+		if (GF_getVariable(SV_UNION)~=9) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+	end
+	
+
+end
+
+
+function AT_KTR_join()
+	if (QF_checkQuestCondition("KTR04")==1) then
+		QF_doQuestTrigger("KTR04");
+	end
+	
+
+end
+
+
+function AT_KTR_leave()
+	if (QF_checkQuestCondition("AR03")==1) then
+		QF_doQuestTrigger("AR03");
+	end
+	
+
+end
+
+

@@ -1,0 +1,1602 @@
+-- Cold Fusion LUA Decompiler v1.0.0
+-- By 4E534B
+-- Date: 09-17-2008 Time: 16:02:04
+-- On error(s), send source (compiled) file to 4E534B@gmail.com
+
+
+function g_showMotion01(hID, repeatNum)
+	local iObject=IDT_Nil;
+	local iMotion=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	iMotion=GF_GetMotionUseFile("3Ddata/MOTION/NPC/inventor1/inventor1_bow.ZMO");
+	GF_SetMotion(iObject, iMotion, repeatNum);
+
+end
+
+
+function TA_checkRepeat(hEvent_ID)
+	local repeatNum=IDT_Nil;
+	repeatNum=1;
+	return 1;
+	
+
+end
+
+
+function AT_store(hID)
+	local iObject=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	local specialFlag=IDT_Nil;
+	specialFlag=1;
+	GF_openStore(iObject, specialFlag);
+
+end
+
+
+function TA_hideMenu()
+	return 0;
+	
+
+end
+
+
+function AT_stat_renew()
+	if (QF_checkQuestCondition("ReStat-07")==1) then
+		QF_doQuestTrigger("ReStat-07");
+	end
+	
+
+end
+
+
+function TA_stat_renew()
+	if (QF_getUserSwitch(1)==0) then
+		if (GF_getVariable(SV_LEVEL)<=15) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_already()
+	if (QF_getUserSwitch(1)==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_levelOver15()
+	if (GF_getVariable(SV_LEVEL)>15) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_2002_completion()
+	if (QF_findQuest(2002)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_2003_completion()
+	if (QF_findQuest(2003)>=0) then
+		if (QF_getQuestItemQuantity(2006, 13532)>=1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_2004_completion()
+	if (QF_findQuest(2004)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_2002_Start_2003_end()
+	if (QF_checkQuestCondition("2002-02_2003-01")==1) then
+		QF_doQuestTrigger("2002-02_2003-01");
+	end
+	
+
+end
+
+
+function AT_2004_Start_2005_end()
+	if (QF_checkQuestCondition("2004-02_2005-01")==1) then
+		QF_doQuestTrigger("2004-02_2005-01");
+	end
+	
+
+end
+
+
+function TA_5009_start(hID)
+	local npc=IDT_Nil;
+	local npcVar0=IDT_Nil;
+	npc=QF_getEventOwner(hID);
+	npcVar0=QF_getNpcQuestZeroVal(npc);
+	if (npcVar0==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_5009_start()
+	if (QF_checkQuestCondition("5009-01")==1) then
+		QF_doQuestTrigger("5009-01");
+	end
+	
+
+end
+
+
+function TA_5009_yet()
+	if (QF_checkQuestCondition("5009-11")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_5009_end()
+	if (QF_checkQuestCondition("5009-02")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_5009_end()
+	if (QF_checkQuestCondition("5009-09")==1) then
+		QF_doQuestTrigger("5009-09");
+	end
+	
+
+end
+
+
+function TA_5009_fail()
+	if (QF_checkQuestCondition("5009-10")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_5009_already(hID)
+	local npc=IDT_Nil;
+	local npcVar0=IDT_Nil;
+	npc=QF_getEventOwner(hID);
+	npcVar0=QF_getNpcQuestZeroVal(npc);
+	if (npcVar0~=1) then
+		if (QF_findQuest(5009)==-1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_levelOver15_1()
+	if (GF_getVariable(SV_LEVEL)<15) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew()
+	if (QF_getUserSwitch(4)==0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew0()
+	if (QF_getUserSwitch(4)==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renew0()
+	if (QF_checkQuestCondition("ReStat-03")==1) then
+		QF_doQuestTrigger("ReStat-03");
+	end
+	
+
+end
+
+
+function AT_restat09()
+	if (QF_checkQuestCondition("ReStat-09")==1) then
+		QF_doQuestTrigger("ReStat-09");
+	end
+	
+
+end
+
+
+function TA_event_skill_renew()
+	if (QF_checkQuestCondition("skill-renew01")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_skill_renew0()
+	if (QF_checkQuestCondition("skill-renew01")==1) then
+		return 0;
+		
+	else
+		return 1;
+		
+	end
+	
+
+end
+
+
+function AT_event_skill_renew()
+	if (QF_checkQuestCondition("skill-renew01")==1) then
+		QF_doQuestTrigger("skill-renew01");
+	end
+	
+
+end
+
+
+function TA_event_stat_ItemsetCheck()
+	if (QF_checkQuestCondition("ReStat-09")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_10()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck1-10")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_20()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck11-20")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_30()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck21-30")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_40()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck31-40")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_50()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck41-50")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_60()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck51-60")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_70()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck61-70")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_80()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck71-80")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_90()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck81-90")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_100()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck91-100")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_110()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck101-110")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_120()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck111-120")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_130()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck121-130")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_140()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck131-140")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_150()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck141-150")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_160()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck151-160")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_170()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck161-170")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_180()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck171-180")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_190()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck181-190")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renew_999()
+	if (QF_checkQuestCondition("stat-renew_LevelCheck191-999")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE10()
+	if (QF_checkQuestCondition("stat-renewE1-10")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE10()
+	if (QF_checkQuestCondition("stat-renewE1-10")==1) then
+		QF_doQuestTrigger("stat-renewE1-10");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE20()
+	if (QF_checkQuestCondition("stat-renewE11-20")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE20()
+	if (QF_checkQuestCondition("stat-renewE11-20")==1) then
+		QF_doQuestTrigger("stat-renewE11-20");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE30()
+	if (QF_checkQuestCondition("stat-renewE21-30")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE30()
+	if (QF_checkQuestCondition("stat-renewE21-30")==1) then
+		QF_doQuestTrigger("stat-renewE21-30");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE40()
+	if (QF_checkQuestCondition("stat-renewE31-40")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE40()
+	if (QF_checkQuestCondition("stat-renewE31-40")==1) then
+		QF_doQuestTrigger("stat-renewE31-40");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE50()
+	if (QF_checkQuestCondition("stat-renewE41-50")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE50()
+	if (QF_checkQuestCondition("stat-renewE41-50")==1) then
+		QF_doQuestTrigger("stat-renewE41-50");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE60()
+	if (QF_checkQuestCondition("stat-renewE51-60")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE60()
+	if (QF_checkQuestCondition("stat-renewE51-60")==1) then
+		QF_doQuestTrigger("stat-renewE51-60");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE70()
+	if (QF_checkQuestCondition("stat-renewE61-70")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE70()
+	if (QF_checkQuestCondition("stat-renewE61-70")==1) then
+		QF_doQuestTrigger("stat-renewE61-70");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE80()
+	if (QF_checkQuestCondition("stat-renewE71-80")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE80()
+	if (QF_checkQuestCondition("stat-renewE71-80")==1) then
+		QF_doQuestTrigger("stat-renewE71-80");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE90()
+	if (QF_checkQuestCondition("stat-renewE81-90")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE90()
+	if (QF_checkQuestCondition("stat-renewE81-90")==1) then
+		QF_doQuestTrigger("stat-renewE81-90");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE100()
+	if (QF_checkQuestCondition("stat-renewE91-100")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE100()
+	if (QF_checkQuestCondition("stat-renewE91-100")==1) then
+		QF_doQuestTrigger("stat-renewE91-100");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE110()
+	if (QF_checkQuestCondition("stat-renewE101-110")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE110()
+	if (QF_checkQuestCondition("stat-renewE101-110")==1) then
+		QF_doQuestTrigger("stat-renewE101-110");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE120()
+	if (QF_checkQuestCondition("stat-renewE111-120")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE120()
+	if (QF_checkQuestCondition("stat-renewE111-120")==1) then
+		QF_doQuestTrigger("stat-renewE111-120");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE130()
+	if (QF_checkQuestCondition("stat-renewE121-130")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE130()
+	if (QF_checkQuestCondition("stat-renewE121-130")==1) then
+		QF_doQuestTrigger("stat-renewE121-130");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE140()
+	if (QF_checkQuestCondition("stat-renewE131-140")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE140()
+	if (QF_checkQuestCondition("stat-renewE131-140")==1) then
+		QF_doQuestTrigger("stat-renewE131-140");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE150()
+	if (QF_checkQuestCondition("stat-renewE141-150")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE150()
+	if (QF_checkQuestCondition("stat-renewE141-150")==1) then
+		QF_doQuestTrigger("stat-renewE141-150");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE160()
+	if (QF_checkQuestCondition("stat-renewE151-160")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE160()
+	if (QF_checkQuestCondition("stat-renewE151-160")==1) then
+		QF_doQuestTrigger("stat-renewE151-160");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE170()
+	if (QF_checkQuestCondition("stat-renewE161-170")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE170()
+	if (QF_checkQuestCondition("stat-renewE161-170")==1) then
+		QF_doQuestTrigger("stat-renewE161-170");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE180()
+	if (QF_checkQuestCondition("stat-renewE171-180")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE180()
+	if (QF_checkQuestCondition("stat-renewE171-180")==1) then
+		QF_doQuestTrigger("stat-renewE171-180");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE190()
+	if (QF_checkQuestCondition("stat-renewE181-190")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE190()
+	if (QF_checkQuestCondition("stat-renewE181-190")==1) then
+		QF_doQuestTrigger("stat-renewE181-190");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewE999()
+	if (QF_checkQuestCondition("stat-renewE191-999")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewE999()
+	if (QF_checkQuestCondition("stat-renewE191-999")==1) then
+		QF_doQuestTrigger("stat-renewE191-999");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA10()
+	if (QF_checkQuestCondition("stat-renewA1-10")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA10()
+	if (QF_checkQuestCondition("stat-renewA1-10")==1) then
+		QF_doQuestTrigger("stat-renewA1-10");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA20()
+	if (QF_checkQuestCondition("stat-renewA11-20")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA20()
+	if (QF_checkQuestCondition("stat-renewA11-20")==1) then
+		QF_doQuestTrigger("stat-renewA11-20");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA30()
+	if (QF_checkQuestCondition("stat-renewA21-30")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA30()
+	if (QF_checkQuestCondition("stat-renewA21-30")==1) then
+		QF_doQuestTrigger("stat-renewA21-30");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA40()
+	if (QF_checkQuestCondition("stat-renewA31-40")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA40()
+	if (QF_checkQuestCondition("stat-renewA31-40")==1) then
+		QF_doQuestTrigger("stat-renewA31-40");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA50()
+	if (QF_checkQuestCondition("stat-renewA41-50")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA50()
+	if (QF_checkQuestCondition("stat-renewA41-50")==1) then
+		QF_doQuestTrigger("stat-renewA41-50");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA60()
+	if (QF_checkQuestCondition("stat-renewA51-60")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA60()
+	if (QF_checkQuestCondition("stat-renewA51-60")==1) then
+		QF_doQuestTrigger("stat-renewA51-60");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA70()
+	if (QF_checkQuestCondition("stat-renewA61-70")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA70()
+	if (QF_checkQuestCondition("stat-renewA61-70")==1) then
+		QF_doQuestTrigger("stat-renewA61-70");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA80()
+	if (QF_checkQuestCondition("stat-renewA71-80")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA80()
+	if (QF_checkQuestCondition("stat-renewA71-80")==1) then
+		QF_doQuestTrigger("stat-renewA71-80");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA90()
+	if (QF_checkQuestCondition("stat-renewA81-90")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA90()
+	if (QF_checkQuestCondition("stat-renewA81-90")==1) then
+		QF_doQuestTrigger("stat-renewA81-90");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA100()
+	if (QF_checkQuestCondition("stat-renewA91-100")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA100()
+	if (QF_checkQuestCondition("stat-renewA91-100")==1) then
+		QF_doQuestTrigger("stat-renewA91-100");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA110()
+	if (QF_checkQuestCondition("stat-renewA101-110")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA110()
+	if (QF_checkQuestCondition("stat-renewA101-110")==1) then
+		QF_doQuestTrigger("stat-renewA101-110");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA120()
+	if (QF_checkQuestCondition("stat-renewA111-120")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA120()
+	if (QF_checkQuestCondition("stat-renewA111-120")==1) then
+		QF_doQuestTrigger("stat-renewA111-120");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA130()
+	if (QF_checkQuestCondition("stat-renewA121-130")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA130()
+	if (QF_checkQuestCondition("stat-renewA121-130")==1) then
+		QF_doQuestTrigger("stat-renewA121-130");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA140()
+	if (QF_checkQuestCondition("stat-renewA131-140")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA140()
+	if (QF_checkQuestCondition("stat-renewA131-140")==1) then
+		QF_doQuestTrigger("stat-renewA131-140");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA150()
+	if (QF_checkQuestCondition("stat-renewA141-150")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA150()
+	if (QF_checkQuestCondition("stat-renewA141-150")==1) then
+		QF_doQuestTrigger("stat-renewA141-150");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA160()
+	if (QF_checkQuestCondition("stat-renewA151-160")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA160()
+	if (QF_checkQuestCondition("stat-renewA151-160")==1) then
+		QF_doQuestTrigger("stat-renewA151-160");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA170()
+	if (QF_checkQuestCondition("stat-renewA161-170")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA170()
+	if (QF_checkQuestCondition("stat-renewA161-170")==1) then
+		QF_doQuestTrigger("stat-renewA161-170");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA180()
+	if (QF_checkQuestCondition("stat-renewA171-180")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA180()
+	if (QF_checkQuestCondition("stat-renewA171-180")==1) then
+		QF_doQuestTrigger("stat-renewA171-180");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA190()
+	if (QF_checkQuestCondition("stat-renewA181-190")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA190()
+	if (QF_checkQuestCondition("stat-renewA181-190")==1) then
+		QF_doQuestTrigger("stat-renewA181-190");
+	end
+	
+
+end
+
+
+function TA_event_stat_renewA999()
+	if (QF_checkQuestCondition("stat-renewA191-999")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_event_stat_renewA999()
+	if (QF_checkQuestCondition("stat-renewA191-999")==1) then
+		QF_doQuestTrigger("stat-renewA191-999");
+	end
+	
+
+end
+
+
+function TA_203_Start01()
+	if (QF_findQuest(202)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_203_Start01()
+	if (QF_checkQuestCondition("203_01")==1) then
+		QF_doQuestTrigger("203_01");
+	end
+	
+
+end
+
+
+function TA_212_End01()
+	if (QF_findQuest(212)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_212_End01()
+	if (QF_checkQuestCondition("212_02")==1) then
+		QF_doQuestTrigger("212_02");
+	end
+	
+
+end
+
+
+function TA_215_Start01()
+	if (QF_checkQuestCondition("215_1_01")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_215_Start01()
+	if (QF_checkQuestCondition("215_1_01")==1) then
+		QF_doQuestTrigger("215_1_01");
+	end
+	
+
+end
+
+
+function TA_215_220_reissue01()
+	if (QF_findQuest(215)==-1) then
+		if (QF_findQuest(216)==-1) then
+			if (QF_findQuest(217)==-1) then
+				if (QF_findQuest(218)==-1) then
+					if (QF_findQuest(219)==-1) then
+						if (QF_findQuest(220)==-1) then
+							if (QF_getEpisodeVAR(1)==6) then
+								return 1;
+								
+							else
+								return 0;
+								
+							end
+							
+
+end
+
+
+function AT_215_220_reissue01()
+	if (QF_checkQuestCondition("215_220_1-03")==1) then
+		QF_doQuestTrigger("215_220_1-03");
+	end
+	
+
+end
+
+
+function TA_218_end()
+	if (QF_findQuest(218)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_218_end()
+	if (QF_checkQuestCondition("218_02")==1) then
+		QF_doQuestTrigger("218_02");
+	end
+	
+
+end
+
+

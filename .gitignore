@@ -3,6 +3,10 @@
 *.lo
 *.o
 *.obj
+*.manifest
+*.pdb
+*.idb
+
 
 # Precompiled Headers
 *.gch
@@ -11,7 +15,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+#*.dll	We need the dlls....
 
 # Fortran module files
 *.mod
@@ -20,9 +24,14 @@
 *.lai
 *.la
 *.a
-*.lib
+#.lib  We need the libs too
 
 # Executables
 *.exe
 *.out
 *.app
+
+# Logs
+*.log
+*.tlog
+

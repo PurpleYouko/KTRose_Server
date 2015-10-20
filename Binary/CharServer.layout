@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="default" />
+	<File name="..\Char Server\charclient.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="1111" topLine="0" />
+	</File>
+	<File name="..\Char Server\charpackets.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="13732" topLine="328" />
+	</File>
+	<File name="..\Char Server\charserver.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="4948" topLine="134" />
+	</File>
+	<File name="..\Common\SocketServer.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="2296" topLine="39" />
+	</File>
+</CodeBlocks_layout_file>

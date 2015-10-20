@@ -1,0 +1,1 @@
+lua4.exe YOUR_LUA_FILENAME

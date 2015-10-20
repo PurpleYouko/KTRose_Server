@@ -1,0 +1,511 @@
+-- Cold Fusion LUA Decompiler v1.0.0
+-- By 4E534B
+-- Date: 01-02-2009 Time: 13:40:44
+-- On error(s), send source (compiled) file to 4E534B@gmail.com
+
+
+function g_showMotion01(hID, repeatNum)
+	local iObject=IDT_Nil;
+	local iMotion=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	iMotion=GF_GetMotionUseFile("3Ddata/MOTION/NPC/inventor1/inventor1_bow.ZMO");
+	GF_SetMotion(iObject, iMotion, repeatNum);
+
+end
+
+
+function TA_checkRepeat(hEvent_ID)
+	local repeatNum=IDT_Nil;
+	repeatNum=1;
+	return 1;
+	
+
+end
+
+
+function AT_store(hID)
+	local iObject=IDT_Nil;
+	iObject=QF_getEventOwner(hID);
+	local specialFlag=IDT_Nil;
+	specialFlag=1;
+	GF_openStore(iObject, specialFlag);
+
+end
+
+
+function TA_hideMenu()
+	return 0;
+	
+
+end
+
+
+function TA_normal()
+	if (GF_getVariable(SV_UNION)~=1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_JN()
+	if (GF_getVariable(SV_UNION)==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_JN_end()
+	if (QF_checkQuestCondition("3001-03")~=1) then
+		if (QF_checkQuestCondition("3002-02")~=1) then
+			if (QF_checkQuestCondition("3003-02")~=1) then
+				if (QF_checkQuestCondition("3004-04")~=1) then
+					if (QF_checkQuestCondition("3005-03")~=1) then
+						if (QF_checkQuestCondition("3006-02")~=1) then
+							if (QF_checkQuestCondition("3007-02")==1) then
+							end
+							
+						end
+						
+					end
+					
+				end
+				
+			end
+			
+		end
+		
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_3001_end()
+	if (QF_checkQuestCondition("3001-03")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3001_end()
+	if (QF_checkQuestCondition("3001-03")==1) then
+		QF_doQuestTrigger("3001-03");
+	end
+	
+
+end
+
+
+function TA_3002_end()
+	if (QF_checkQuestCondition("3002-02")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3002_end()
+	if (QF_checkQuestCondition("3002-02")==1) then
+		QF_doQuestTrigger("3002-02");
+	end
+	
+
+end
+
+
+function TA_3003_end()
+	if (QF_checkQuestCondition("3003-02")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3003_end()
+	if (QF_checkQuestCondition("3003-02")==1) then
+		QF_doQuestTrigger("3003-02");
+	end
+	
+
+end
+
+
+function TA_3004_end()
+	if (QF_checkQuestCondition("3004-04")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3004_end()
+	if (QF_checkQuestCondition("3004-04")==1) then
+		QF_doQuestTrigger("3004-04");
+	end
+	
+
+end
+
+
+function TA_3005_end()
+	if (QF_checkQuestCondition("3005-03")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3005_end()
+	if (QF_checkQuestCondition("3005-03")==1) then
+		QF_doQuestTrigger("3005-03");
+	end
+	
+
+end
+
+
+function TA_all_already()
+	if (QF_findQuest(3001)>=0) then
+		if (QF_findQuest(3002)>=0) then
+			if (QF_findQuest(3003)>=0) then
+				return 1;
+				
+			else
+				return 0;
+				
+			end
+			
+
+end
+
+
+function TA_all_start()
+	if (QF_findQuest(3001)~=-1) then
+		if (QF_findQuest(3002)~=-1) then
+			if (QF_findQuest(3003)==-1) then
+			end
+			
+		end
+		
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_3001_start()
+	if (QF_findQuest(3001)==-1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_3002_start()
+	if (QF_findQuest(3002)==-1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function TA_3003_start()
+	if (QF_findQuest(3003)==-1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3001_start()
+	if (QF_checkQuestCondition("3001-01")==1) then
+		QF_doQuestTrigger("3001-01");
+	end
+	
+
+end
+
+
+function AT_3002_start()
+	if (QF_checkQuestCondition("3002-01")==1) then
+		QF_doQuestTrigger("3002-01");
+	end
+	
+
+end
+
+
+function AT_3003_start()
+	if (QF_checkQuestCondition("3003-01")==1) then
+		QF_doQuestTrigger("3003-01");
+	end
+	
+
+end
+
+
+function TA_alba_already(hID)
+	local npc=IDT_Nil;
+	local npcVar0=IDT_Nil;
+	npc=QF_getEventOwner(hID);
+	npcVar0=QF_getNpcQuestZeroVal(npc);
+	if (npcVar0~=1) then
+		if (npcVar0~=7) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_3004_start(hID)
+	local npc=IDT_Nil;
+	local npcVar0=IDT_Nil;
+	npc=QF_getEventOwner(hID);
+	npcVar0=QF_getNpcQuestZeroVal(npc);
+	if (npcVar0==1) then
+		if (QF_findQuest(3004)==-1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function TA_3005_start(hID)
+	local npc=IDT_Nil;
+	local npcVar0=IDT_Nil;
+	npc=QF_getEventOwner(hID);
+	npcVar0=QF_getNpcQuestZeroVal(npc);
+	if (npcVar0==7) then
+		if (QF_findQuest(3005)==-1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function AT_3004_start()
+	if (QF_checkQuestCondition("3004-01")==1) then
+		QF_doQuestTrigger("3004-01");
+	end
+	
+
+end
+
+
+function AT_3005_start()
+	if (QF_checkQuestCondition("3005-01")==1) then
+		QF_doQuestTrigger("3005-01");
+	end
+	
+
+end
+
+
+function TA_3006_start()
+	if (GF_getVariable(SV_LEVEL)>50) then
+		if (QF_findQuest(3006)==-1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function AT_3006_start()
+	if (QF_checkQuestCondition("3006-01")==1) then
+		QF_doQuestTrigger("3006-01");
+	end
+	
+
+end
+
+
+function TA_3006_end()
+	if (QF_checkQuestCondition("3006-02")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3006_end()
+	if (QF_checkQuestCondition("3006-02")==1) then
+		QF_doQuestTrigger("3006-02");
+	end
+	
+
+end
+
+
+function TA_3006_7_start()
+	if (GF_getVariable(SV_LEVEL)>50) then
+		if (QF_findQuest(3006)~=-1) then
+			if (GF_getVariable(SV_LEVEL)>54) then
+				if (QF_findQuest(3007)==-1) then
+				end
+				
+				return 1;
+				
+			else
+				return 0;
+				
+			end
+			
+
+end
+
+
+function TA_3007_start()
+	if (GF_getVariable(SV_LEVEL)>54) then
+		if (QF_findQuest(3007)==-1) then
+			return 1;
+			
+		else
+			return 0;
+			
+		end
+		
+
+end
+
+
+function AT_3007_start()
+	if (QF_checkQuestCondition("3007-01")==1) then
+		QF_doQuestTrigger("3007-01");
+	end
+	
+
+end
+
+
+function TA_3007_end()
+	if (QF_checkQuestCondition("3007-02")==1) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_3007_end()
+	if (QF_checkQuestCondition("3007-02")==1) then
+		QF_doQuestTrigger("3007-02");
+	end
+	
+
+end
+
+
+function TA_233_start()
+	if (QF_findQuest(232)>=0) then
+		return 1;
+		
+	else
+		return 0;
+		
+	end
+	
+
+end
+
+
+function AT_233_start()
+	if (QF_checkQuestCondition("233_01")==1) then
+		QF_doQuestTrigger("233_01");
+	end
+	
+
+end
+
+

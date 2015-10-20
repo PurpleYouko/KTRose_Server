@@ -1,0 +1,171 @@
+# Project: WorldServer
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = Objects/config.o Objects/log.o Objects/rosecrypt.o Objects/SocketBase.o Objects/SocketClient.o Objects/SocketServer.o Objects/character.o Objects/charevent.o Objects/charfunctions.o Objects/charstats.o Objects/mapfunctions.o Objects/worldmap.o Objects/battle.o Objects/WorldMonster.o Objects/Monster.o Objects/MonsterEvents.o Objects/monsterfunctions.o Objects/MonsterStats.o Objects/Buff.o Objects/player.o Objects/playerdata.o Objects/playerfunctions.o Objects/playerstats.o Objects/extrafunctions.o Objects/gmcmds.o Objects/main.o Objects/MainProcess.o Objects/Party.o Objects/partyfunctions.o Objects/ServerFunctions.o Objects/startup.o Objects/worldpackets.o Objects/Worldprocess.o Objects/worldserver.o Objects/clan.o Objects/database.o Objects/stbhandler.o Objects/strhashing.o Objects/itemdata.o Objects/globals.o Objects/QuestActions.o Objects/QuestConditions.o Objects/Quests.o Objects/playerquest.o Objects/AiActions.o Objects/AiConditions.o Objects/Aip.o Objects/seh.o $(RES)
+LINKOBJ  = Objects/config.o Objects/log.o Objects/rosecrypt.o Objects/SocketBase.o Objects/SocketClient.o Objects/SocketServer.o Objects/character.o Objects/charevent.o Objects/charfunctions.o Objects/charstats.o Objects/mapfunctions.o Objects/worldmap.o Objects/battle.o Objects/WorldMonster.o Objects/Monster.o Objects/MonsterEvents.o Objects/monsterfunctions.o Objects/MonsterStats.o Objects/Buff.o Objects/player.o Objects/playerdata.o Objects/playerfunctions.o Objects/playerstats.o Objects/extrafunctions.o Objects/gmcmds.o Objects/main.o Objects/MainProcess.o Objects/Party.o Objects/partyfunctions.o Objects/ServerFunctions.o Objects/startup.o Objects/worldpackets.o Objects/Worldprocess.o Objects/worldserver.o Objects/clan.o Objects/database.o Objects/stbhandler.o Objects/strhashing.o Objects/itemdata.o Objects/globals.o Objects/QuestActions.o Objects/QuestConditions.o Objects/Quests.o Objects/playerquest.o Objects/AiActions.o Objects/AiConditions.o Objects/Aip.o Objects/seh.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -lmysql -lws2_32 C:/Dev-Cpp/include/libmysql_pthread2/lib/libmysql.a C:/Dev-Cpp/include/libmysql_pthread2/lib/libpthreadGC2.a  -g3 
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = WorldServer.exe
+CXXFLAGS = $(CXXINCS)   -fexceptions -g3
+CFLAGS = $(INCS)   -fexceptions -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before WorldServer.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "WorldServer.exe" $(LIBS)
+
+Objects/config.o: ../Common/config.cpp
+	$(CPP) -c ../Common/config.cpp -o Objects/config.o $(CXXFLAGS)
+
+Objects/log.o: ../Common/log.cpp
+	$(CPP) -c ../Common/log.cpp -o Objects/log.o $(CXXFLAGS)
+
+Objects/rosecrypt.o: ../Common/rosecrypt.cpp
+	$(CPP) -c ../Common/rosecrypt.cpp -o Objects/rosecrypt.o $(CXXFLAGS)
+
+Objects/SocketBase.o: ../Common/SocketBase.cpp
+	$(CPP) -c ../Common/SocketBase.cpp -o Objects/SocketBase.o $(CXXFLAGS)
+
+Objects/SocketClient.o: ../Common/SocketClient.cpp
+	$(CPP) -c ../Common/SocketClient.cpp -o Objects/SocketClient.o $(CXXFLAGS)
+
+Objects/SocketServer.o: ../Common/SocketServer.cpp
+	$(CPP) -c ../Common/SocketServer.cpp -o Objects/SocketServer.o $(CXXFLAGS)
+
+Objects/character.o: ../World\ Server/character.cpp
+	$(CPP) -c "../World Server/character.cpp" -o Objects/character.o $(CXXFLAGS)
+
+Objects/charevent.o: ../World\ Server/charevent.cpp
+	$(CPP) -c "../World Server/charevent.cpp" -o Objects/charevent.o $(CXXFLAGS)
+
+Objects/charfunctions.o: ../World\ Server/charfunctions.cpp
+	$(CPP) -c "../World Server/charfunctions.cpp" -o Objects/charfunctions.o $(CXXFLAGS)
+
+Objects/charstats.o: ../World\ Server/charstats.cpp
+	$(CPP) -c "../World Server/charstats.cpp" -o Objects/charstats.o $(CXXFLAGS)
+
+Objects/mapfunctions.o: ../World\ Server/mapfunctions.cpp
+	$(CPP) -c "../World Server/mapfunctions.cpp" -o Objects/mapfunctions.o $(CXXFLAGS)
+
+Objects/worldmap.o: ../World\ Server/worldmap.cpp
+	$(CPP) -c "../World Server/worldmap.cpp" -o Objects/worldmap.o $(CXXFLAGS)
+
+Objects/battle.o: ../World\ Server/battle.cpp
+	$(CPP) -c "../World Server/battle.cpp" -o Objects/battle.o $(CXXFLAGS)
+
+Objects/WorldMonster.o: ../World\ Server/WorldMonster.cpp
+	$(CPP) -c "../World Server/WorldMonster.cpp" -o Objects/WorldMonster.o $(CXXFLAGS)
+
+Objects/Monster.o: ../World\ Server/Monster.cpp
+	$(CPP) -c "../World Server/Monster.cpp" -o Objects/Monster.o $(CXXFLAGS)
+
+Objects/MonsterEvents.o: ../World\ Server/MonsterEvents.cpp
+	$(CPP) -c "../World Server/MonsterEvents.cpp" -o Objects/MonsterEvents.o $(CXXFLAGS)
+
+Objects/monsterfunctions.o: ../World\ Server/monsterfunctions.cpp
+	$(CPP) -c "../World Server/monsterfunctions.cpp" -o Objects/monsterfunctions.o $(CXXFLAGS)
+
+Objects/MonsterStats.o: ../World\ Server/MonsterStats.cpp
+	$(CPP) -c "../World Server/MonsterStats.cpp" -o Objects/MonsterStats.o $(CXXFLAGS)
+
+Objects/Buff.o: ../World\ Server/Buff.cpp
+	$(CPP) -c "../World Server/Buff.cpp" -o Objects/Buff.o $(CXXFLAGS)
+
+Objects/player.o: ../World\ Server/player.cpp
+	$(CPP) -c "../World Server/player.cpp" -o Objects/player.o $(CXXFLAGS)
+
+Objects/playerdata.o: ../World\ Server/playerdata.cpp
+	$(CPP) -c "../World Server/playerdata.cpp" -o Objects/playerdata.o $(CXXFLAGS)
+
+Objects/playerfunctions.o: ../World\ Server/playerfunctions.cpp
+	$(CPP) -c "../World Server/playerfunctions.cpp" -o Objects/playerfunctions.o $(CXXFLAGS)
+
+Objects/playerstats.o: ../World\ Server/playerstats.cpp
+	$(CPP) -c "../World Server/playerstats.cpp" -o Objects/playerstats.o $(CXXFLAGS)
+
+Objects/extrafunctions.o: ../World\ Server/extrafunctions.cpp
+	$(CPP) -c "../World Server/extrafunctions.cpp" -o Objects/extrafunctions.o $(CXXFLAGS)
+
+Objects/gmcmds.o: ../World\ Server/gmcmds.cpp
+	$(CPP) -c "../World Server/gmcmds.cpp" -o Objects/gmcmds.o $(CXXFLAGS)
+
+Objects/main.o: ../World\ Server/main.cpp
+	$(CPP) -c "../World Server/main.cpp" -o Objects/main.o $(CXXFLAGS)
+
+Objects/MainProcess.o: ../World\ Server/MainProcess.cpp
+	$(CPP) -c "../World Server/MainProcess.cpp" -o Objects/MainProcess.o $(CXXFLAGS)
+
+Objects/Party.o: ../World\ Server/Party.cpp
+	$(CPP) -c "../World Server/Party.cpp" -o Objects/Party.o $(CXXFLAGS)
+
+Objects/partyfunctions.o: ../World\ Server/partyfunctions.cpp
+	$(CPP) -c "../World Server/partyfunctions.cpp" -o Objects/partyfunctions.o $(CXXFLAGS)
+
+Objects/ServerFunctions.o: ../World\ Server/ServerFunctions.cpp
+	$(CPP) -c "../World Server/ServerFunctions.cpp" -o Objects/ServerFunctions.o $(CXXFLAGS)
+
+Objects/startup.o: ../World\ Server/startup.cpp
+	$(CPP) -c "../World Server/startup.cpp" -o Objects/startup.o $(CXXFLAGS)
+
+Objects/worldpackets.o: ../World\ Server/worldpackets.cpp
+	$(CPP) -c "../World Server/worldpackets.cpp" -o Objects/worldpackets.o $(CXXFLAGS)
+
+Objects/Worldprocess.o: ../World\ Server/Worldprocess.cpp
+	$(CPP) -c "../World Server/Worldprocess.cpp" -o Objects/Worldprocess.o $(CXXFLAGS)
+
+Objects/worldserver.o: ../World\ Server/worldserver.cpp
+	$(CPP) -c "../World Server/worldserver.cpp" -o Objects/worldserver.o $(CXXFLAGS)
+
+Objects/clan.o: ../World\ Server/clan.cpp
+	$(CPP) -c "../World Server/clan.cpp" -o Objects/clan.o $(CXXFLAGS)
+
+Objects/database.o: ../Common/database/database.cpp
+	$(CPP) -c ../Common/database/database.cpp -o Objects/database.o $(CXXFLAGS)
+
+Objects/stbhandler.o: ../World\ Server/stbhandler.cpp
+	$(CPP) -c "../World Server/stbhandler.cpp" -o Objects/stbhandler.o $(CXXFLAGS)
+
+Objects/strhashing.o: ../World\ Server/strhashing.cpp
+	$(CPP) -c "../World Server/strhashing.cpp" -o Objects/strhashing.o $(CXXFLAGS)
+
+Objects/itemdata.o: ../World\ Server/itemdata.cpp
+	$(CPP) -c "../World Server/itemdata.cpp" -o Objects/itemdata.o $(CXXFLAGS)
+
+Objects/globals.o: ../Common/globals.cpp
+	$(CPP) -c ../Common/globals.cpp -o Objects/globals.o $(CXXFLAGS)
+
+Objects/QuestActions.o: ../World\ Server/quest/QuestActions.cpp
+	$(CPP) -c "../World Server/quest/QuestActions.cpp" -o Objects/QuestActions.o $(CXXFLAGS)
+
+Objects/QuestConditions.o: ../World\ Server/quest/QuestConditions.cpp
+	$(CPP) -c "../World Server/quest/QuestConditions.cpp" -o Objects/QuestConditions.o $(CXXFLAGS)
+
+Objects/Quests.o: ../World\ Server/quest/Quests.cpp
+	$(CPP) -c "../World Server/quest/Quests.cpp" -o Objects/Quests.o $(CXXFLAGS)
+
+Objects/playerquest.o: ../World\ Server/playerquest.cpp
+	$(CPP) -c "../World Server/playerquest.cpp" -o Objects/playerquest.o $(CXXFLAGS)
+
+Objects/AiActions.o: ../World\ Server/aip/AiActions.cpp
+	$(CPP) -c "../World Server/aip/AiActions.cpp" -o Objects/AiActions.o $(CXXFLAGS)
+
+Objects/AiConditions.o: ../World\ Server/aip/AiConditions.cpp
+	$(CPP) -c "../World Server/aip/AiConditions.cpp" -o Objects/AiConditions.o $(CXXFLAGS)
+
+Objects/Aip.o: ../World\ Server/aip/Aip.cpp
+	$(CPP) -c "../World Server/aip/Aip.cpp" -o Objects/Aip.o $(CXXFLAGS)
+
+Objects/seh.o: ../Common/seh.cpp
+	$(CPP) -c ../Common/seh.cpp -o Objects/seh.o $(CXXFLAGS)
