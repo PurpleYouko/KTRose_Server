@@ -42,6 +42,7 @@
     <IncludePath>F:\Triggersoft\KTRose Server VS2010\include;$(IncludePath)</IncludePath>
     <LibraryPath>F:\Triggersoft\KTRose Server VS2010\include\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>..\..</OutDir>
+    <TargetName>WorldServerVS</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
