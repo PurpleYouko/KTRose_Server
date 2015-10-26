@@ -4221,7 +4221,10 @@ bool CWorldServer::pakModifiedItem( CPlayer* thisclient, CPacket* P )
             bool success = true;
             srand( time(NULL));
             unsigned int prefine = rand()%100;
-            int refinechance = upgrade[nextlevel];
+
+			//PY ToDo. This whole function needs to be recoded so that we know if it's a bindrune or a talisman
+			//right now the success chance is Bindrune chance (which is the same as talisman chance in the STB anyway for now)
+            int refinechance = upgrade[nextlevel].BindRune_Success;
 
             if( GServer->EquipList[itemtype].Index[itemnum]->raretype != 0 )
                 refinechance += GServer->Config.Rare_Refine;

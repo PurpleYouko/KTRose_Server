@@ -367,9 +367,17 @@ class CWorldServer : public CServerSocket
         vector<CFairy*>         FairyList;              // Fairy List
         std::map< unsigned, CNPCTrigger* >  NPCActionList;
 
+		struct UpgradeList
+		{
+			UINT BindRune_Level;
+			UINT Talisman_Level;
+			UINT BindRune_Success;
+			UINT Talisman_Success;
+		};
+
 
         CItemStas               StatsList[500];
-        UINT                    upgrade[10];
+        UpgradeList             upgrade[10];
         CEquipList              EquipList[10];
         CJemList                JemList;
         CNaturalList            NaturalList;
@@ -391,6 +399,7 @@ class CWorldServer : public CServerSocket
         CSTBData                STB_BREAK;              // Break data
         CSTBData                STB_SELL;               // npc sell index
         CSTBData                ListGrade;              // LMA: used to store the refine bonuses (% and +).
+		CSTBData				ListUpGrade;			// Bindrune and Tlisman upgrade data
 
 		vector<CQuestTrigger*> TriggerList;
 		fpQuestCond qstCondFunc[31];

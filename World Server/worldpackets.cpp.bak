@@ -208,7 +208,7 @@ void CWorldServer::pakQuestData( CPlayer *thisclient )
         byte tempval = 0;
         for(int j=0;j<8;j++)
         {
-            tempval += (byte)thisclient->quest.Qflags[i][j] * (int)pow((double)2,j);
+			tempval += (byte)thisclient->quest.Qflags[i][j] * (int)pow(2.0,(double)j);
         }
         pakout.AddByte(tempval);
         //pakout.AddByte( thisclient->quest.flags[i] );
@@ -284,7 +284,7 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
 	thisclient->Session->TotalLogTime = atoi(row[7]);   //total log time for this account
 	thisclient->Session->award = 0;
 	thisclient->Session->RespawnChoice = 0;
-	thisclient->Session->Respawned = false;
+	thisclient->Session->Respawned = 0;
 	thisclient->Session->inGame = true;
     DB->QFree( );
     if(thisclient->Session->NewPoints != 0)
@@ -362,7 +362,7 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 		return false;
 	}
 	Log( MSG_INFO, "User '%s'(#%i) assigned id #%i", thisclient->Session->username, thisclient->Session->userid, thisclient->clientid );
-    Log( MSG_DEBUG, "User Session Ingame = %i", thisclient->Session->inGame);
+    //Log( MSG_DEBUG, "User Session Ingame = %i", thisclient->Session->inGame);
     //thisclient->Session->inGame = true;
     if( thisclient->Party->party )
     {
@@ -381,18 +381,18 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
     ADDWORD    ( pak, 0x0002 );
     ADDWORD    ( pak, 0x0000 );
     thisclient->client->SendPacket( &pak );
-    Log( MSG_DEBUG, "Packet 0x721 sent");
+    //Log( MSG_DEBUG, "Packet 0x721 sent");
     RESETPACKET( pak, 0x753 );
     ADDWORD    ( pak, thisclient->clientid );			// USER ID
-    Log( MSG_DEBUG, "User ID added");
+    //Log( MSG_DEBUG, "User ID added");
     ADDWORD    ( pak, thisclient->Stats->HP );		// CURRENT HP
-    Log( MSG_DEBUG, "Current HP added");
+    //Log( MSG_DEBUG, "Current HP added");
     ADDWORD    ( pak, thisclient->Stats->MP );		// CURRENT MP
-    Log( MSG_DEBUG, "Current MP added");
+    //Log( MSG_DEBUG, "Current MP added");
     ADDDWORD   ( pak, thisclient->CharInfo->Exp );				// CURRENT EXP
     ADDDWORD   ( pak, 0x00000000 );						// LVL EXP (UNSUSED)
-    Log( MSG_DEBUG, "Current XP added");
-    Log( MSG_DEBUG, "Basic info added");
+    //Log( MSG_DEBUG, "Current XP added");
+    //Log( MSG_DEBUG, "Basic info added");
     // thanks to StrikeX to post this source
         //[economy]
         /*
@@ -421,9 +421,9 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
     ADDDWORD   ( pak, 0x3232cd50 );
     ADDDWORD   ( pak, 0x32323235 );
     ADDDWORD   ( pak, 0x35323232 );
-    Log( MSG_DEBUG, "rates added");
+    //Log( MSG_DEBUG, "rates added");
     CMap* map = MapList.Index[thisclient->Position->Map];
-    Log( MSG_DEBUG, "position added");
+    //Log( MSG_DEBUG, "position added");
     if(map->allowpvp!=0)
         ADDWORD(pak, 0x0001)//player vs player map
     else
@@ -449,7 +449,7 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
         ADDWORD(pak, 0x0000 );//white icon (map)
     }
     thisclient->client->SendPacket( &pak );
-    Log( MSG_DEBUG, "Sent 0x753 packet");
+    //Log( MSG_DEBUG, "Sent 0x753 packet");
     // Sort out weight stuff, make user not able to run if overweight
     int weight = ( thisclient->GetCurrentWeight() / thisclient->GetMaxWeight() ) * 100;
     if(weight>110)
@@ -474,8 +474,8 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 	SendToVisible( &pak, thisclient );
     thisclient->CleanPlayerVector( );
 	thisclient->Session->inGame = true;
-	thisclient->Session->Respawned = false;
-	Log( MSG_DEBUG, "Completed DoID");
+	thisclient->Session->Respawned = 0;
+	//Log( MSG_DEBUG, "Completed DoID");
 	return true;
 }
 
@@ -547,6 +547,7 @@ bool CWorldServer::pakStopChar( CPlayer* thisclient, CPacket* P )
 // Spawn NPC
 bool CWorldServer::pakSpawnNPC( CPlayer* thisclient, CNPC* thisnpc )
 {
+	//Log(MSG_DEBUG,"spawning NPC type %i at X: %f Y: %f.",thisnpc->npctype,thisnpc->pos.x,thisnpc->pos.y);
 	BEGINPACKET( pak, 0x791 );
     ADDWORD( pak, thisnpc->clientid );
 	ADDFLOAT( pak, thisnpc->pos.x*100 );
@@ -1371,7 +1372,7 @@ bool CWorldServer::pakGameGuard ( CPlayer* thisclient, CPacket* P )
 bool CWorldServer::pakUserDied ( CPlayer* thisclient, CPacket* P )
 {
     thisclient->Session->inGame = false;
-    thisclient->Session->Respawned = true;
+    thisclient->Session->Respawned = 1;
     //BYTE respawn = GETBYTE((*P),0);
     thisclient->Session->RespawnChoice = GETBYTE((*P),0);
 

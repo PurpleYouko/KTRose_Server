@@ -46,6 +46,7 @@ bool CWorldServer::LoadSTBData( )
 	STBStoreData( "3DData\\STB\\LIST_ZONE.STB", &STB_ZONE );
 	//STBStoreData( "3DData\\STB\\ITEM_DROP.STB", &STB_DROP );
 	STBStoreData("3DData\\STB\\LIST_GRADE.STB", &ListGrade);
+	STBStoreData("3DData\\STB\\LIST_UPGRADE.STB", &ListUpGrade);
 	return true;
 }
 
@@ -771,6 +772,7 @@ bool CWorldServer::LoadMonsters( )
 	return true;
 }
 
+/*
 bool CWorldServer::LoadUpgrade( )//for succes rate
 {
 	Log( MSG_INFO, "Loading Refine Data      " );
@@ -790,6 +792,19 @@ bool CWorldServer::LoadUpgrade( )//for succes rate
         upgrade[GetUIntValue(",",&line)] = GetUIntValue(",");
     }
     fclose(fh);
+	return true;
+} */
+
+bool CWorldServer::LoadUpgrade( )//Load success rates for Bindrune and Talismans from STB
+{
+	Log( MSG_INFO, "Loading Upgrades data            " );
+    for (unsigned int i = 0; i<ListUpGrade.rowcount;i++)
+    {
+		upgrade[i].BindRune_Level = ListUpGrade.rows[i][0];
+		upgrade[i].BindRune_Success = ListUpGrade.rows[i][1];
+		upgrade[i].Talisman_Level = ListUpGrade.rows[i][2];
+		upgrade[i].Talisman_Success = ListUpGrade.rows[i][3];
+	}
 	return true;
 }
 

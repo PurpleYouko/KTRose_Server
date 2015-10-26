@@ -394,8 +394,9 @@ class CWorldServer : public CServerSocket
 
 		vector<CQuestTrigger*> TriggerList;
 		fpQuestCond qstCondFunc[31];
-		fpQuestRewd qstRewdFunc[31];
+		fpQuestRewd qstRewdFunc[51];
         vector<CAip*> AipList;
+        //vector<CAIPScript*> AIPList;
         UINT maxSpawnId;
         fpAiCond aiCondFunc[35];
         fpAiAct aiActFunc[40];
