@@ -1,50 +1,43 @@
-#ifndef __ROSE_SERVER__CRYPTION_ROUTINES__HEADER_FILE__
-#define __ROSE_SERVER__CRYPTION_ROUTINES__HEADER_FILE__
-//#define USE124
-//-------------------------------------------------------------------------
-// This structure contains generated tables, which are needed to
-// encrypt and decrypt packets.
-//-------------------------------------------------------------------------
-struct CCryptTable
-{
-	unsigned**			Tables;							// Main encryption table
-	unsigned short*		AddTable;						// Less important encryption table
+/*
+    Rose Online Server Emulator
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
-	unsigned			EncryptionStartValue;			// Start value for sending clients	
-};
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
 
-//-------------------------------------------------------------------------
-// This structure contains informations about current encrypt-values.
-// Startvalues should be "EncryptionStartValue" from the CCryptTable for
-// CurEncryptionValue and zero for CurAddValue.
-// * This values changes every incoming encryption.
-//-------------------------------------------------------------------------
-struct CCryptStatus
-{
-	unsigned			CurEncryptionValue;				// Current encryption value
-	unsigned			CurAddValue;					// Current additional value
-};
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-//-------------------------------------------------------------------------
-// Functions, used to generate and delete CryptTables
-//-------------------------------------------------------------------------
-void GenerateCryptTables			( CCryptTable* &CryptTables, unsigned ModValue );
-void GenerateLoginServerCryptTables	( CCryptTable* &CryptTables );
-void FreeCryptTables				( CCryptTable* &CryptTables );
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-//-------------------------------------------------------------------------
-// Functions, used to decrypt/encrypt a buffer - serverside
-//-------------------------------------------------------------------------
-int  DecryptBufferHeader			( CCryptStatus *ri, CCryptTable *CryptTables, unsigned char *Buffer );
-bool DecryptBufferData				( CCryptTable *CryptTables, unsigned char *Buffer );
-void EncryptBuffer					( CCryptTable *CryptTables, unsigned char *Buffer );
-bool CryptISCPak( unsigned char* pak ); // Raven0123
-//-------------------------------------------------------------------------
-#ifndef USE124
-#define TABLE_SIZE	(256+8)
+    depeloped with Main erose/hrose source server + some change from the original eich source
+*/
+#ifndef __ROSE_ENCRYPTION__
+#define __ROSE_ENCRYPTION__
 
-int buildChecksum(char* csum, char* path=0);
-void buildCryptTable(char* crypttable, char* checksum, int checksumlen);
-void cryptPacket(char *packet, char *crypttable);
+#ifdef _WIN32
+    #include <windows.h>
 #endif
+#define allocChecksum() new char[0x200]
+#define allocCrypttable() new char[256+8]
+
+// Functions
+#ifdef _WIN32
+//int buildChecksum( char* csum, char* path = 0 );
+void buildCryptTable( char* crypttable, char* checksum, int checksumlen );
 #endif
+void cryptPacket( char *packet, char *crypttable );
+
+
+#endif
+
+
+
+
+

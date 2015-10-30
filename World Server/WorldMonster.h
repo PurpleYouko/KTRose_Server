@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -34,21 +34,40 @@ class CMonster : public CCharacter
         clock_t SpawnTime;
      	clock_t lastSighCheck;
      	clock_t lastDegenTime;
-     	clock_t lastAiUpdate;
-     	clock_t DeathDelayTimer;
+		time_t lastLifeUpdate;
+		UINT life_time; //LMA: life time, for summons mainly...
+
+
+		//LMA: daynight
+		int daynight;
+		//LMA: special AIP.
+		int sp_aip;
 
         MDrop* MonsterDrop;
         UINT activecycle;
 
+        unsigned int team;  //LMA: PVP team or friendly.
     	unsigned int montype;
     	unsigned int owner;
-    	unsigned int monAI;
-    	unsigned int AItimer;
-    	unsigned char hitcount; //for guardiantree scarab spawning
-    	unsigned int IsCasting;
+    	unsigned int MonAI;
+    	unsigned int AITimer;
+    	unsigned int owner_user_id;  //LMA: used by summons for the summon jauge.
+    	unsigned int hitcount;       //LMA: hit count for some monsters (MC and so on...) Arnold.
+    	unsigned int maxhitcount;    //LMA: max hit count for some monsters (MC and so on...) Arnold.
+    	bool stay_still;             //LMA: if yes, the monster will never move from the place it had been placed.
+    	UINT skillid;                //LMA: skill info (generally for summons like bonfires...)
+    	UINT buffid;                 //LMA: some monsters do buff.
+        UINT minvalue;
+        UINT maxvalue;
+        UINT bonushp;
+        UINT bonusmp;
+        UINT range;
+        int aip_npctype;    //LMA: AIP
+        int aip_clientid;   //LMA: AIP
+        bool is_tactical;   //LMA: Is Tactical or basic?
+        bool suicide;   //LMA: did the monster committ suicide?
 
-
-    	unsigned int NextWayPoint;
+        unsigned int NextWayPoint;
 
     	CParty* thisparty;
     	CNPCData* thisnpc;
@@ -56,14 +75,13 @@ class CMonster : public CCharacter
         vector<MonsterDamage*> PlayersDamage;
 
         // Monster Functions
-        void DoAi(int ainumber,char type);
-        //bool Guardiantree(CMonster* monster, CMap* map);
-        bool Scarab(CMonster* monster, CMap* map);
+        void DoAi(int ainumber,char type);  //LMA: AIP.
         bool SummonUpdate(CMonster* monster, CMap* map, UINT j);
-        bool SetStats( );
-        bool UnspawnMonster( );
+        bool SetStats(bool all=true);   //LMA: update in some occasions.
+        bool UnspawnMonster();
       	bool IsGhost( );
       	bool IsGhostSeed( );
+      	bool IsBonfire( );
       	bool CanMove( );
       	void OnEnemyDie( void* enemy );
       	bool ReadyToMove( );
@@ -72,8 +90,10 @@ class CMonster : public CCharacter
       	CPlayer* GetOwner( );
       	void SpawnMonster( CPlayer* player, CMonster* thismon );
       	bool PlayerInRange( );
+      	bool PlayerInGrid( );      //LMA: maps
       	CPlayer* GetNearPlayer( UINT mdist = 20 );
-        void AddDamage( CCharacter* enemy, long int hitpower);
+        //void AddDamage( CCharacter* enemy, long int hitpower);
+        void AddDamage( CCharacter* enemy, long long hitpower);
         CDrop* GetDrop( );
 
         //
@@ -81,26 +101,24 @@ class CMonster : public CCharacter
         bool UpdateValues( );
 
       	// Stats
-        unsigned int GetAttackPower( );
-        unsigned int GetDefense( );
-        unsigned int GetXPRate( );
-        unsigned int GetItemDropRate( );
-        unsigned int GetItemDropCountRate( );
-        unsigned int GetZulyDropRate( );
-        unsigned int GetGreyDrops( );
-        unsigned int GetDodge( );
-        unsigned int GetAccury( );
-        unsigned int GetMagicDefense( );
-        unsigned int GetMagicAttack( );
-        unsigned int GetCritical( );
-        unsigned int GetAttackSpeed( );
-        unsigned int GetMoveSpeed( );
-        unsigned int GetMaxHP( );
-        float GetAttackDistance( );
+        unsigned int GetAttackPower();
+        unsigned int GetDefense();
+        unsigned int GetDodge();
+        unsigned int GetAccury();
+        unsigned int GetMagicDefense();
+        unsigned int GetCritical();
+        unsigned int GetAttackSpeed();
+        unsigned int GetMoveSpeed();
+
+        //unsigned int GetMaxHP( );
+        unsigned long long GetMaxHP( );
+        bool ForceMaxHP( );   //LMA: Forcing maxHP
+
+        float GetAttackDistance();
 
         // Events
         bool OnBeAttacked( CCharacter* Enemy );
-        bool OnEnemyOnSight( CCharacter* Enemy );
+        bool OnEnemyOnSight( CPlayer* Enemy );
         bool OnDie( );
         bool OnEnemyDie( CCharacter* Enemy );
         bool OnSpawn( bool );

@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -32,6 +32,56 @@ bool CMonster::PlayerInRange()
     return false;
 }
 
+//LMA: maps, is there a player in a nearby grid (alternative to PlayerInRange)
+bool CMonster::PlayerInGrid()
+{
+    int grid_id=0;
+    UINT coords=0;
+
+
+    //Log(MSG_INFO,"position->Map %i",Position->Map);
+    CMap* map = GServer->MapList.Index[Position->Map];
+    grid_id=GServer->allmaps[map->id].grid_id;
+    //we don't handle this map (player shouldn't be here, monster neither, non existing map).
+    //Or no players in map.
+    if (map->PlayerList.size()==0||grid_id==-1)
+    {
+        return false;
+    }
+
+    //getting coordinates.
+    coords=GServer->GetGridNumber((int) map->id,(int) Position->current.x,(int) Position->current.y,this);
+
+    //LMA: Special case where a monster is outside the grid, we update it to kill it.
+    if(coords==0&&Stats->HP<=0)
+    {
+        return true;
+    }
+
+    //Is there anyone in the grids nearby?
+    int nb_players=0;
+    int col_offset=0;
+    col_offset=GServer->allmaps[map->id].nb_col+2;
+    nb_players=GServer->gridmaps[grid_id].coords[coords]+GServer->gridmaps[grid_id].coords[coords+1]+GServer->gridmaps[grid_id].coords[coords-1];
+    nb_players+=GServer->gridmaps[grid_id].coords[coords+col_offset]+GServer->gridmaps[grid_id].coords[coords+col_offset+1]+GServer->gridmaps[grid_id].coords[coords+col_offset-1];
+    nb_players+=GServer->gridmaps[grid_id].coords[coords-col_offset]+GServer->gridmaps[grid_id].coords[coords-col_offset+1]+GServer->gridmaps[grid_id].coords[coords-col_offset-1];
+    if (nb_players>0)
+    {
+        //Log(MSG_INFO,"[GRID-%i] Mob %i X(%.2f,%.2f)",coords,clientid,Position->current.x,Position->current.y);
+       return true;
+    }
+
+    //Still here? Special case for very little maps or special maps.
+    if (map->PlayerList.size()>0&&GServer->allmaps[map->id].always_on==true)
+    {
+        //Log(MSG_INFO,"monster in cell %i (AUTO)",coords);
+        return true;
+    }
+
+
+    return false;
+}
+
 // get the near player
 CPlayer* CMonster::GetNearPlayer( UINT mdist )
 {
@@ -47,16 +97,20 @@ CPlayer* CMonster::GetNearPlayer( UINT mdist )
             distance = tempdist;
         }
     }
+
     if(distance>mdist)
         return NULL; // near player is too far
+
+
     return thisplayer;
 }
+
 
 // return true if is a ghost
 bool CMonster::IsGhost( )
 {
     // candle host, elec ghost, yigore ghost
-    if((montype>710 && montype<751) || (montype>679 && montype<693))
+    if((montype>710 && montype<751) || (montype>679 && montype<694) || (montype>697 && montype<700))
         return true;
     return false;
 }
@@ -69,10 +123,22 @@ bool CMonster::IsGhostSeed( )
     return false;
 }
 
+// Return True if bonfire/salamander flame/mana flame.. by Terr0risT
+bool CMonster::IsBonfire( )
+{
+    if(montype>770 && montype<811)
+        return true;
+    return false;
+}
+
 // return true if current monster can move
 bool CMonster::CanMove( )
 {
-    if((montype<41 || montype>45) && (montype<325 || montype>329) && montype!=659 && (montype<771 || montype>810 ) && montype!=992 && (montype<1474 || montype>1489))
+    if (Status->Stun!=0xff)
+       return false;
+    //LMA: bonfire case handled elsewhere...
+    //if((montype<41 || montype>45) && (montype<325 || montype>329) && montype!=659 && montype!=992 && (montype<1474 || montype>1489))
+    if (thisnpc->wspeed!=0 && thisnpc->rspeed!=0)
         return true;
     return false;
 }
@@ -96,29 +162,29 @@ bool CMonster::IsMonster( )
     return true;
 }
 
-void CMonster::AddDamage( CCharacter* enemy, long int hitpower)
+//LMA: moving to long long...
+//void CMonster::AddDamage( CCharacter* enemy, long long hitpower)
+void CMonster::AddDamage( CCharacter* enemy, long long hitpower)
 {
-    int MaxDamage = Stats->MaxHP * 2;
-    //Log(MSG_DEBUG,"Max Damage = %i",MaxDamage);
+    //Log(MSG_INFO,"In CMonster::AddDamage");
+
     CPlayer* player = NULL;
     if(enemy->IsMonster( ))
     {
         CMonster* monster = (CMonster*) enemy;
-        if(!enemy->IsSummon( )) 
-            return;
+        if(!enemy->IsSummon( )) return;
         player = monster->GetOwner( );
-        if(player == NULL) 
-            return;
+        if(player==NULL) return;
     }
     else
     {
         player = (CPlayer*) enemy;
     }
-    if(MonsterDrop->firsthit == 0 && hitpower > 0)
+    if(MonsterDrop->firsthit==0 && hitpower > 0)
     {
         MonsterDrop->firsthit = player->CharInfo->charid;
         MonsterDrop->firstlevel = player->Stats->Level;
-        if( player->Party->party != NULL )
+        if( player->Party->party!=NULL )
             thisparty = player->Party->party;
         else
             thisparty = NULL;
@@ -128,24 +194,48 @@ void CMonster::AddDamage( CCharacter* enemy, long int hitpower)
         MonsterDamage* thisplayer = PlayersDamage.at(i);
         if(thisplayer->charid == player->CharInfo->charid)
         {
-            if(hitpower > MaxDamage)
-                hitpower = MaxDamage;
+            if( hitpower > Stats->HP )
+            {
+                //hitpower += (long int)Stats->HP + (long int)( Stats->HP * 0.10 );
+                hitpower += Stats->HP + (long long) ( Stats->HP * 0.10 );
+            }
+
             thisplayer->damage += hitpower;
-            if(thisplayer->damage > MaxDamage)
-                thisplayer->damage = MaxDamage;
             return;
         }
     }
     MonsterDamage* newplayer = new MonsterDamage;
     newplayer->charid = player->CharInfo->charid;
-    if( hitpower > MaxDamage )
-        hitpower = MaxDamage;
+    if( hitpower > Stats->HP )
+    {
+        //hitpower += (long int)Stats->HP + (long int)( Stats->HP  * 0.10 );
+        hitpower += Stats->HP + (long long)( Stats->HP  * 0.10 );
+    }
     newplayer->damage = hitpower;
     PlayersDamage.push_back( newplayer );
-    //Log(MSG_DEBUG,"Player Damage added= %i",hitpower);
 }
 
+//hidden
 CDrop* CMonster::GetDrop( )
 {
-    return GServer->GetNewDrop( this );
+    //added a new functionality to PYGetDrop.
+    //now requires an input value for droptype. A droptype of 1 is a normal drop while a droptype of 2 can be sent to generate a drop while the monster is still alive
+    //Code for these 'side drops' is still under development and will follow soon
+    //GServer->PYGetDrop( this, 1 );
+
+    if (IsDead())
+    {
+        drop_dead=true;
+    }
+
+    //LMA: And system
+    if(!GServer->Config.drop_rev)
+    {
+        return GServer->GetPYDrop( this, 1 );
+    }
+    else
+    {
+        return GServer->GetPYDropAnd( this, 1 );
+    }
+
 }

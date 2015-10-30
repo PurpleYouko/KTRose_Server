@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@ CMap::CMap( )
     RespawnList.clear();
     MonsterSpawnList.clear();
     //if(GServer->Config.SpawnType == 0)
-        MobGroupList.clear();
+    //MobGroupList.clear();
     MonsterList.clear();
     DropsList.clear();
     PlayerList.clear();
@@ -51,6 +51,7 @@ CMap::~CMap( )
 {
     for(UINT i=0;i<RespawnList.size();i++)
         delete RespawnList.at(i);
+    /*
     if(GServer->Config.SpawnType == 0)
     {
         for(UINT i = 0; i < MobGroupList.size(); i++)
@@ -63,6 +64,7 @@ CMap::~CMap( )
             delete thisgroup;
         }
     }
+    */
     for(UINT i=0;i<MonsterSpawnList.size();i++)
         delete MonsterSpawnList.at(i);
     for(UINT i=0;i<MonsterList.size();i++)
@@ -98,6 +100,7 @@ bool CMap::RemovePlayer( CPlayer* player, bool clearobject )
             return true;
         }
     }
+    Log(MSG_WARNING, "Player not founded %s", player->CharInfo->charname );
     return false;
 }
 
@@ -132,14 +135,19 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     monster->Status->spawnid = spawnid;     //this way we can easily find which spawn a mob belongs to
     monster->SetStats( );
     //if(AI == 999) Log( MSG_WARNING, "AddMonster Stats set " );
-    if(AI != 0 && monster->monAI != 999)
+
+
+    if(AI != 0 && monster->MonAI != 999)
     {
         //Set monster's AI to the defined value
         //if(AI == 999) Log( MSG_WARNING, "AddMonster Setting monAI " );
-        monster->monAI = AI;
+        monster->MonAI = AI;
+        if(monster->MonAI == 999) AI = 30; //should create an AIP script that does nothing
+        /*
+        //this stuff is from KT where we were re-writing the entire AIP code. don't want to mess with that right now
         CAip* script = NULL;
         //if(AI == 999) Log( MSG_WARNING, "AddMonster Created CAip script " );
-        if(monster->monAI == 999) AI = 30; //should create an AIP script that does nothing
+
         for(unsigned j=0; j < GServer->AipList.size(); j++)
         {
             if (GServer->AipList.at(j)->AInumber == AI)
@@ -167,14 +175,17 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
             }
             //Log( MSG_WARNING, "Set the timer from the script" );
         }
-        if (monster->AItimer == 0)
-            monster->AItimer = 4000;
+        */
+        if (monster->AITimer == 0)
+            monster->AITimer = 4000;
         //Log( MSG_WARNING, "AddMonster end of main clause " );
     }
     else
     {
         //Set monster's AI to the default value for this monster type
-        monster->monAI = monster->thisnpc->AI;
+        monster->MonAI = monster->thisnpc->AI;
+
+        /*
         CAip* script = NULL;
         for(unsigned j=0; j < GServer->AipList.size(); j++)
         {
@@ -193,19 +204,20 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
         {
             monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
         }
-        if (monster->AItimer == 0)
-            monster->AItimer = 4000;
+        */
+        if (monster->AITimer == 0)
+            monster->AITimer = 4000;
         //if(AI == 999) Log( MSG_WARNING, "AddMonster end of ELSE clause " );
     }
     if(IsTD)
     {
 
         //monster->thisnpc->AI = 331;
-        monster->monAI = 999;
+        monster->MonAI = 999;
         monster->thisnpc->aggresive = 0;
         monster->NextWayPoint = 1;
         monster->Position->destiny = monster->Position->current;
-        monster->AItimer = 1000; //shorter testing time because it doesn't run an AIP
+        monster->AITimer = 1000; //shorter testing time because it doesn't run an AIP
     }
 
     if(limit == 0)
@@ -235,18 +247,18 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     if(AI == 999) Log( MSG_WARNING, "Added to monster list " );
     if(spawnid != 0)
     {
-        if(GServer->Config.SpawnType == 1)
-        {
+        //if(GServer->Config.SpawnType == 1)
+        //{
             CSpawnArea* thisspawn = GServer->GetSpawnArea( spawnid, this->id );
             if(thisspawn!=NULL)
                 thisspawn->amon++;
-        }
-        if(GServer->Config.SpawnType == 0)
-        {
-            CMobGroup* thisgroup = GServer->GetMobGroup( spawnid, this->id );
-            if(thisgroup != NULL)
-                thisgroup->active++;
-        }
+        //}
+        //if(GServer->Config.SpawnType == 0)
+        //{
+        //    CMobGroup* thisgroup = GServer->GetMobGroup( spawnid, this->id );
+        //    if(thisgroup != NULL)
+         //       thisgroup->active++;
+        //}
     }
     monster->activecycle = GServer->RandNumber(1, 10);
     monster->SpawnTime = clock( );
@@ -265,8 +277,8 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
     GServer->ClearClientID( monster->clientid );
     if(monster->Position->respawn != 0)
     {
-        if(GServer->Config.SpawnType == 1)
-        {
+        //if(GServer->Config.SpawnType == 1)
+        //{
             CSpawnArea* thisspawn = GServer->GetSpawnArea( monster->Position->respawn, monster->Position->Map );
             if(thisspawn != NULL)
             {
@@ -275,7 +287,8 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
                 thisspawn->amon--;
                 UpdateSpawnCounter( thisspawn->montype, thisspawn->id, 2);
             }
-        }
+        //}
+        /*
         if(GServer->Config.SpawnType == 0)
         {
             CMobGroup* thisgroup = GServer->GetMobGroup( monster->Position->respawn, monster->Position->Map );
@@ -287,6 +300,7 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
                 thisgroup->basicKills++;
             }
         }
+        */
     }
     if(clearobject) // is this for clearing Summons?
     {
@@ -294,9 +308,8 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
         BEGINPACKET( pak, 0x799 );
         ADDWORD    ( pak, monster->clientid );
         ADDWORD    ( pak, monster->clientid );
-        ADDWORD    ( pak, 0x8005 );
-        //ADDDWORD   ( pak, monster->Stats->HP );
-        //ADDDWORD   ( pak, 16 );
+        ADDDWORD   ( pak, monster->Stats->HP );
+        ADDDWORD   ( pak, 16 );
         GServer->SendToVisible( &pak, monster );
     }
     if(i != 0)
@@ -355,6 +368,33 @@ bool CMap::DeleteDrop( CDrop* drop )
 bool CMap::AddNPC( CNPC* npc )
 {
     NPCList.push_back( npc );
+
+    //LMA: We keep a track with a more general map as well since we'll need it
+	//in some QSD...
+    if (GServer->ListAllNpc.find(npc->npctype)==GServer->ListAllNpc.end())
+    {
+        //not found yet.
+        GServer->ListAllNpc[npc->npctype].push_back(npc->posMap);
+        //Log(MSG_WARNING,"Adding NPC %i (didn't exist) in map %i",npc->npctype,npc->posMap);
+        return true;
+    }
+
+    //found, let's see if we already got a NPC in this map.
+    for (int k=0;k<GServer->ListAllNpc[npc->npctype].size();k++)
+    {
+        if(GServer->ListAllNpc[npc->npctype].at(k)==npc->posMap)
+        {
+            //Log(MSG_WARNING,"there is already a NPC %i in map %i",npc->npctype,npc->posMap);
+            return true;
+        }
+
+    }
+
+    //let's add it :)
+    GServer->ListAllNpc[npc->npctype].push_back(npc->posMap);
+    //Log(MSG_WARNING,"Adding NPC %i (already in other maps) in map %i as well",npc->npctype,npc->posMap);
+
+
     return true;
 }
 

@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://osroseon.to.md
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -16,22 +16,14 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-    developed with Main erose/hrose source server + some change from the original eich source
+    depeloped with Main erose/hrose source server + some change from the original eich source
 */
 #include "sockets.h"
-#include <iostream>
+#include <math.h>
 
 // Constructor
 CServerSocket::CServerSocket( )
 {
-#ifdef USE124
-  csum = new char [0x200];
-	csumlen = buildChecksum(csum, "TRose.exe");
-  if(csumlen < 0)
-    std::cout << "Failed to generate checksum, error: " << csumlen << std::endl;
-	else
-		std::cout << "Generated checksum" << std::endl;
-#endif
     ConnectedClients = 0;
 }
 
@@ -44,19 +36,17 @@ CServerSocket::~CServerSocket( )
 // Start up our server
 bool CServerSocket::StartServer( )
 {
-	//struct sockaddr_in ain;
-    int test;
+	struct sockaddr_in ain;
 	sock = socket( AF_INET, SOCK_STREAM, 0 );
 	if (sock == INVALID_SOCKET)
     {
-		Log( MSG_FATALERROR, "Could not create a socket" );
+		//Log( MSG_FATALERROR, "Could not create a socket" );
 		return false;
 	}
-
     int optval = 1;
     if(setsockopt(sock, SOL_SOCKET,SO_KEEPALIVE,(const char*)&optval,sizeof(optval))==-1)
     {
-        Log(MSG_ERROR, "setsockopt:SO_KEEPALIVE" );
+        //Log(MSG_ERROR, "setsockopt:SO_KEEPALIVE" );
     }
     setsockopt(sock, IPPROTO_TCP,TCP_NODELAY,(const char*)&optval,sizeof(optval));
 	ain.sin_family		= AF_INET;
@@ -65,180 +55,36 @@ bool CServerSocket::StartServer( )
 	memset(&(ain.sin_zero), '\0', 8);
 	if ( bind( sock, (const sockaddr*)&ain, sizeof( struct sockaddr ) ) )
     {
-
-		Log( MSG_FATALERROR, "Could not bind socket" );
-		std::cout <<"socket " << sock << std::endl;
-		std::cin >> test;
+		//Log( MSG_FATALERROR, "Could not bind socket" );
 		closesocket( sock );
 		sock = INVALID_SOCKET;
 		return false;
 	}
+
 	if ( listen( sock, SOMAXCONN ) == -1 )
     {
-		Log( MSG_FATALERROR, "Could not listen on socket" );
+		//Log( MSG_FATALERROR, "Could not listen on socket" );
 		closesocket( sock );
 		sock = INVALID_SOCKET;
 		return false;
 	}
-    if (LOG_THISSERVER == LOG_CHARACTER_SERVER)
-    {
-        //struct sockaddr_in ain;
-        sckISC = socket( AF_INET, SOCK_STREAM, 0 );
-    	if (sckISC == INVALID_SOCKET) {
-    		Log( MSG_ERROR, "Could not create valid ISC socket (WSK2 ERROR: %i)", WSAGetLastError( ) );
-    		return false;
-   		}
-    	optval = 1;
-        if(setsockopt(sckISC, SOL_SOCKET,SO_KEEPALIVE,(const char*)&optval,sizeof(optval))==-1)
-        {
-            Log(MSG_ERROR, "setsockopt:SO_KEEPALIVE" );
-        }
-        setsockopt(sckISC, IPPROTO_TCP,TCP_NODELAY,(const char*)&optval,sizeof(optval));
-	    sain.sin_family		= AF_INET;
-	    sain.sin_addr.s_addr	= INADDR_ANY;
-	    sain.sin_port		= htons( Config.CharsPort);//29110 );
-	    memset(&(sain.sin_zero), '\0', 8);
-	    if ( bind( sckISC, (const sockaddr*)&sain, sizeof( struct sockaddr ) ) )
-        {
-		    Log( MSG_FATALERROR, "Could not bind socket" );
-            closesocket( sckISC );
-		    sckISC = INVALID_SOCKET;
-		    return false;
-	    }
-	    if ( listen( sckISC, SOMAXCONN ) == -1 )
-        {
-		    Log( MSG_FATALERROR, "Could not listen on socket" );
-		    closesocket( sckISC );
-		    sckISC = INVALID_SOCKET;
-		    return false;
-	    }
-	    Log( MSG_INFO, "opened ISC poort %i",29110 );
 
-    }
-
-    if (LOG_THISSERVER == LOG_WORLD_SERVER)
-    {
-        struct sockaddr_in aina;  //if this doesn't work. change back to ain
-    	sckISC = socket( AF_INET, SOCK_STREAM, 0 );
-    	if (sckISC == INVALID_SOCKET) {
-    		Log( MSG_ERROR, "Could not create valid ISC socket (WSK2 ERROR: %i)", WSAGetLastError( ) );
-    		return false;
-    	}
-    	aina.sin_family		= AF_INET;
-    	aina.sin_addr.s_addr	= inet_addr(Config.CharIP);//( "127.0.0.1" );
-    	aina.sin_port		= htons( Config.CharPort);//29110 );
-    	if ( connect( sckISC, (const sockaddr*)&aina, sizeof( aina ) ) == SOCKET_ERROR ) {
-    		Log( MSG_ERROR, "Could not connect to ISC (WSK2 ERROR: %i)", WSAGetLastError( ) );
-    		closesocket( sckISC );
-    		sckISC = INVALID_SOCKET;
-    		return false;
-    	}
-
-
-   	    sckISCII = socket( AF_INET, SOCK_STREAM, 0 );
-    	if (sckISCII == INVALID_SOCKET) {
-    		Log( MSG_ERROR, "Could not create valid ISC socket (WSK2 ERROR: %i)", WSAGetLastError( ) );
-    		return false;
-   		}
-    	optval = 1;
-        if(setsockopt(sckISCII, SOL_SOCKET,SO_KEEPALIVE,(const char*)&optval,sizeof(optval))==-1)
-        {
-            Log(MSG_ERROR, "setsockopt:SO_KEEPALIVE" );
-        }
-        setsockopt(sckISCII, IPPROTO_TCP,TCP_NODELAY,(const char*)&optval,sizeof(optval));
-	    sain.sin_family		= AF_INET;
-	    sain.sin_addr.s_addr	= INADDR_ANY;
-	    sain.sin_port		= htons( Config.WorldsPort );//29210 );
-	    memset(&(sain.sin_zero), '\0', 8);
-	    if ( bind( sckISCII, (const sockaddr*)&sain, sizeof( struct sockaddr ) ) )
-        {
-		    Log( MSG_FATALERROR, "Could not bind socket" );
-            closesocket( sckISCII );
-		    sckISCII = INVALID_SOCKET;
-		    return false;
-	    }
-	    if ( listen( sckISCII, SOMAXCONN ) == -1 )
-        {
-		    Log( MSG_FATALERROR, "Could not listen on socket" );
-		    closesocket( sckISCII );
-		    sckISCII = INVALID_SOCKET;
-		    return false;
-	    }
-	    Log( MSG_INFO, "opened ISC poort %i",Config.WorldsPort );//29210 );
-    }
-    if (LOG_THISSERVER == LOG_LOGIN_SERVER)
-    {
-        struct sockaddr_in aina;  //may need to change back to ain
-    	sckISC = socket( AF_INET, SOCK_STREAM, 0 );
-    	if (sckISC == INVALID_SOCKET) {
-    		Log( MSG_ERROR, "Could not create valid ISC socket (WSK2 ERROR: %i)", WSAGetLastError( ) );
-    		return false;
-    	}
-     }
 	isActive = true;
 
 	if ( !this->OnServerReady( ) )
     {
-		Log( MSG_FATALERROR, "Server could not start" );
+		//Log( MSG_FATALERROR, "Server could not start" );
 		closesocket( sock );
 		sock = INVALID_SOCKET;
 		isActive = false;
 		return false;
 	}
-	Log( MSG_INFO, "Server started on port %i and is listening.", port );
-	//ISCThread( );
+	//Log( MSG_INFO, "Server started on port %i and is listening.", port );
 	ServerLoop( );
 	// Nothing past here is ever really called
 	OnServerDie( );
 	closesocket( sock );
 
-	return true;
-}
-
-// Raven0123
-void CServerSocket::CryptISCPak( char* pak )
-{
-	return;
-	unsigned paksize = *((unsigned short*)&pak[0]);
-	for( unsigned short i = 2; i < paksize; i ++ )
-		pak[i] ^= 0x81 * i * paksize;
-}
-
-// Raven0123
-//void CServerSocket::ISCThread()
-bool CClientSocket::ISCThread()
-{
-    unsigned char buffer[0x400];
-	unsigned recvd = 0;
-	unsigned bufsize = 0;
-	unsigned readlen = 6;
-	bool go = true;
-
-	do {
-
-		recvd = recv( sock, (char*)&buffer[bufsize], readlen-bufsize, 0 );
-		if( recvd == 0){
-			return false;
-		}
-
-		if( recvd == SOCKET_ERROR ) {
-			return false;
-		}
-
-		bufsize += recvd;
-		if( bufsize != readlen ) continue;//return;//continue;
-		if( bufsize == 6 ) {
-			readlen = *((unsigned short*)&buffer[0]);
-			if( readlen < 6 ) Log( MSG_ERROR, "Invalid server Packet Header" );
-			if( readlen > 6 ) continue;//return;//continue;
-		}
-
-		GS->OnReceivePacket( this, (CPacket*)&buffer[0] );
-		go = false;
-
-		bufsize = 0;
-		readlen = 6;
-	} while ( go==true );
 	return true;
 }
 
@@ -253,10 +99,37 @@ void CServerSocket::ServerLoop( )
 	timeval		timeout;
 	maxfd = sock;
 	OnServerStep();
+
+	//LMA BEGIN
+	//MySQL Ping (every hour)
+	//20070623, 221000
+	UINT time_last_ping=clock();
+	UINT time_last_client_ping=clock();
+	UINT delay_ping=3600000;
+	UINT delay_client_ping=5000;    //We do this each 5 seconds.
+	//LMA END
+
 	do
 	{
-        if (!Ping( ))
-          isActive = false;
+        //LMA BEGIN
+        //MySQL Ping
+        //20070623, 221000
+        UINT etime = (UINT)(clock( ) - time_last_ping);
+        if(etime>=delay_ping)
+        {
+            time_last_ping=clock();
+            Ping();
+        }
+        //LMA END
+
+        //LMA: We have to send a ping packets to client...
+        etime = (UINT)(clock( ) - time_last_client_ping);
+        if(etime>=delay_client_ping)
+        {
+            PingClients();
+            time_last_client_ping=clock();
+        }
+
         timeout.tv_sec = 0;
         timeout.tv_usec = 1000;
         NewSocket = INVALID_SOCKET;
@@ -265,59 +138,18 @@ void CServerSocket::ServerLoop( )
     	   FillFDS( &fds );
 		FD_SET( sock, &fds );
 		activity = select( maxfd+1, &fds, NULL, NULL, &timeout );
-		if ( activity == 0 )
-        {
-             // continue;
-             FD_ZERO( &fds );
-             if(!Config.usethreads)
-    	        FillFDS( &fds );
-             FD_SET( sckISC, &fds );
-             activity = select( maxfd+1, &fds, NULL, NULL, &timeout );
-             if ( activity == 0 )continue;
-             if ( activity < 0 && errno != EINTR )
-        {
-			#ifdef _WIN32
-			Log( MSG_ERROR, "Select command failed. Error #%i", WSAGetLastError() );
-			#else
-			Log( MSG_ERROR, "Select command failed. Error #%i", errno );
-			#endif
-			isActive = false;
-		}
-		if ( FD_ISSET( sckISC, &fds ) )
-        {
-			int clientinfolen = sizeof( sockaddr_in );
-            #ifdef _WIN32
-       		NewSocket = accept( sckISC, (sockaddr*)&ClientInfo, (int*)&clientinfolen );
-       		#else
-    		NewSocket = accept( sckISC, (sockaddr*)&ClientInfo, (socklen_t*)&clientinfolen );
-            #endif
-			// TODO: check if server is full
-			if (NewSocket != INVALID_SOCKET)
-            {
-				AddUser( NewSocket, &ClientInfo, true );
-
-            }
-            else
-			{
-			    #ifdef _WIN32
-			    Log( MSG_ERROR, "Error accepting socket: %i", WSAGetLastError() );
-			    #else
-			    Log( MSG_ERROR, "Error accepting socket: %i", errno );
-			    #endif
-            }
-		}
-        }
-
+		if ( activity == 0 ) continue;
 		if ( activity < 0 && errno != EINTR )
         {
 			#ifdef _WIN32
-			Log( MSG_ERROR, "Select command failed. Error #%i", WSAGetLastError() );
+			//Log( MSG_ERROR, "Select command failed. Error #%i", WSAGetLastError() );
 			#else
-			Log( MSG_ERROR, "Select command failed. Error #%i", errno );
+			//Log( MSG_ERROR, "Select command failed. Error #%i", errno );
 			#endif
 			isActive = false;
 		}
-		if ( FD_ISSET( sock, &fds ) )
+
+		if ( FD_ISSET( sock, &fds ) && ConnectedClients < 1024 )
         {
 			int clientinfolen = sizeof( sockaddr_in );
             #ifdef _WIN32
@@ -327,13 +159,21 @@ void CServerSocket::ServerLoop( )
             #endif
 			// TODO: check if server is full
 			if (NewSocket != INVALID_SOCKET)
-				AddUser( NewSocket, &ClientInfo, false );
+			{
+				if(!isBanned(&ClientInfo))
+					AddUser( NewSocket, &ClientInfo );
+				else
+				{
+					//Log( MSG_WARNING, "Banned client tried to connect: %s", inet_ntoa( ClientInfo.sin_addr ) );
+					close( NewSocket );
+				}
+			}
 			else
 			{
 			    #ifdef _WIN32
-			    Log( MSG_ERROR, "Error accepting socket: %i", WSAGetLastError() );
+			    //Log( MSG_ERROR, "Error accepting socket: %i", WSAGetLastError() );
 			    #else
-			    Log( MSG_ERROR, "Error accepting socket: %i", errno );
+			    //Log( MSG_ERROR, "Error accepting socket: %i", errno );
 			    #endif
             }
 		}
@@ -341,6 +181,15 @@ void CServerSocket::ServerLoop( )
     		HandleClients( &fds );
 	} while( isActive );
 }
+
+//LMA BEGIN
+//MySQL Ping
+//20070623, 224500
+bool CServerSocket::Ping()
+{
+     return true;
+}
+//LMA END
 
 // Fills out an FDS for the server
 void CServerSocket::FillFDS( fd_set* fds )
@@ -356,6 +205,7 @@ void CServerSocket::FillFDS( fd_set* fds )
         }
         else
         {
+            //Log(MSG_INFO,"CServerSocket::FillFDS sid %i",client->sock);
             DisconnectClient( client );
         }
 	}
@@ -368,19 +218,18 @@ void CServerSocket::HandleClients( fd_set* fds )
 	{
         CClientSocket* client = ClientList.at( i );
         if(!client->isActive)
+        {
             continue;
+        }
+
 		if(FD_ISSET( client->sock, fds ))
 		{
-            if (client->isserver == true)
-            {
-               //Log( MSG_INFO,"ISC PACKET in HandleClients");
-               if(!client->ISCThread()){
-               client->isActive = false;
-               DisconnectClient( client );}
-            }
-            else
 			if(!client->ReceiveData( ) )
 			{
+			    //LMA: Log.
+			    //Log(MSG_INFO,"Client sid %i is inactive",client->sock);
+			    //End of log.
+
                 client->isActive = false;
                 DisconnectClient( client );
 			}
@@ -388,8 +237,37 @@ void CServerSocket::HandleClients( fd_set* fds )
 	}
 }
 
+// Handle all our clients
+void CServerSocket::PingClients()
+{
+    for(UINT i=0;i<ClientList.size( );i++)
+	{
+        CClientSocket* client = ClientList.at( i );
+        if(!client->isActive)
+        {
+            continue;
+        }
+
+        //LMA: Sending ping each 30 seconds.
+        UINT etime = (UINT)(clock( ) - client->CxTime);
+        if(etime>30000)
+        {
+            BEGINPACKET( pak, 0x700 );
+            ADDWORD   ( pak, 0x0000);
+            client->SendPacket( &pak );
+
+            client->CxTime=clock();
+            //Log(MSG_INFO,"Sending ping to cid %i",client->sock);
+        }
+
+	}
+
+
+	return;
+}
+
 // Add a new user to our server
-void CServerSocket::AddUser( SOCKET sock, sockaddr_in* ClientInfo, bool server )
+void CServerSocket::AddUser( SOCKET sock, sockaddr_in* ClientInfo )
 {
     ConnectedClients++;
 	CClientSocket* thisclient = this->CreateClientSocket( );
@@ -400,16 +278,10 @@ void CServerSocket::AddUser( SOCKET sock, sockaddr_in* ClientInfo, bool server )
 		thisclient=0;
 		return;
 	}
-#ifdef USE124
-	thisclient->ct = new char[TABLE_SIZE];
-	buildCryptTable(thisclient->ct, csum, csumlen);
-#endif
-	thisclient->CryptTable = CryptTable;
-	thisclient->CryptStatus.CurAddValue = 0;
-	thisclient->CryptStatus.CurEncryptionValue = CryptTable->EncryptionStartValue;
 	thisclient->GS = this;
 	thisclient->sock = sock;
 	thisclient->isActive = true;
+	thisclient->CxTime=clock();
 
 	if (!OnClientConnect( thisclient )) {
 		closesocket( thisclient->sock );
@@ -417,6 +289,7 @@ void CServerSocket::AddUser( SOCKET sock, sockaddr_in* ClientInfo, bool server )
 		thisclient=0;
 		return;
 	}
+	//Log( MSG_INFO, "[%i]User connected from %s", thisclient->sock, inet_ntoa( ClientInfo->sin_addr ) );
 	thisclient->ClientIP = "";
     thisclient->ClientIP = inet_ntoa( ClientInfo->sin_addr );
     char *tmp;
@@ -430,16 +303,6 @@ void CServerSocket::AddUser( SOCKET sock, sockaddr_in* ClientInfo, bool server )
         pthread_create( &threads[sock], NULL, ClientMainThread, (PVOID)thisclient);
     }
     memcpy( &thisclient->clientinfo, ClientInfo, sizeof(struct sockaddr_in));
-    if(server==true)
-    {
-        thisclient->isserver=true;
-        Log( MSG_INFO, "Server connected from %s", inet_ntoa( ClientInfo->sin_addr ) );
-    }
-    else
-    {
-        thisclient->isserver=false;
-        Log( MSG_INFO, "User connected from %s", inet_ntoa( ClientInfo->sin_addr ) );
-    }
 }
 
 // Disconnect our user
@@ -459,6 +322,7 @@ void CServerSocket::DisconnectClient( CClientSocket* thisclient )
             break;
         }
     }
+
 	DeleteClientSocket( thisclient );
 }
 
@@ -473,18 +337,10 @@ CClientSocket* CServerSocket::CreateClientSocket ( )
 // This function deletes an old client socket
 void CServerSocket::DeleteClientSocket( CClientSocket* thisclient )
 {
-     if (thisclient->isserver)
-     Log( MSG_INFO, "Server disconnected" );
-     else
-     Log( MSG_INFO, "User disconnected" );
-	delete thisclient;
-}
+	//Log( MSG_INFO, "User disconnected CServerSocket::DeleteClientSocket" );
+    //    Log( MSG_INFO, " %s : disconnected" , thisclient->CharInfo->charname);
 
-//This function loads the encryption
-void CServerSocket::LoadEncryption( )
-{
-	GenerateCryptTables( CryptTable, 0x87654321 );
-	//port = ConfigGetInt("server.conf", "loginport", 29000);
+	delete thisclient;
 }
 
 // This function is called just before proccessing clients
@@ -521,29 +377,132 @@ void CServerSocket::OnClientDisconnect( CClientSocket* thisclient )
 {
 }
 
-// Raven0123
-void CServerSocket::SendISCPacket( CPacket* pak )
+// return if ip is banned
+bool CServerSocket::isBanned( sockaddr_in* ClientInfo )
 {
-	send( sckISC, (char*)pak, pak->Size, 0 );
+	return false;
 }
 
-void CServerSocket::ReceivedISCPacket( CPacket* pak )
+// Returns the current time/date
+unsigned long int CServerSocket::GetServerTime( )
 {
-	Log( MSG_DEBUG, "GOT ISC PACKET (BASESERVER) - 0x%04x %04x", pak->Command, pak->Size );
+    //LMA: This is wrong since the year goes from 1900 and there is a month offset too...
+    /*
+	// Get time/date and write it to the beginning of the row
+	time_t rawtime;							// For time
+	struct tm* timeinfo;					//    "
+	time	  ( &rawtime );
+	timeinfo  = localtime( &rawtime );
+	unsigned long int uCurTime = 0;
+	uCurTime += (timeinfo->tm_sec         * 1         );
+	uCurTime += (timeinfo->tm_min         * 60        );
+	uCurTime += (timeinfo->tm_hour        * 3600      );
+	uCurTime += (timeinfo->tm_yday        * 86400     );
+	uCurTime += ((timeinfo->tm_year-2000) * 86400*366 );
+	*/
+
+	unsigned long int uCurTime = time(NULL);
+
+	return uCurTime;
 }
 
-bool CServerSocket::DoSQL(char *Format, ...) {
-	int retval;
-	char Buffer[0x1500];
-	va_list ap; va_start( ap, Format );
-	vsprintf( Buffer, Format, ap );
-	va_end  ( ap );
- 	retval = mysql_query( mysql, Buffer );
-	if( retval != 0 ) Log( MSG_ERROR, "MySQL Query Error '%s'", mysql_error( mysql ) );
-	return (retval==0);
+void CServerSocket::startConsole( )
+{
+    pthread_create( &consoleThread, NULL, Console, (PVOID)this );
 }
 
-bool CServerSocket::Ping( )
+/*void* CServerSocket::Console( PVOID cserver )
 {
-  return true;
+    //When the console is open, all the servers messages will not be printed (but still will be saved to files)
+    Log( MSG_INFO, "Console started." );
+    CServerSocket* server = static_cast<CServerSocket*>(cserver);
+    bool running = true;
+    PRINT_LOG = false;
+    while(running)
+    {
+        char command[100];
+        memset( &command,'\0', 100 );
+        std::cout << "# ";
+        std::cin.getline( command, 100);
+        if(strcasecmp( command, "exit" )==0)
+        {
+            running = false;
+        }
+        else
+        {
+            if(!server->handleCommand( command ))
+            {
+                running = false;
+            }
+
+        }
+
+    }
+    PRINT_LOG = true;
+    Log( MSG_INFO, "Console closed." );
+}*/
+
+
+//LMA: New version of the Console... Handling double Control+C bug and some others.
+void* CServerSocket::Console( PVOID cserver )
+{
+    //When the console is open, all the servers messages will not be printed (but still will be saved to files)
+    CServerSocket* server = static_cast<CServerSocket*>(cserver);
+    bool running = true;
+    PRINT_LOG = false;
+    //Log( MSG_INFO, "Console started." );
+
+    while(running)
+    {
+        char command[100];
+        memset( &command,'\0', 100 );
+        std::cout << "# " << std::flush;
+
+        std::cin.clear();
+        std::cin.sync();
+        std::cin.ignore(std::cin.rdbuf()->in_avail(),'\n');
+        std::cin.getline( command, 100);
+        if(strcmp( command, "exit" )==0)
+        {
+            running = false;
+        }
+        else
+        {
+            if(strlen(command)>0)
+            {
+                if(!server->handleCommand( command ))
+                {
+                    running = false;
+                }
+
+            }
+            else
+            {
+                running=false;
+            }
+
+        }
+
+    }
+
+    std::cin.clear();
+    std::cin.sync();
+    std::cin.ignore(std::cin.rdbuf()->in_avail(),'\n');
+    server->console_started=false;
+    PRINT_LOG = true;
+    //Log( MSG_INFO, "\nConsole closed." );
+	return 0;
+}
+
+
+bool CServerSocket::handleCommand( char* cmd )
+{
+    if(strcmp(cmd, "close server")==0)
+    {
+        //Log( MSG_CONSOLE, "Closing server..." );
+        isActive = false;
+        return false;
+    }
+    //Log( MSG_CONSOLE, "Unhandled command: %s", cmd );
+    return true;
 }

@@ -10,26 +10,28 @@
 				<Option output="WorldServer" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="1" />
 				<Compiler>
-					<Add option="-O" />
-					<Add option="-Wshadow" />
-					<Add option="-Winit-self" />
-					<Add option="-Wredundant-decls" />
-					<Add option="-Wunreachable-code" />
-					<Add option="-Wswitch-enum" />
+					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
+					<Add library="mysql" />
+					<Add library="pthreadGC2" />
+					<Add library="ws2_32" />
 				</Linker>
+			</Target>
+			<Target title="debug">
+				<Option output="WorldServer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="E:\drop_rev\Binary\.objs" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Wshadow" />
-			<Add option="-Winit-self" />
-			<Add option="-Wredundant-decls" />
-			<Add option="-Wcast-align" />
-			<Add option="-Wundef" />
-			<Add option="-Wmissing-declarations" />
 			<Add option="-g" />
 		</Compiler>
 		<Linker>
@@ -44,13 +46,10 @@
 		<Unit filename="..\Common\config.h" />
 		<Unit filename="..\Common\database\database.cpp" />
 		<Unit filename="..\Common\database\database.h" />
-		<Unit filename="..\Common\globals.cpp" />
 		<Unit filename="..\Common\log.cpp" />
 		<Unit filename="..\Common\log.h" />
 		<Unit filename="..\Common\rosecrypt.cpp" />
 		<Unit filename="..\Common\rosecrypt.hpp" />
-		<Unit filename="..\Common\seh.cpp" />
-		<Unit filename="..\Common\seh.hpp" />
 		<Unit filename="..\Common\sockets.h" />
 		<Unit filename="..\World Server\Buff.cpp" />
 		<Unit filename="..\World Server\MainProcess.cpp" />
@@ -59,6 +58,7 @@
 		<Unit filename="..\World Server\MonsterStats.cpp" />
 		<Unit filename="..\World Server\Party.cpp" />
 		<Unit filename="..\World Server\ServerFunctions.cpp" />
+		<Unit filename="..\World Server\Signal.cpp" />
 		<Unit filename="..\World Server\WorldMonster.cpp" />
 		<Unit filename="..\World Server\WorldMonster.h" />
 		<Unit filename="..\World Server\WorldServer.h" />
@@ -77,10 +77,14 @@
 		<Unit filename="..\World Server\charstats.cpp" />
 		<Unit filename="..\World Server\chartype.h" />
 		<Unit filename="..\World Server\clan.cpp" />
+		<Unit filename="..\World Server\console.cpp" />
 		<Unit filename="..\World Server\datatypes.h" />
+		<Unit filename="..\World Server\datatypes_compat.h" />
 		<Unit filename="..\World Server\extrafunctions.cpp" />
 		<Unit filename="..\World Server\gmcmds.cpp" />
 		<Unit filename="..\World Server\itemdata.cpp" />
+		<Unit filename="..\World Server\ltbhandler.cpp" />
+		<Unit filename="..\World Server\ltbhandler.h" />
 		<Unit filename="..\World Server\main.cpp" />
 		<Unit filename="..\World Server\mapfunctions.cpp" />
 		<Unit filename="..\World Server\monsterfunctions.cpp" />
@@ -92,21 +96,26 @@
 		<Unit filename="..\World Server\playerfunctions.cpp" />
 		<Unit filename="..\World Server\playerquest.cpp" />
 		<Unit filename="..\World Server\playerstats.cpp" />
+		<Unit filename="..\World Server\quest.cpp" />
 		<Unit filename="..\World Server\quest\CIntStb.hpp" />
 		<Unit filename="..\World Server\quest\CRoseArray.hpp" />
 		<Unit filename="..\World Server\quest\CRoseFile.hpp" />
 		<Unit filename="..\World Server\quest\CStrStb.hpp" />
 		<Unit filename="..\World Server\quest\QuestActions.cpp" />
 		<Unit filename="..\World Server\quest\QuestActions.h" />
+		<Unit filename="..\World Server\quest\QuestActionsC.cpp" />
 		<Unit filename="..\World Server\quest\QuestConditions.cpp" />
 		<Unit filename="..\World Server\quest\QuestConditions.h" />
+		<Unit filename="..\World Server\quest\QuestConditionsC.cpp" />
 		<Unit filename="..\World Server\quest\QuestTrigger.h" />
 		<Unit filename="..\World Server\quest\Quests.cpp" />
+		<Unit filename="..\World Server\quest\strhashing.cpp" />
+		<Unit filename="..\World Server\quest\strhashing.h" />
 		<Unit filename="..\World Server\startup.cpp" />
 		<Unit filename="..\World Server\stbhandler.cpp" />
 		<Unit filename="..\World Server\stbhandler.h" />
-		<Unit filename="..\World Server\strhashing.cpp" />
-		<Unit filename="..\World Server\strhashing.h" />
+		<Unit filename="..\World Server\stlhandler.cpp" />
+		<Unit filename="..\World Server\stlhandler.h" />
 		<Unit filename="..\World Server\worldmap.cpp" />
 		<Unit filename="..\World Server\worldmap.h" />
 		<Unit filename="..\World Server\worldpackets.cpp" />

@@ -1,6 +1,6 @@
 /*
-    Open Source Rose Online Team - http://osroseon.to.md/
-    note: the Server is develop with erose source server + eich source        
+    Open Source Rose Online Team - http://www.dev-osrose.com
+    note: the Server is develop with erose source server + eich source
 */
 #ifndef __ROSE_DATATYPES__
 #define __ROSE_DATATYPES__
@@ -8,7 +8,8 @@
 // List of clan members
 struct CClanMembers
 {
-    UINT id;
+    //UINT id;
+    DWORD id;
     char name[50];
     int clan_rank;
 };
@@ -35,10 +36,32 @@ struct CCharacter {
 	unsigned long int DeleteTime;
 };
 
+//LMA: people in the chatroom.
+struct CPeople
+{
+    DWORD charid;
+    WORD account_id;
+    string charname;
+    bool is_active;
+};
+
+//LMA: Chatroom structure.
+struct CChatroom
+{
+    string chatroom_name;
+	WORD chatroom_id;
+	time_t creation_time;
+	bool is_protected;
+	string password;
+	BYTE nb_max;
+	vector<CPeople*> People_list;
+};
+
 // List of friends
 struct CFriendList
 {
-    int id;
+    //int id;
+    DWORD id;
     char name[17];
 };
 
@@ -47,21 +70,23 @@ struct CClans
 {
     int id;
     int logo;
+    unsigned int siglogo;       //LMA: logos.
     int back;
     int grade;
-    int cp;  
+    unsigned int cp;
     char name[17];
     char slogan[30];
     char news[260];
+    UINT rankingpoints;          //LMA: ranking points.
     vector<CClanMembers*> ClanMembers;
 };
 
 // Channel list
 struct CChanels
 {
-    UINT id;    
+    UINT id;
     char* ip;
-    UINT port;    
+    UINT port;
     SOCKET sock;
 };
 #endif

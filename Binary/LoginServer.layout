@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="default" />
-	<File name="..\Common\SocketBase.cpp" open="0" top="0" tabpos="4">
-		<Cursor position="984" topLine="26" />
+	<File name="..\Common\SocketClient.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="4584" topLine="146" />
 	</File>
-	<File name="..\Common\SocketClient.cpp" open="1" top="1" tabpos="11">
-		<Cursor position="3120" topLine="37" />
+	<File name="..\Common\SocketServer.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="6016" topLine="205" />
 	</File>
-	<File name="..\Common\SocketServer.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="1034" topLine="120" />
+	<File name="..\Common\rosecrypt.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="3085" topLine="65" />
 	</File>
-	<File name="..\Common\config.h" open="1" top="0" tabpos="7">
+	<File name="..\Common\sockets.h" open="1" top="0" tabpos="1">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="..\Common\log.cpp" open="1" top="0" tabpos="5">
-		<Cursor position="2569" topLine="78" />
-	</File>
-	<File name="..\Common\log.h" open="1" top="0" tabpos="6">
-		<Cursor position="1291" topLine="9" />
-	</File>
-	<File name="..\Login Server\LoginPackets.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="8269" topLine="167" />
-	</File>
-	<File name="..\Login Server\LoginServer.h" open="1" top="0" tabpos="8">
-		<Cursor position="1346" topLine="23" />
+	<File name="..\Login Server\LoginPackets.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="13503" topLine="348" />
 	</File>
 	<File name="..\Login Server\loginserver.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="2376" topLine="66" />
+		<Cursor position="6611" topLine="153" />
 	</File>
 </CodeBlocks_layout_file>

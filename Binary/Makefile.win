@@ -5,26 +5,26 @@ CPP  = g++.exe -D__DEBUG__
 CC   = gcc.exe -D__DEBUG__
 WINDRES = windres.exe
 RES  = 
-OBJ  = Objects/config.o Objects/log.o Objects/rosecrypt.o Objects/SocketBase.o Objects/SocketClient.o Objects/SocketServer.o Objects/character.o Objects/charevent.o Objects/charfunctions.o Objects/charstats.o Objects/mapfunctions.o Objects/worldmap.o Objects/battle.o Objects/WorldMonster.o Objects/Monster.o Objects/MonsterEvents.o Objects/monsterfunctions.o Objects/MonsterStats.o Objects/Buff.o Objects/player.o Objects/playerdata.o Objects/playerfunctions.o Objects/playerstats.o Objects/extrafunctions.o Objects/gmcmds.o Objects/main.o Objects/MainProcess.o Objects/Party.o Objects/partyfunctions.o Objects/ServerFunctions.o Objects/startup.o Objects/worldpackets.o Objects/Worldprocess.o Objects/worldserver.o Objects/clan.o Objects/database.o Objects/stbhandler.o Objects/strhashing.o Objects/itemdata.o Objects/globals.o Objects/QuestActions.o Objects/QuestConditions.o Objects/Quests.o Objects/playerquest.o Objects/AiActions.o Objects/AiConditions.o Objects/Aip.o Objects/seh.o $(RES)
-LINKOBJ  = Objects/config.o Objects/log.o Objects/rosecrypt.o Objects/SocketBase.o Objects/SocketClient.o Objects/SocketServer.o Objects/character.o Objects/charevent.o Objects/charfunctions.o Objects/charstats.o Objects/mapfunctions.o Objects/worldmap.o Objects/battle.o Objects/WorldMonster.o Objects/Monster.o Objects/MonsterEvents.o Objects/monsterfunctions.o Objects/MonsterStats.o Objects/Buff.o Objects/player.o Objects/playerdata.o Objects/playerfunctions.o Objects/playerstats.o Objects/extrafunctions.o Objects/gmcmds.o Objects/main.o Objects/MainProcess.o Objects/Party.o Objects/partyfunctions.o Objects/ServerFunctions.o Objects/startup.o Objects/worldpackets.o Objects/Worldprocess.o Objects/worldserver.o Objects/clan.o Objects/database.o Objects/stbhandler.o Objects/strhashing.o Objects/itemdata.o Objects/globals.o Objects/QuestActions.o Objects/QuestConditions.o Objects/Quests.o Objects/playerquest.o Objects/AiActions.o Objects/AiConditions.o Objects/Aip.o Objects/seh.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib" -lmysql -lws2_32 C:/Dev-Cpp/include/libmysql_pthread2/lib/libmysql.a C:/Dev-Cpp/include/libmysql_pthread2/lib/libpthreadGC2.a  -g3 
+OBJ  = Objects/config.o Objects/log.o Objects/rosecrypt.o Objects/SocketBase.o Objects/SocketClient.o Objects/SocketServer.o Objects/character.o Objects/charevent.o Objects/charfunctions.o Objects/charstats.o Objects/mapfunctions.o Objects/worldmap.o Objects/battle.o Objects/WorldMonster.o Objects/Monster.o Objects/MonsterEvents.o Objects/monsterfunctions.o Objects/MonsterStats.o Objects/Buff.o Objects/player.o Objects/playerdata.o Objects/playerfunctions.o Objects/playerquest.o Objects/playerstats.o Objects/extrafunctions.o Objects/gmcmds.o Objects/main.o Objects/MainProcess.o Objects/Party.o Objects/partyfunctions.o Objects/quest.o Objects/ServerFunctions.o Objects/Signal.o Objects/startup.o Objects/worldpackets.o Objects/Worldprocess.o Objects/worldserver.o Objects/clan.o Objects/database.o Objects/console.o Objects/QuestActions.o Objects/QuestConditions.o Objects/Quests.o Objects/strhashing.o Objects/itemdata.o Objects/stbhandler.o Objects/AiActions.o Objects/AiConditions.o Objects/Aip.o Objects/ltbhandler.o Objects/QuestConditionsC.o Objects/QuestActionsC.o Objects/stlhandler.o $(RES)
+LINKOBJ  = Objects/config.o Objects/log.o Objects/rosecrypt.o Objects/SocketBase.o Objects/SocketClient.o Objects/SocketServer.o Objects/character.o Objects/charevent.o Objects/charfunctions.o Objects/charstats.o Objects/mapfunctions.o Objects/worldmap.o Objects/battle.o Objects/WorldMonster.o Objects/Monster.o Objects/MonsterEvents.o Objects/monsterfunctions.o Objects/MonsterStats.o Objects/Buff.o Objects/player.o Objects/playerdata.o Objects/playerfunctions.o Objects/playerquest.o Objects/playerstats.o Objects/extrafunctions.o Objects/gmcmds.o Objects/main.o Objects/MainProcess.o Objects/Party.o Objects/partyfunctions.o Objects/quest.o Objects/ServerFunctions.o Objects/Signal.o Objects/startup.o Objects/worldpackets.o Objects/Worldprocess.o Objects/worldserver.o Objects/clan.o Objects/database.o Objects/console.o Objects/QuestActions.o Objects/QuestConditions.o Objects/Quests.o Objects/strhashing.o Objects/itemdata.o Objects/stbhandler.o Objects/AiActions.o Objects/AiConditions.o Objects/Aip.o Objects/ltbhandler.o Objects/QuestConditionsC.o Objects/QuestActionsC.o Objects/stlhandler.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -lmysql -lpthreadGC -lws2_32  -g3 
 INCS =  -I"C:/Dev-Cpp/include" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
-BIN  = WorldServer.exe
+BIN  = WorldServer(1).exe
 CXXFLAGS = $(CXXINCS)   -fexceptions -g3
 CFLAGS = $(INCS)   -fexceptions -g3
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before WorldServer.exe all-after
+all: all-before WorldServer(1).exe all-after
 
 
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o "WorldServer.exe" $(LIBS)
+	$(CPP) $(LINKOBJ) -o "WorldServer(1).exe" $(LIBS)
 
 Objects/config.o: ../Common/config.cpp
 	$(CPP) -c ../Common/config.cpp -o Objects/config.o $(CXXFLAGS)
@@ -92,6 +92,9 @@ Objects/playerdata.o: ../World\ Server/playerdata.cpp
 Objects/playerfunctions.o: ../World\ Server/playerfunctions.cpp
 	$(CPP) -c "../World Server/playerfunctions.cpp" -o Objects/playerfunctions.o $(CXXFLAGS)
 
+Objects/playerquest.o: ../World\ Server/playerquest.cpp
+	$(CPP) -c "../World Server/playerquest.cpp" -o Objects/playerquest.o $(CXXFLAGS)
+
 Objects/playerstats.o: ../World\ Server/playerstats.cpp
 	$(CPP) -c "../World Server/playerstats.cpp" -o Objects/playerstats.o $(CXXFLAGS)
 
@@ -113,8 +116,14 @@ Objects/Party.o: ../World\ Server/Party.cpp
 Objects/partyfunctions.o: ../World\ Server/partyfunctions.cpp
 	$(CPP) -c "../World Server/partyfunctions.cpp" -o Objects/partyfunctions.o $(CXXFLAGS)
 
+Objects/quest.o: ../World\ Server/quest.cpp
+	$(CPP) -c "../World Server/quest.cpp" -o Objects/quest.o $(CXXFLAGS)
+
 Objects/ServerFunctions.o: ../World\ Server/ServerFunctions.cpp
 	$(CPP) -c "../World Server/ServerFunctions.cpp" -o Objects/ServerFunctions.o $(CXXFLAGS)
+
+Objects/Signal.o: ../World\ Server/Signal.cpp
+	$(CPP) -c "../World Server/Signal.cpp" -o Objects/Signal.o $(CXXFLAGS)
 
 Objects/startup.o: ../World\ Server/startup.cpp
 	$(CPP) -c "../World Server/startup.cpp" -o Objects/startup.o $(CXXFLAGS)
@@ -134,17 +143,8 @@ Objects/clan.o: ../World\ Server/clan.cpp
 Objects/database.o: ../Common/database/database.cpp
 	$(CPP) -c ../Common/database/database.cpp -o Objects/database.o $(CXXFLAGS)
 
-Objects/stbhandler.o: ../World\ Server/stbhandler.cpp
-	$(CPP) -c "../World Server/stbhandler.cpp" -o Objects/stbhandler.o $(CXXFLAGS)
-
-Objects/strhashing.o: ../World\ Server/strhashing.cpp
-	$(CPP) -c "../World Server/strhashing.cpp" -o Objects/strhashing.o $(CXXFLAGS)
-
-Objects/itemdata.o: ../World\ Server/itemdata.cpp
-	$(CPP) -c "../World Server/itemdata.cpp" -o Objects/itemdata.o $(CXXFLAGS)
-
-Objects/globals.o: ../Common/globals.cpp
-	$(CPP) -c ../Common/globals.cpp -o Objects/globals.o $(CXXFLAGS)
+Objects/console.o: ../World\ Server/console.cpp
+	$(CPP) -c "../World Server/console.cpp" -o Objects/console.o $(CXXFLAGS)
 
 Objects/QuestActions.o: ../World\ Server/quest/QuestActions.cpp
 	$(CPP) -c "../World Server/quest/QuestActions.cpp" -o Objects/QuestActions.o $(CXXFLAGS)
@@ -155,8 +155,14 @@ Objects/QuestConditions.o: ../World\ Server/quest/QuestConditions.cpp
 Objects/Quests.o: ../World\ Server/quest/Quests.cpp
 	$(CPP) -c "../World Server/quest/Quests.cpp" -o Objects/Quests.o $(CXXFLAGS)
 
-Objects/playerquest.o: ../World\ Server/playerquest.cpp
-	$(CPP) -c "../World Server/playerquest.cpp" -o Objects/playerquest.o $(CXXFLAGS)
+Objects/strhashing.o: ../World\ Server/quest/strhashing.cpp
+	$(CPP) -c "../World Server/quest/strhashing.cpp" -o Objects/strhashing.o $(CXXFLAGS)
+
+Objects/itemdata.o: ../World\ Server/itemdata.cpp
+	$(CPP) -c "../World Server/itemdata.cpp" -o Objects/itemdata.o $(CXXFLAGS)
+
+Objects/stbhandler.o: ../World\ Server/stbhandler.cpp
+	$(CPP) -c "../World Server/stbhandler.cpp" -o Objects/stbhandler.o $(CXXFLAGS)
 
 Objects/AiActions.o: ../World\ Server/aip/AiActions.cpp
 	$(CPP) -c "../World Server/aip/AiActions.cpp" -o Objects/AiActions.o $(CXXFLAGS)
@@ -167,5 +173,14 @@ Objects/AiConditions.o: ../World\ Server/aip/AiConditions.cpp
 Objects/Aip.o: ../World\ Server/aip/Aip.cpp
 	$(CPP) -c "../World Server/aip/Aip.cpp" -o Objects/Aip.o $(CXXFLAGS)
 
-Objects/seh.o: ../Common/seh.cpp
-	$(CPP) -c ../Common/seh.cpp -o Objects/seh.o $(CXXFLAGS)
+Objects/ltbhandler.o: ../World\ Server/ltbhandler.cpp
+	$(CPP) -c "../World Server/ltbhandler.cpp" -o Objects/ltbhandler.o $(CXXFLAGS)
+
+Objects/QuestConditionsC.o: ../World\ Server/quest/QuestConditionsC.cpp
+	$(CPP) -c "../World Server/quest/QuestConditionsC.cpp" -o Objects/QuestConditionsC.o $(CXXFLAGS)
+
+Objects/QuestActionsC.o: ../World\ Server/quest/QuestActionsC.cpp
+	$(CPP) -c "../World Server/quest/QuestActionsC.cpp" -o Objects/QuestActionsC.o $(CXXFLAGS)
+
+Objects/stlhandler.o: ../World\ Server/stlhandler.cpp
+	$(CPP) -c "../World Server/stlhandler.cpp" -o Objects/stlhandler.o $(CXXFLAGS)

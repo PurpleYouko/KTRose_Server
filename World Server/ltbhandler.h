@@ -25,4 +25,4 @@
 using namespace std;
 
 
-void LTBStoreData(char* filename, LTBData* data);
+void LTBStoreData(const char* filename, LTBData* data);

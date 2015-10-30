@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://osroseon.to.md
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
     
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ CLoginClient::CLoginClient( )
 {
 	userid = 0;
 	isLoggedIn = false;
+	hasGameGuard = false;
 	accesslevel = 0;
 	username.reserve(17);
 	password.reserve(33);		

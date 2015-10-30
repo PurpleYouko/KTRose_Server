@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1196087818 source:f:\osprose\common\socketbase.cpp
+1245170766 source:c:\documents and settings\administrator\desktop\dude rev\common\socketbase.cpp
 	"sockets.h"
 
-1212939678 f:\osprose\common\sockets.h
+1247031838 c:\documents and settings\administrator\desktop\dude rev\common\sockets.h
 	<windows.h>
 	<winsock2.h>
 	<unistd.h>
@@ -24,516 +24,293 @@
 	<time.h>
 	<assert.h>
 	<math.h>
-	<cmath>
-	<map>
 	<pthread.h>
-	<vector>
+	<map>
 	<csignal>
 	"log.h"
 	"rosecrypt.hpp"
 	"config.h"
 	"database/database.h"
 
-1196087818 f:\osprose\common\log.h
+1245170766 c:\documents and settings\administrator\desktop\dude rev\common\log.h
 
-1196087816 f:\osprose\common\rosecrypt.hpp
+1245170766 c:\documents and settings\administrator\desktop\dude rev\common\rosecrypt.hpp
+	<windows.h>
 
-1196087818 f:\osprose\common\config.h
+1245170766 c:\documents and settings\administrator\desktop\dude rev\common\config.h
 
-1212502526 f:\osprose\common\database\database.h
+1245170764 c:\documents and settings\administrator\desktop\dude rev\common\database\database.h
 	"../sockets.h"
 
-1206716764 source:f:\osprose\common\socketclient.cpp
-	"sockets.h"
-	"config.h"
-
-1212502520 source:f:\osprose\common\socketserver.cpp
+1247026244 source:c:\documents and settings\administrator\desktop\dude rev\common\socketclient.cpp
 	"sockets.h"
 
-1196087818 source:f:\osprose\common\config.cpp
+1245170766 source:c:\documents and settings\administrator\desktop\dude rev\common\socketserver.cpp
+	"sockets.h"
+
+1245170766 source:c:\documents and settings\administrator\desktop\dude rev\common\config.cpp
 	<cstdio>
 	<cstring>
 	<cstdlib>
 	<ctype.h>
 
-1212502526 source:f:\osprose\common\database\database.cpp
+1245170764 source:c:\documents and settings\administrator\desktop\dude rev\common\database\database.cpp
 	"database.h"
 	"../log.h"
 
-1196087818 source:f:\osprose\common\globals.cpp
-	"sockets.h"
-
-1196087816 source:f:\osprose\common\log.cpp
+1245170766 source:c:\documents and settings\administrator\desktop\dude rev\common\log.cpp
 	<conio.h>
 	<windows.h>
 	<cstdio>
 	<cstdio>
+	<string>
+	<time.h>
 	"log.h"
 
-1196087818 source:f:\osprose\common\rosecrypt.cpp
-	<stdlib.h>
+1245170766 source:c:\documents and settings\administrator\desktop\dude rev\common\rosecrypt.cpp
 	"rosecrypt.hpp"
 
-1213726086 source:f:\osprose\world server\buff.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\buff.cpp
 	"worldserver.h"
 
-1214318114 f:\osprose\world server\worldserver.h
+1247027257 c:\documents and settings\administrator\desktop\dude rev\world server\worldserver.h
+	"datatypes.h"
 	"../common/sockets.h"
 	"worldmonster.h"
-	"quest/CRoseArray.hpp"
-	"quest/CRoseFile.hpp"
-	"quest/CStrStb.hpp"
-	"quest/CIntStb.hpp"
-	"quest/QuestTrigger.h"
 	"worldmap.h"
 	"player.h"
 	"character.h"
 	"party.h"
-	"datatypes.h"
 	"stbhandler.h"
-	"strhashing.h"
-
-1213197122 f:\osprose\world server\worldmonster.h
-	"character.h"
-	"player.h"
-	"worldserver.h"
-
-1213197122 f:\osprose\world server\character.h
-	"chartype.h"
-
-1213197122 f:\osprose\world server\chartype.h
-	"datatypes.h"
-
-1213892218 f:\osprose\world server\datatypes.h
-	"../common/sockets.h"
-
-1213197192 f:\osprose\world server\player.h
-	"character.h"
-
-1206716788 f:\osprose\world server\quest\crosearray.hpp
-	<memory.h>
-
-1206716788 f:\osprose\world server\quest\crosefile.hpp
-	<stdio.h>
-	<stdlib.h>
-	"CRoseArray.hpp"
-
-1206716788 f:\osprose\world server\quest\cstrstb.hpp
-
-1206716790 f:\osprose\world server\quest\cintstb.hpp
-
-1209996438 f:\osprose\world server\quest\questtrigger.h
-	"QuestConditions.h"
-	"QuestActions.h"
-
-1206716788 f:\osprose\world server\quest\questconditions.h
-
-1209996438 f:\osprose\world server\quest\questactions.h
-
-1212418560 f:\osprose\world server\worldmap.h
-	"worldserver.h"
-	"player.h"
-	"character.h"
-	"worldmonster.h"
-	"datatypes.h"
-
-1211202204 f:\osprose\world server\party.h
-	"worldserver.h"
-	"datatypes.h"
-
-1211202204 f:\osprose\world server\stbhandler.h
-	"worldserver.h"
-
-1211202204 f:\osprose\world server\strhashing.h
-
-1211202204 source:f:\osprose\world server\mainprocess.cpp
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\monster.cpp
-	"worldmonster.h"
-
-1211202204 source:f:\osprose\world server\monsterevents.cpp
-	"worldmonster.h"
-
-1213197770 source:f:\osprose\world server\monsterstats.cpp
-	"worldmonster.h"
-
-1211202204 source:f:\osprose\world server\party.cpp
-	"worldserver.h"
-
-1214060042 source:f:\osprose\world server\serverfunctions.cpp
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\worldmonster.cpp
-	"worldmonster.h"
-
-1212159274 source:f:\osprose\world server\worldprocess.cpp
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\character.cpp
-	"character.h"
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\charevent.cpp
-	"character.h"
-
-1212602604 source:f:\osprose\world server\charfunctions.cpp
-	"character.h"
-	"worldserver.h"
-
-1213197122 source:f:\osprose\world server\charstats.cpp
-	"character.h"
-
-1211202204 source:f:\osprose\world server\clan.cpp
-	"worldserver.h"
-
-1213112284 source:f:\osprose\world server\extrafunctions.cpp
-	"worldserver.h"
-
-1214317914 source:f:\osprose\world server\gmcmds.cpp
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\itemdata.cpp
-	"datatypes.h"
-
-1211202204 source:f:\osprose\world server\main.cpp
-	"worldserver.h"
-
-1212418560 source:f:\osprose\world server\mapfunctions.cpp
-	"worldmap.h"
-
-1211202204 source:f:\osprose\world server\monsterfunctions.cpp
-	"worldmonster.h"
-
-1211202204 source:f:\osprose\world server\partyfunctions.cpp
-	"party.h"
-
-1211998616 source:f:\osprose\world server\player.cpp
-	"player.h"
-	"worldserver.h"
-
-1212164066 source:f:\osprose\world server\playerdata.cpp
-	"player.h"
-	"worldserver.h"
-
-1212603814 source:f:\osprose\world server\playerfunctions.cpp
-	"player.h"
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\playerquest.cpp
-	"player.h"
-	"worldserver.h"
-
-1213728582 source:f:\osprose\world server\playerstats.cpp
-	"player.h"
-	"worldserver.h"
-
-1209996438 source:f:\osprose\world server\quest\quests.cpp
-	"../WorldServer.h"
-
-1214234590 source:f:\osprose\world server\startup.cpp
-	"worldserver.h"
-
-1213892218 source:f:\osprose\world server\stbhandler.cpp
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\strhashing.cpp
-	"worldserver.h"
-
-1211202204 source:f:\osprose\world server\worldmap.cpp
-	"worldmap.h"
-
-1213893384 source:f:\osprose\world server\worldpackets.cpp
-	"worldserver.h"
-
-1214324874 source:f:\osprose\world server\battle.cpp
-	"character.h"
-	"worldserver.h"
-
-1214334242 source:f:\osprose\world server\quest\questconditions.cpp
-	"../WorldServer.h"
-
-1196084218 source:c:\rose pre-evo server\ktrose code blocks\common\socketbase.cpp
-	"sockets.h"
-
-1227739218 c:\rose pre-evo server\ktrose code blocks\common\sockets.h
-	<windows.h>
-	<winsock2.h>
-	<unistd.h>
-	<netinet/in.h>
-	<sys/socket.h>
-	<sys/types.h>
-	<arpa/inet.h>
-	<sys/ioctl.h>
-	<cstdarg>
-	<errno.h>
-	<mysql/mysql.h>
-	<cstdio>
-	<cstdlib>
-	<iostream>
-	<vector>
-	<string>
-	<cstdio>
-	<exception>
-	<time.h>
-	<assert.h>
-	<math.h>
-	<cmath>
-	<map>
-	<pthread.h>
-	<vector>
-	<csignal>
-	"log.h"
-	"rosecrypt.hpp"
-	"config.h"
-	"database/database.h"
-
-1196084218 c:\rose pre-evo server\ktrose code blocks\common\log.h
-
-1196084216 c:\rose pre-evo server\ktrose code blocks\common\rosecrypt.hpp
-
-1196084218 c:\rose pre-evo server\ktrose code blocks\common\config.h
-
-1212498926 c:\rose pre-evo server\ktrose code blocks\common\database\database.h
-	"../sockets.h"
-
-1227735430 source:c:\rose pre-evo server\ktrose code blocks\common\socketclient.cpp
-	"sockets.h"
-	"config.h"
-
-1227738672 source:c:\rose pre-evo server\ktrose code blocks\common\socketserver.cpp
-	"sockets.h"
-
-1196084218 source:c:\rose pre-evo server\ktrose code blocks\common\config.cpp
-	<cstdio>
-	<cstring>
-	<cstdlib>
-	<ctype.h>
-
-1227738674 source:c:\rose pre-evo server\ktrose code blocks\common\database\database.cpp
-	"database.h"
-	"../log.h"
-
-1196084218 source:c:\rose pre-evo server\ktrose code blocks\common\globals.cpp
-	"sockets.h"
-
-1196084216 source:c:\rose pre-evo server\ktrose code blocks\common\log.cpp
-	<conio.h>
-	<windows.h>
-	<cstdio>
-	<cstdio>
-	"log.h"
-
-1220621242 source:c:\rose pre-evo server\ktrose code blocks\common\rosecrypt.cpp
-	<fstream>
-	<iostream>
-	"rosecrypt.hpp"
-
-1233085980 source:c:\rose pre-evo server\ktrose code blocks\world server\buff.cpp
-	"worldserver.h"
-
-1232576646 c:\rose pre-evo server\ktrose code blocks\world server\worldserver.h
-	"../common/sockets.h"
-	"worldmonster.h"
+	"stlhandler.h"
+	"quest/strhashing.h"
 	"quest/CRoseArray.hpp"
 	"quest/CRoseFile.hpp"
 	"quest/CStrStb.hpp"
 	"quest/CIntStb.hpp"
 	"quest/QuestTrigger.h"
+	"ltbhandler.h"
 	"aip/Aip.h"
-	"worldmap.h"
-	"player.h"
-	"character.h"
-	"party.h"
-	"datatypes.h"
-	"stbhandler.h"
-	"strhashing.h"
 
-1229274904 c:\rose pre-evo server\ktrose code blocks\world server\worldmonster.h
+1247032710 c:\documents and settings\administrator\desktop\dude rev\world server\datatypes.h
+	"datatypes_compat.h"
+	"../common/sockets.h"
+
+1245170780 c:\documents and settings\administrator\desktop\dude rev\world server\datatypes_compat.h
+
+1245170780 c:\documents and settings\administrator\desktop\dude rev\world server\worldmonster.h
 	"character.h"
 	"player.h"
 	"worldserver.h"
 
-1219848448 c:\rose pre-evo server\ktrose code blocks\world server\character.h
+1245170780 c:\documents and settings\administrator\desktop\dude rev\world server\character.h
 	"chartype.h"
 
-1231178270 c:\rose pre-evo server\ktrose code blocks\world server\chartype.h
+1245170781 c:\documents and settings\administrator\desktop\dude rev\world server\chartype.h
 	"datatypes.h"
 
-1229093046 c:\rose pre-evo server\ktrose code blocks\world server\datatypes.h
-	"../common/sockets.h"
-
-1232833868 c:\rose pre-evo server\ktrose code blocks\world server\player.h
+1245604576 c:\documents and settings\administrator\desktop\dude rev\world server\player.h
 	"character.h"
 
-1214485238 c:\rose pre-evo server\ktrose code blocks\world server\quest\crosearray.hpp
+1245170781 c:\documents and settings\administrator\desktop\dude rev\world server\worldmap.h
+	"worldserver.h"
+	"player.h"
+	"character.h"
+	"worldmonster.h"
+	"datatypes.h"
+
+1245170781 c:\documents and settings\administrator\desktop\dude rev\world server\party.h
+	"worldserver.h"
+	"datatypes.h"
+
+1245170780 c:\documents and settings\administrator\desktop\dude rev\world server\stbhandler.h
+	"worldserver.h"
+
+1245170781 c:\documents and settings\administrator\desktop\dude rev\world server\stlhandler.h
+	"worldserver.h"
+
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\strhashing.h
+
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\crosearray.hpp
 	<memory.h>
 
-1214485238 c:\rose pre-evo server\ktrose code blocks\world server\quest\crosefile.hpp
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\crosefile.hpp
 	<stdio.h>
 	<stdlib.h>
 	"CRoseArray.hpp"
 
-1214485238 c:\rose pre-evo server\ktrose code blocks\world server\quest\cstrstb.hpp
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\cstrstb.hpp
 
-1214485238 c:\rose pre-evo server\ktrose code blocks\world server\quest\cintstb.hpp
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\cintstb.hpp
 
-1221227094 c:\rose pre-evo server\ktrose code blocks\world server\quest\questtrigger.h
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\questtrigger.h
 	"QuestConditions.h"
 	"QuestActions.h"
 
-1226514004 c:\rose pre-evo server\ktrose code blocks\world server\quest\questconditions.h
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\questconditions.h
 
-1228502532 c:\rose pre-evo server\ktrose code blocks\world server\quest\questactions.h
+1245170778 c:\documents and settings\administrator\desktop\dude rev\world server\quest\questactions.h
 
-1219252148 c:\rose pre-evo server\ktrose code blocks\world server\aip\aip.h
+1245170781 c:\documents and settings\administrator\desktop\dude rev\world server\ltbhandler.h
+	"worldserver.h"
+	<map>
+
+1245170771 c:\documents and settings\administrator\desktop\dude rev\world server\aip\aip.h
 	"AiConditions.h"
 	"AiActions.h"
 
-1231780334 c:\rose pre-evo server\ktrose code blocks\world server\aip\aiconditions.h
+1245170771 c:\documents and settings\administrator\desktop\dude rev\world server\aip\aiconditions.h
 
-1224794742 c:\rose pre-evo server\ktrose code blocks\world server\aip\aiactions.h
+1245170771 c:\documents and settings\administrator\desktop\dude rev\world server\aip\aiactions.h
 
-1224680082 c:\rose pre-evo server\ktrose code blocks\world server\worldmap.h
-	"worldserver.h"
-	"player.h"
-	"character.h"
-	"worldmonster.h"
-	"datatypes.h"
-
-1211198604 c:\rose pre-evo server\ktrose code blocks\world server\party.h
-	"worldserver.h"
-	"datatypes.h"
-
-1211198604 c:\rose pre-evo server\ktrose code blocks\world server\stbhandler.h
+1245613163 source:c:\documents and settings\administrator\desktop\dude rev\world server\mainprocess.cpp
 	"worldserver.h"
 
-1211198604 c:\rose pre-evo server\ktrose code blocks\world server\strhashing.h
-
-1237234272 source:c:\rose pre-evo server\ktrose code blocks\world server\mainprocess.cpp
-	"worldserver.h"
-
-1218736564 source:c:\rose pre-evo server\ktrose code blocks\world server\monster.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\monster.cpp
 	"worldmonster.h"
 
-1229208406 source:c:\rose pre-evo server\ktrose code blocks\world server\monsterstats.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\monsterevents.cpp
 	"worldmonster.h"
 
-1221844560 source:c:\rose pre-evo server\ktrose code blocks\world server\party.cpp
-	"worldserver.h"
-
-1218457768 source:c:\rose pre-evo server\ktrose code blocks\world server\worldmonster.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\monsterstats.cpp
 	"worldmonster.h"
 
-1235658464 source:c:\rose pre-evo server\ktrose code blocks\world server\worldprocess.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\party.cpp
 	"worldserver.h"
 
-1237658833 source:c:\rose pre-evo server\ktrose code blocks\world server\aip\aiactions.cpp
+1247033821 source:c:\documents and settings\administrator\desktop\dude rev\world server\serverfunctions.cpp
+	"worldserver.h"
+
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\signal.cpp
+	"worldserver.h"
+
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\worldmonster.cpp
+	"worldmonster.h"
+
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\worldprocess.cpp
+	"worldserver.h"
+
+1245170771 source:c:\documents and settings\administrator\desktop\dude rev\world server\aip\aiactions.cpp
 	"../WorldServer.h"
 
-1237487436 source:c:\rose pre-evo server\ktrose code blocks\world server\aip\aiconditions.cpp
+1245170771 source:c:\documents and settings\administrator\desktop\dude rev\world server\aip\aiconditions.cpp
 	"../WorldServer.h"
 
-1233337238 source:c:\rose pre-evo server\ktrose code blocks\world server\aip\aip.cpp
+1245603733 source:c:\documents and settings\administrator\desktop\dude rev\world server\aip\aip.cpp
 	"../WorldServer.h"
 
-1237404728 source:c:\rose pre-evo server\ktrose code blocks\world server\battle.cpp
+1245783776 source:c:\documents and settings\administrator\desktop\dude rev\world server\battle.cpp
 	"character.h"
 	"worldserver.h"
 
-1237658833 source:c:\rose pre-evo server\ktrose code blocks\world server\character.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\character.cpp
 	"character.h"
 	"worldserver.h"
 
-1211198604 source:c:\rose pre-evo server\ktrose code blocks\world server\charevent.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\charevent.cpp
 	"character.h"
 
-1237235122 source:c:\rose pre-evo server\ktrose code blocks\world server\charfunctions.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\charfunctions.cpp
 	"character.h"
 	"worldserver.h"
 
-1219848448 source:c:\rose pre-evo server\ktrose code blocks\world server\charstats.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\charstats.cpp
 	"character.h"
 
-1221844560 source:c:\rose pre-evo server\ktrose code blocks\world server\clan.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\clan.cpp
 	"worldserver.h"
 
-1230745172 source:c:\rose pre-evo server\ktrose code blocks\world server\extrafunctions.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\console.cpp
+	"WorldServer.h"
+
+1247025902 source:c:\documents and settings\administrator\desktop\dude rev\world server\extrafunctions.cpp
 	"worldserver.h"
 
-1235746838 source:c:\rose pre-evo server\ktrose code blocks\world server\gmcmds.cpp
+1247025902 source:c:\documents and settings\administrator\desktop\dude rev\world server\gmcmds.cpp
 	"worldserver.h"
 
-1211198604 source:c:\rose pre-evo server\ktrose code blocks\world server\itemdata.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\itemdata.cpp
 	"datatypes.h"
 
-1211198604 source:c:\rose pre-evo server\ktrose code blocks\world server\main.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\ltbhandler.cpp
+	"ltbhandler.h"
+
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\main.cpp
 	"worldserver.h"
 
-1229191090 source:c:\rose pre-evo server\ktrose code blocks\world server\mapfunctions.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\mapfunctions.cpp
 	"worldmap.h"
 
-1219427532 source:c:\rose pre-evo server\ktrose code blocks\world server\monsterfunctions.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\monsterfunctions.cpp
 	"worldmonster.h"
 
-1211198604 source:c:\rose pre-evo server\ktrose code blocks\world server\partyfunctions.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\partyfunctions.cpp
 	"party.h"
 
-1231179112 source:c:\rose pre-evo server\ktrose code blocks\world server\player.cpp
+1245604630 source:c:\documents and settings\administrator\desktop\dude rev\world server\player.cpp
 	"player.h"
 	"worldserver.h"
 
-1234809442 source:c:\rose pre-evo server\ktrose code blocks\world server\playerdata.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\playerdata.cpp
 	"player.h"
 	"worldserver.h"
 
-1236111460 source:c:\rose pre-evo server\ktrose code blocks\world server\playerfunctions.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\playerfunctions.cpp
 	"player.h"
 	"worldserver.h"
 
-1214485238 source:c:\rose pre-evo server\ktrose code blocks\world server\playerquest.cpp
-
-1235750608 source:c:\rose pre-evo server\ktrose code blocks\world server\playerstats.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\playerquest.cpp
 	"player.h"
 	"worldserver.h"
 
-1234896942 source:c:\rose pre-evo server\ktrose code blocks\world server\quest\questactions.cpp
-	"../WorldServer.h"
-
-1231515952 source:c:\rose pre-evo server\ktrose code blocks\world server\quest\questconditions.cpp
-	"../WorldServer.h"
-
-1233337238 source:c:\rose pre-evo server\ktrose code blocks\world server\quest\quests.cpp
-	"../WorldServer.h"
-
-1234896940 source:c:\rose pre-evo server\ktrose code blocks\world server\startup.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\playerstats.cpp
+	"player.h"
 	"worldserver.h"
 
-1229097028 source:c:\rose pre-evo server\ktrose code blocks\world server\stbhandler.cpp
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest.cpp
 	"worldserver.h"
 
-1211198604 source:c:\rose pre-evo server\ktrose code blocks\world server\strhashing.cpp
+1245410437 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest\questactions.cpp
+	"../worldserver.h"
+
+1245170778 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest\questactionsc.cpp
+	"../worldserver.h"
+
+1245410379 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest\questconditions.cpp
+	"../worldserver.h"
+
+1245170778 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest\questconditionsc.cpp
+	"../worldserver.h"
+
+1245170778 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest\quests.cpp
+	"../worldserver.h"
+
+1245170778 source:c:\documents and settings\administrator\desktop\dude rev\world server\quest\strhashing.cpp
+	"../worldserver.h"
+	"strhashing.h"
+
+1247033195 source:c:\documents and settings\administrator\desktop\dude rev\world server\startup.cpp
 	"worldserver.h"
 
-1229205684 source:c:\rose pre-evo server\ktrose code blocks\world server\worldmap.cpp
+1245170781 source:c:\documents and settings\administrator\desktop\dude rev\world server\stbhandler.cpp
+	"worldserver.h"
+
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\stlhandler.cpp
+	"worldserver.h"
+
+1245170780 source:c:\documents and settings\administrator\desktop\dude rev\world server\worldmap.cpp
 	"worldmap.h"
 
-1237487434 source:c:\rose pre-evo server\ktrose code blocks\world server\worldpackets.cpp
+1245796257 source:c:\documents and settings\administrator\desktop\dude rev\world server\worldpackets.cpp
 	"worldserver.h"
 
-1232839080 source:c:\rose pre-evo server\ktrose code blocks\world server\worldserver.cpp
+1247025902 source:c:\documents and settings\administrator\desktop\dude rev\world server\worldserver.cpp
 	"worldserver.h"
 
-1231531564 source:c:\rose pre-evo server\ktrose code blocks\world server\monsterevents.cpp
-	"worldmonster.h"
-
-1235660184 source:c:\rose pre-evo server\ktrose code blocks\world server\serverfunctions.cpp
-	"worldserver.h"
-
-1214488836 source:g:\osprose\common\socketbase.cpp
+1256936496 source:f:\triggersoft\evo 137 osrose server\common\socketbase.cpp
 	"sockets.h"
 
-1295112854 g:\osprose\common\sockets.h
+1433272541 f:\triggersoft\evo 137 osrose server\common\sockets.h
 	<windows.h>
 	<winsock2.h>
 	<unistd.h>
@@ -555,627 +332,41 @@
 	<time.h>
 	<assert.h>
 	<math.h>
-	<cmath>
-	<map>
 	<pthread.h>
-	<vector>
+	<map>
 	<csignal>
 	"log.h"
 	"rosecrypt.hpp"
 	"config.h"
 	"database/database.h"
 
-1335971100 g:\osprose\common\log.h
+1281029790 f:\triggersoft\evo 137 osrose server\common\log.h
 
-1214488836 g:\osprose\common\rosecrypt.hpp
+1281029786 f:\triggersoft\evo 137 osrose server\common\rosecrypt.hpp
+	<windows.h>
 
-1335973828 g:\osprose\common\config.h
+1281029792 f:\triggersoft\evo 137 osrose server\common\config.h
 
-1335971376 g:\osprose\common\database\database.h
+1281029784 f:\triggersoft\evo 137 osrose server\common\database\database.h
 	"../sockets.h"
 
-1335973828 source:g:\osprose\common\config.cpp
+1393964062 source:f:\triggersoft\evo 137 osrose server\common\socketclient.cpp
+	"sockets.h"
+
+1297438358 source:f:\triggersoft\evo 137 osrose server\common\socketserver.cpp
+	"sockets.h"
+
+1281029790 source:f:\triggersoft\evo 137 osrose server\common\config.cpp
 	<cstdio>
 	<cstring>
 	<cstdlib>
 	<ctype.h>
 
-1337874068 source:g:\osprose\common\database\database.cpp
+1281029782 source:f:\triggersoft\evo 137 osrose server\common\database\database.cpp
 	"database.h"
 	"../log.h"
 
-1214488836 source:g:\osprose\common\globals.cpp
-	"sockets.h"
-
-1337876296 source:g:\osprose\common\log.cpp
-	<conio.h>
-	<windows.h>
-	<cstdio>
-	<cstdio>
-	"log.h"
-
-1337798112 source:g:\osprose\common\rosecrypt.cpp
-	<fstream>
-	<iostream>
-	"rosecrypt.hpp"
-	<cstdlib>
-
-1341243504 source:g:\osprose\world server\monster.cpp
-	"worldmonster.h"
-
-1289239868 g:\osprose\world server\worldmonster.h
-	"character.h"
-	"player.h"
-	"worldserver.h"
-
-1289239868 g:\osprose\world server\character.h
-	"chartype.h"
-
-1340986996 g:\osprose\world server\chartype.h
-	"datatypes.h"
-
-1340900794 g:\osprose\world server\datatypes.h
-	"../common/sockets.h"
-
-1289239868 g:\osprose\world server\player.h
-	"character.h"
-
-1335981270 g:\osprose\world server\worldserver.h
-	"../common/sockets.h"
-	"worldmonster.h"
-	"quest/CRoseArray.hpp"
-	"quest/CRoseFile.hpp"
-	"quest/CStrStb.hpp"
-	"quest/CIntStb.hpp"
-	"quest/QuestTrigger.h"
-	"aip/Aip.h"
-	"worldmap.h"
-	"player.h"
-	"character.h"
-	"party.h"
-	"datatypes.h"
-	"stbhandler.h"
-	"strhashing.h"
-
-1214488838 g:\osprose\world server\quest\crosearray.hpp
-	<memory.h>
-
-1337870620 g:\osprose\world server\quest\crosefile.hpp
-	<stdio.h>
-	<stdlib.h>
-	"CRoseArray.hpp"
-
-1214488838 g:\osprose\world server\quest\cstrstb.hpp
-
-1214488838 g:\osprose\world server\quest\cintstb.hpp
-
-1221230694 g:\osprose\world server\quest\questtrigger.h
-	"QuestConditions.h"
-	"QuestActions.h"
-
-1328564764 g:\osprose\world server\quest\questconditions.h
-
-1244137880 g:\osprose\world server\quest\questactions.h
-
-1245422868 g:\osprose\world server\aip\aip.h
-	"AiConditions.h"
-	"AiActions.h"
-
-1239110628 g:\osprose\world server\aip\aiconditions.h
-
-1224798342 g:\osprose\world server\aip\aiactions.h
-
-1342210868 g:\osprose\world server\worldmap.h
-	"worldserver.h"
-	"player.h"
-	"character.h"
-	"worldmonster.h"
-	"datatypes.h"
-
-1338744516 g:\osprose\world server\party.h
-	"worldserver.h"
-	"datatypes.h"
-
-1211202204 g:\osprose\world server\stbhandler.h
-	"worldserver.h"
-
-1211202204 g:\osprose\world server\strhashing.h
-
-1341243402 source:g:\osprose\world server\monsterevents.cpp
-	"worldmonster.h"
-
-1218461368 source:g:\osprose\world server\worldmonster.cpp
-	"worldmonster.h"
-
-1340912192 source:g:\osprose\world server\aip\aiconditions.cpp
-	"../WorldServer.h"
-
-1211202204 source:g:\osprose\world server\charevent.cpp
-	"character.h"
-
-1219852048 source:g:\osprose\world server\charstats.cpp
-	"character.h"
-
-1211202204 source:g:\osprose\world server\itemdata.cpp
-	"datatypes.h"
-
-1211202204 source:g:\osprose\world server\main.cpp
-	"worldserver.h"
-
-1214488838 source:g:\osprose\world server\playerquest.cpp
-
-1229100628 source:g:\osprose\world server\stbhandler.cpp
-	"worldserver.h"
-
-1211202204 source:g:\osprose\world server\strhashing.cpp
-	"worldserver.h"
-
-1337807008 source:g:\osprose\common\socketclient.cpp
-	"sockets.h"
-	"seh.hpp"
-	"config.h"
-
-1236147414 g:\osprose\common\seh.hpp
-	<windows.h>
-	<excpt.h>
-	<setjmp.h>
-
-1337876664 source:g:\osprose\common\socketserver.cpp
-	"sockets.h"
-
-1236147436 source:g:\osprose\common\seh.cpp
-	"seh.hpp"
-
-1337870612 source:g:\osprose\world server\buff.cpp
-	"worldserver.h"
-
-1341692136 source:g:\osprose\world server\mainprocess.cpp
-	"worldserver.h"
-
-1340995372 source:g:\osprose\world server\monsterstats.cpp
-	"worldmonster.h"
-
-1338751418 source:g:\osprose\world server\party.cpp
-	"worldserver.h"
-
-1341688324 source:g:\osprose\world server\serverfunctions.cpp
-	"worldserver.h"
-
-1341686964 source:g:\osprose\world server\worldprocess.cpp
-	"worldserver.h"
-
-1340986998 source:g:\osprose\world server\aip\aiactions.cpp
-	"../WorldServer.h"
-
-1245423130 source:g:\osprose\world server\aip\aip.cpp
-	"../WorldServer.h"
-
-1341692392 source:g:\osprose\world server\battle.cpp
-	"character.h"
-	"worldserver.h"
-
-1340999248 source:g:\osprose\world server\character.cpp
-	"character.h"
-	"worldserver.h"
-
-1341692392 source:g:\osprose\world server\charfunctions.cpp
-	"character.h"
-	"worldserver.h"
-
-1335972142 source:g:\osprose\world server\clan.cpp
-	"worldserver.h"
-
-1337870618 source:g:\osprose\world server\extrafunctions.cpp
-	"worldserver.h"
-
-1340915898 source:g:\osprose\world server\gmcmds.cpp
-	"worldserver.h"
-
-1337798116 source:g:\osprose\world server\mapfunctions.cpp
-	"worldmap.h"
-
-1337876296 source:g:\osprose\world server\monsterfunctions.cpp
-	"worldmonster.h"
-
-1243017092 source:g:\osprose\world server\partyfunctions.cpp
-	"party.h"
-
-1337798118 source:g:\osprose\world server\player.cpp
-	"player.h"
-	"worldserver.h"
-
-1341240726 source:g:\osprose\world server\playerdata.cpp
-	"player.h"
-	"worldserver.h"
-
-1339776582 source:g:\osprose\world server\playerfunctions.cpp
-	"player.h"
-	"worldserver.h"
-
-1337874070 source:g:\osprose\world server\playerstats.cpp
-	"player.h"
-	"worldserver.h"
-
-1337874072 source:g:\osprose\world server\quest\questactions.cpp
-	"../WorldServer.h"
-
-1337874074 source:g:\osprose\world server\quest\questconditions.cpp
-	"../WorldServer.h"
-
-1244141334 source:g:\osprose\world server\quest\quests.cpp
-	"../WorldServer.h"
-
-1341247572 source:g:\osprose\world server\startup.cpp
-	"worldserver.h"
-
-1341246870 source:g:\osprose\world server\worldmap.cpp
-	"worldmap.h"
-
-1340975744 source:g:\osprose\world server\worldpackets.cpp
-	"worldserver.h"
-
-1337874070 source:g:\osprose\world server\worldserver.cpp
-	"worldserver.h"
-
-1214488836 source:e:\osprose\common\socketbase.cpp
-	"sockets.h"
-
-1295112854 e:\osprose\common\sockets.h
-	<windows.h>
-	<winsock2.h>
-	<unistd.h>
-	<netinet/in.h>
-	<sys/socket.h>
-	<sys/types.h>
-	<arpa/inet.h>
-	<sys/ioctl.h>
-	<cstdarg>
-	<errno.h>
-	<mysql/mysql.h>
-	<cstdio>
-	<cstdlib>
-	<iostream>
-	<vector>
-	<string>
-	<cstdio>
-	<exception>
-	<time.h>
-	<assert.h>
-	<math.h>
-	<cmath>
-	<map>
-	<pthread.h>
-	<vector>
-	<csignal>
-	"log.h"
-	"rosecrypt.hpp"
-	"config.h"
-	"database/database.h"
-
-1335971100 e:\osprose\common\log.h
-
-1214488836 e:\osprose\common\rosecrypt.hpp
-
-1335973828 e:\osprose\common\config.h
-
-1335971376 e:\osprose\common\database\database.h
-	"../sockets.h"
-
-1337807008 source:e:\osprose\common\socketclient.cpp
-	"sockets.h"
-	"seh.hpp"
-	"config.h"
-
-1236147414 e:\osprose\common\seh.hpp
-	<windows.h>
-	<excpt.h>
-	<setjmp.h>
-
-1337876664 source:e:\osprose\common\socketserver.cpp
-	"sockets.h"
-
-1335973828 source:e:\osprose\common\config.cpp
-	<cstdio>
-	<cstring>
-	<cstdlib>
-	<ctype.h>
-
-1337874068 source:e:\osprose\common\database\database.cpp
-	"database.h"
-	"../log.h"
-
-1214488836 source:e:\osprose\common\globals.cpp
-	"sockets.h"
-
-1337876296 source:e:\osprose\common\log.cpp
-	<conio.h>
-	<windows.h>
-	<cstdio>
-	<cstdio>
-	"log.h"
-
-1337798112 source:e:\osprose\common\rosecrypt.cpp
-	<fstream>
-	<iostream>
-	"rosecrypt.hpp"
-	<cstdlib>
-
-1236147436 source:e:\osprose\common\seh.cpp
-	"seh.hpp"
-
-1337870612 source:e:\osprose\world server\buff.cpp
-	"worldserver.h"
-
-1335981270 e:\osprose\world server\worldserver.h
-	"../common/sockets.h"
-	"worldmonster.h"
-	"quest/CRoseArray.hpp"
-	"quest/CRoseFile.hpp"
-	"quest/CStrStb.hpp"
-	"quest/CIntStb.hpp"
-	"quest/QuestTrigger.h"
-	"aip/Aip.h"
-	"worldmap.h"
-	"player.h"
-	"character.h"
-	"party.h"
-	"datatypes.h"
-	"stbhandler.h"
-	"strhashing.h"
-
-1289239868 e:\osprose\world server\worldmonster.h
-	"character.h"
-	"player.h"
-	"worldserver.h"
-
-1289239868 e:\osprose\world server\character.h
-	"chartype.h"
-
-1338688426 e:\osprose\world server\chartype.h
-	"datatypes.h"
-
-1297444182 e:\osprose\world server\datatypes.h
-	"../common/sockets.h"
-
-1289239868 e:\osprose\world server\player.h
-	"character.h"
-
-1214488838 e:\osprose\world server\quest\crosearray.hpp
-	<memory.h>
-
-1337870620 e:\osprose\world server\quest\crosefile.hpp
-	<stdio.h>
-	<stdlib.h>
-	"CRoseArray.hpp"
-
-1214488838 e:\osprose\world server\quest\cstrstb.hpp
-
-1214488838 e:\osprose\world server\quest\cintstb.hpp
-
-1221230694 e:\osprose\world server\quest\questtrigger.h
-	"QuestConditions.h"
-	"QuestActions.h"
-
-1328564764 e:\osprose\world server\quest\questconditions.h
-
-1244137880 e:\osprose\world server\quest\questactions.h
-
-1245422868 e:\osprose\world server\aip\aip.h
-	"AiConditions.h"
-	"AiActions.h"
-
-1239110628 e:\osprose\world server\aip\aiconditions.h
-
-1224798342 e:\osprose\world server\aip\aiactions.h
-
-1244660940 e:\osprose\world server\worldmap.h
-	"worldserver.h"
-	"player.h"
-	"character.h"
-	"worldmonster.h"
-	"datatypes.h"
-
-1338744516 e:\osprose\world server\party.h
-	"worldserver.h"
-	"datatypes.h"
-
-1211202204 e:\osprose\world server\stbhandler.h
-	"worldserver.h"
-
-1211202204 e:\osprose\world server\strhashing.h
-
-1337870612 source:e:\osprose\world server\mainprocess.cpp
-	"worldserver.h"
-
-1218740164 source:e:\osprose\world server\monster.cpp
-	"worldmonster.h"
-
-1231535164 source:e:\osprose\world server\monsterevents.cpp
-	"worldmonster.h"
-
-1289239868 source:e:\osprose\world server\monsterstats.cpp
-	"worldmonster.h"
-
-1338751418 source:e:\osprose\world server\party.cpp
-	"worldserver.h"
-
-1337870614 source:e:\osprose\world server\serverfunctions.cpp
-	"worldserver.h"
-
-1218461368 source:e:\osprose\world server\worldmonster.cpp
-	"worldmonster.h"
-
-1338754636 source:e:\osprose\world server\worldprocess.cpp
-	"worldserver.h"
-
-1337798114 source:e:\osprose\world server\aip\aiactions.cpp
-	"../WorldServer.h"
-
-1237487436 source:e:\osprose\world server\aip\aiconditions.cpp
-	"../WorldServer.h"
-
-1245423130 source:e:\osprose\world server\aip\aip.cpp
-	"../WorldServer.h"
-
-1339880136 source:e:\osprose\world server\battle.cpp
-	"character.h"
-	"worldserver.h"
-
-1338744436 source:e:\osprose\world server\character.cpp
-	"character.h"
-	"worldserver.h"
-
-1211202204 source:e:\osprose\world server\charevent.cpp
-	"character.h"
-
-1338324994 source:e:\osprose\world server\charfunctions.cpp
-	"character.h"
-	"worldserver.h"
-
-1219852048 source:e:\osprose\world server\charstats.cpp
-	"character.h"
-
-1335972142 source:e:\osprose\world server\clan.cpp
-	"worldserver.h"
-
-1337870618 source:e:\osprose\world server\extrafunctions.cpp
-	"worldserver.h"
-
-1339777794 source:e:\osprose\world server\gmcmds.cpp
-	"worldserver.h"
-
-1211202204 source:e:\osprose\world server\itemdata.cpp
-	"datatypes.h"
-
-1211202204 source:e:\osprose\world server\main.cpp
-	"worldserver.h"
-
-1337798116 source:e:\osprose\world server\mapfunctions.cpp
-	"worldmap.h"
-
-1337876296 source:e:\osprose\world server\monsterfunctions.cpp
-	"worldmonster.h"
-
-1243017092 source:e:\osprose\world server\partyfunctions.cpp
-	"party.h"
-
-1337798118 source:e:\osprose\world server\player.cpp
-	"player.h"
-	"worldserver.h"
-
-1339774498 source:e:\osprose\world server\playerdata.cpp
-	"player.h"
-	"worldserver.h"
-
-1339776582 source:e:\osprose\world server\playerfunctions.cpp
-	"player.h"
-	"worldserver.h"
-
-1214488838 source:e:\osprose\world server\playerquest.cpp
-
-1337874070 source:e:\osprose\world server\playerstats.cpp
-	"player.h"
-	"worldserver.h"
-
-1337874072 source:e:\osprose\world server\quest\questactions.cpp
-	"../WorldServer.h"
-
-1337874074 source:e:\osprose\world server\quest\questconditions.cpp
-	"../WorldServer.h"
-
-1244141334 source:e:\osprose\world server\quest\quests.cpp
-	"../WorldServer.h"
-
-1337969564 source:e:\osprose\world server\startup.cpp
-	"worldserver.h"
-
-1229100628 source:e:\osprose\world server\stbhandler.cpp
-	"worldserver.h"
-
-1211202204 source:e:\osprose\world server\strhashing.cpp
-	"worldserver.h"
-
-1338074936 source:e:\osprose\world server\worldmap.cpp
-	"worldmap.h"
-
-1338397840 source:e:\osprose\world server\worldpackets.cpp
-	"worldserver.h"
-
-1337874070 source:e:\osprose\world server\worldserver.cpp
-	"worldserver.h"
-
-1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\socketbase.cpp
-	"sockets.h"
-
-1369059143 f:\triggersoft\ktrose server svn\trunk\common\sockets.h
-	<windows.h>
-	<winsock2.h>
-	<unistd.h>
-	<netinet/in.h>
-	<sys/socket.h>
-	<sys/types.h>
-	<arpa/inet.h>
-	<sys/ioctl.h>
-	<cstdarg>
-	<errno.h>
-	<mysql/mysql.h>
-	<cstdio>
-	<cstdlib>
-	<iostream>
-	<vector>
-	<string>
-	<cstdio>
-	<exception>
-	<time.h>
-	<assert.h>
-	<math.h>
-	<cmath>
-	<map>
-	<pthread.h>
-	<vector>
-	<csignal>
-	"log.h"
-	"rosecrypt.hpp"
-	"config.h"
-	"database/database.h"
-
-1369058056 f:\triggersoft\ktrose server svn\trunk\common\log.h
-
-1369058054 f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.hpp
-
-1369058054 f:\triggersoft\ktrose server svn\trunk\common\config.h
-
-1369058054 f:\triggersoft\ktrose server svn\trunk\common\database\database.h
-	"../sockets.h"
-
-1369058056 source:f:\triggersoft\ktrose server svn\trunk\common\socketclient.cpp
-	"sockets.h"
-	"seh.hpp"
-	"config.h"
-
-1369058056 f:\triggersoft\ktrose server svn\trunk\common\seh.hpp
-	<windows.h>
-	<excpt.h>
-	<setjmp.h>
-
-1390589663 source:f:\triggersoft\ktrose server svn\trunk\common\socketserver.cpp
-	"sockets.h"
-	<iostream>
-
-1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\config.cpp
-	<cstdio>
-	<cstring>
-	<cstdlib>
-	<ctype.h>
-
-1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\database\database.cpp
-	"database.h"
-	"../log.h"
-
-1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\globals.cpp
-	"sockets.h"
-
-1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\log.cpp
+1281029788 source:f:\triggersoft\evo 137 osrose server\common\log.cpp
 	<conio.h>
 	<windows.h>
 	<cstdio>
@@ -1184,213 +375,243 @@
 	<time.h>
 	"log.h"
 
-1369058056 source:f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.cpp
-	<fstream>
-	<iostream>
+1393964199 source:f:\triggersoft\evo 137 osrose server\common\rosecrypt.cpp
 	"rosecrypt.hpp"
-	<cstdlib>
 
-1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\seh.cpp
-	"seh.hpp"
-
-1371824770 source:f:\triggersoft\ktrose server svn\trunk\world server\buff.cpp
+1281029828 source:f:\triggersoft\evo 137 osrose server\world server\buff.cpp
 	"worldserver.h"
 
-1397492313 f:\triggersoft\ktrose server svn\trunk\world server\worldserver.h
+1433958567 f:\triggersoft\evo 137 osrose server\world server\worldserver.h
+	"datatypes.h"
 	"../common/sockets.h"
 	"worldmonster.h"
+	"worldmap.h"
+	"player.h"
+	"character.h"
+	"party.h"
+	"stbhandler.h"
+	"stlhandler.h"
+	"quest/strhashing.h"
 	"quest/CRoseArray.hpp"
 	"quest/CRoseFile.hpp"
 	"quest/CStrStb.hpp"
 	"quest/CIntStb.hpp"
 	"quest/QuestTrigger.h"
+	"ltbhandler.h"
 	"aip/Aip.h"
-	"worldmap.h"
-	"player.h"
-	"character.h"
-	"party.h"
-	"datatypes.h"
-	"stbhandler.h"
-	"strhashing.h"
 
-1369058639 f:\triggersoft\ktrose server svn\trunk\world server\worldmonster.h
+1433958843 f:\triggersoft\evo 137 osrose server\world server\datatypes.h
+	"datatypes_compat.h"
+	"../common/sockets.h"
+
+1256936524 f:\triggersoft\evo 137 osrose server\world server\datatypes_compat.h
+
+1433275262 f:\triggersoft\evo 137 osrose server\world server\worldmonster.h
 	"character.h"
 	"player.h"
 	"worldserver.h"
 
-1397492798 f:\triggersoft\ktrose server svn\trunk\world server\character.h
+1394728885 f:\triggersoft\evo 137 osrose server\world server\character.h
 	"chartype.h"
 
-1397492292 f:\triggersoft\ktrose server svn\trunk\world server\chartype.h
+1433958843 f:\triggersoft\evo 137 osrose server\world server\chartype.h
 	"datatypes.h"
 
-1371825323 f:\triggersoft\ktrose server svn\trunk\world server\datatypes.h
-	"../common/sockets.h"
-
-1397492798 f:\triggersoft\ktrose server svn\trunk\world server\player.h
+1290523806 f:\triggersoft\evo 137 osrose server\world server\player.h
 	"character.h"
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\crosearray.hpp
+1433263511 f:\triggersoft\evo 137 osrose server\world server\worldmap.h
+	"worldserver.h"
+	"player.h"
+	"character.h"
+	"worldmonster.h"
+	"datatypes.h"
+
+1281029826 f:\triggersoft\evo 137 osrose server\world server\party.h
+	"worldserver.h"
+	"datatypes.h"
+
+1281029824 f:\triggersoft\evo 137 osrose server\world server\stbhandler.h
+	"worldserver.h"
+
+1281029826 f:\triggersoft\evo 137 osrose server\world server\stlhandler.h
+	"worldserver.h"
+
+1256936516 f:\triggersoft\evo 137 osrose server\world server\quest\strhashing.h
+
+1256936516 f:\triggersoft\evo 137 osrose server\world server\quest\crosearray.hpp
 	<memory.h>
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\crosefile.hpp
+1256936516 f:\triggersoft\evo 137 osrose server\world server\quest\crosefile.hpp
 	<stdio.h>
 	<stdlib.h>
 	"CRoseArray.hpp"
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\cstrstb.hpp
+1281029814 f:\triggersoft\evo 137 osrose server\world server\quest\cstrstb.hpp
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\cintstb.hpp
+1256936518 f:\triggersoft\evo 137 osrose server\world server\quest\cintstb.hpp
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\questtrigger.h
+1256936518 f:\triggersoft\evo 137 osrose server\world server\quest\questtrigger.h
 	"QuestConditions.h"
 	"QuestActions.h"
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\questconditions.h
+1281029810 f:\triggersoft\evo 137 osrose server\world server\quest\questconditions.h
 
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\questactions.h
+1281029812 f:\triggersoft\evo 137 osrose server\world server\quest\questactions.h
 
-1369058060 f:\triggersoft\ktrose server svn\trunk\world server\aip\aip.h
+1281029830 f:\triggersoft\evo 137 osrose server\world server\ltbhandler.h
+	"worldserver.h"
+	<map>
+
+1256936506 f:\triggersoft\evo 137 osrose server\world server\aip\aip.h
 	"AiConditions.h"
 	"AiActions.h"
 
-1369058061 f:\triggersoft\ktrose server svn\trunk\world server\aip\aiconditions.h
+1271082188 f:\triggersoft\evo 137 osrose server\world server\aip\aiconditions.h
 
-1369058060 f:\triggersoft\ktrose server svn\trunk\world server\aip\aiactions.h
+1271082186 f:\triggersoft\evo 137 osrose server\world server\aip\aiactions.h
 
-1369058068 f:\triggersoft\ktrose server svn\trunk\world server\worldmap.h
-	"worldserver.h"
-	"player.h"
-	"character.h"
-	"worldmonster.h"
-	"datatypes.h"
-
-1369058064 f:\triggersoft\ktrose server svn\trunk\world server\party.h
-	"worldserver.h"
-	"datatypes.h"
-
-1369058063 f:\triggersoft\ktrose server svn\trunk\world server\stbhandler.h
+1433959459 source:f:\triggersoft\evo 137 osrose server\world server\mainprocess.cpp
 	"worldserver.h"
 
-1369058060 f:\triggersoft\ktrose server svn\trunk\world server\strhashing.h
-
-1397496007 source:f:\triggersoft\ktrose server svn\trunk\world server\mainprocess.cpp
-	"worldserver.h"
-
-1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\monster.cpp
+1281029830 source:f:\triggersoft\evo 137 osrose server\world server\monster.cpp
 	"worldmonster.h"
 
-1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\monsterevents.cpp
+1290523808 source:f:\triggersoft\evo 137 osrose server\world server\monsterevents.cpp
 	"worldmonster.h"
 
-1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\monsterstats.cpp
+1267722398 source:f:\triggersoft\evo 137 osrose server\world server\monsterstats.cpp
 	"worldmonster.h"
 
-1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\party.cpp
+1267722400 source:f:\triggersoft\evo 137 osrose server\world server\party.cpp
 	"worldserver.h"
 
-1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\serverfunctions.cpp
+1281029826 source:f:\triggersoft\evo 137 osrose server\world server\serverfunctions.cpp
 	"worldserver.h"
 
-1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\worldmonster.cpp
+1271082196 source:f:\triggersoft\evo 137 osrose server\world server\signal.cpp
+	"worldserver.h"
+
+1433263448 source:f:\triggersoft\evo 137 osrose server\world server\worldmonster.cpp
 	"worldmonster.h"
 
-1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\worldprocess.cpp
+1281029824 source:f:\triggersoft\evo 137 osrose server\world server\worldprocess.cpp
 	"worldserver.h"
 
-1369058061 source:f:\triggersoft\ktrose server svn\trunk\world server\aip\aiactions.cpp
+1394728885 source:f:\triggersoft\evo 137 osrose server\world server\aip\aiactions.cpp
 	"../WorldServer.h"
 
-1395408459 source:f:\triggersoft\ktrose server svn\trunk\world server\aip\aiconditions.cpp
+1394651776 source:f:\triggersoft\evo 137 osrose server\world server\aip\aiconditions.cpp
 	"../WorldServer.h"
 
-1369058061 source:f:\triggersoft\ktrose server svn\trunk\world server\aip\aip.cpp
+1394651947 source:f:\triggersoft\evo 137 osrose server\world server\aip\aip.cpp
 	"../WorldServer.h"
 
-1389223940 source:f:\triggersoft\ktrose server svn\trunk\world server\battle.cpp
+1394728885 source:f:\triggersoft\evo 137 osrose server\world server\battle.cpp
 	"character.h"
 	"worldserver.h"
 
-1369058510 source:f:\triggersoft\ktrose server svn\trunk\world server\character.cpp
+1290523806 source:f:\triggersoft\evo 137 osrose server\world server\character.cpp
 	"character.h"
 	"worldserver.h"
 
-1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\charevent.cpp
+1256936530 source:f:\triggersoft\evo 137 osrose server\world server\charevent.cpp
 	"character.h"
 
-1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\charfunctions.cpp
+1297437502 source:f:\triggersoft\evo 137 osrose server\world server\charfunctions.cpp
 	"character.h"
 	"worldserver.h"
 
-1369058068 source:f:\triggersoft\ktrose server svn\trunk\world server\charstats.cpp
+1256936534 source:f:\triggersoft\evo 137 osrose server\world server\charstats.cpp
 	"character.h"
 
-1369058059 source:f:\triggersoft\ktrose server svn\trunk\world server\clan.cpp
+1290523804 source:f:\triggersoft\evo 137 osrose server\world server\clan.cpp
 	"worldserver.h"
 
-1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\extrafunctions.cpp
+1256936528 source:f:\triggersoft\evo 137 osrose server\world server\console.cpp
+	"WorldServer.h"
+
+1433785435 source:f:\triggersoft\evo 137 osrose server\world server\extrafunctions.cpp
 	"worldserver.h"
 
-1369058530 source:f:\triggersoft\ktrose server svn\trunk\world server\gmcmds.cpp
+1433967008 source:f:\triggersoft\evo 137 osrose server\world server\gmcmds.cpp
 	"worldserver.h"
 
-1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\itemdata.cpp
+1256936532 source:f:\triggersoft\evo 137 osrose server\world server\itemdata.cpp
 	"datatypes.h"
 
-1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\main.cpp
+1281029824 source:f:\triggersoft\evo 137 osrose server\world server\ltbhandler.cpp
+	"ltbhandler.h"
+
+1281029824 source:f:\triggersoft\evo 137 osrose server\world server\main.cpp
 	"worldserver.h"
 
-1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\mapfunctions.cpp
+1433276526 source:f:\triggersoft\evo 137 osrose server\world server\mapfunctions.cpp
 	"worldmap.h"
 
-1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\monsterfunctions.cpp
+1267722398 source:f:\triggersoft\evo 137 osrose server\world server\monsterfunctions.cpp
 	"worldmonster.h"
 
-1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\partyfunctions.cpp
+1281029830 source:f:\triggersoft\evo 137 osrose server\world server\partyfunctions.cpp
 	"party.h"
 
-1397496008 source:f:\triggersoft\ktrose server svn\trunk\world server\player.cpp
+1281029830 source:f:\triggersoft\evo 137 osrose server\world server\player.cpp
 	"player.h"
 	"worldserver.h"
 
-1395412921 source:f:\triggersoft\ktrose server svn\trunk\world server\playerdata.cpp
+1433962955 source:f:\triggersoft\evo 137 osrose server\world server\playerdata.cpp
 	"player.h"
 	"worldserver.h"
 
-1389115824 source:f:\triggersoft\ktrose server svn\trunk\world server\playerfunctions.cpp
+1290523804 source:f:\triggersoft\evo 137 osrose server\world server\playerfunctions.cpp
 	"player.h"
 	"worldserver.h"
 
-1369058059 source:f:\triggersoft\ktrose server svn\trunk\world server\playerquest.cpp
-
-1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\playerstats.cpp
+1256936526 source:f:\triggersoft\evo 137 osrose server\world server\playerquest.cpp
 	"player.h"
 	"worldserver.h"
 
-1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\quest\questactions.cpp
-	"../WorldServer.h"
-
-1369058065 source:f:\triggersoft\ktrose server svn\trunk\world server\quest\questconditions.cpp
-	"../WorldServer.h"
-
-1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\quest\quests.cpp
-	"../WorldServer.h"
-
-1389115824 source:f:\triggersoft\ktrose server svn\trunk\world server\startup.cpp
+1297448832 source:f:\triggersoft\evo 137 osrose server\world server\playerstats.cpp
+	"player.h"
 	"worldserver.h"
 
-1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\stbhandler.cpp
+1256936528 source:f:\triggersoft\evo 137 osrose server\world server\quest.cpp
 	"worldserver.h"
 
-1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\strhashing.cpp
+1394728025 source:f:\triggersoft\evo 137 osrose server\world server\quest\questactions.cpp
+	"../worldserver.h"
+
+1394728025 source:f:\triggersoft\evo 137 osrose server\world server\quest\questactionsc.cpp
+	"../worldserver.h"
+
+1290523800 source:f:\triggersoft\evo 137 osrose server\world server\quest\questconditions.cpp
+	"../worldserver.h"
+
+1281029810 source:f:\triggersoft\evo 137 osrose server\world server\quest\questconditionsc.cpp
+	"../worldserver.h"
+
+1281029812 source:f:\triggersoft\evo 137 osrose server\world server\quest\quests.cpp
+	"../worldserver.h"
+
+1256936518 source:f:\triggersoft\evo 137 osrose server\world server\quest\strhashing.cpp
+	"../worldserver.h"
+	"strhashing.h"
+
+1433958567 source:f:\triggersoft\evo 137 osrose server\world server\startup.cpp
 	"worldserver.h"
 
-1389223937 source:f:\triggersoft\ktrose server svn\trunk\world server\worldmap.cpp
+1281029830 source:f:\triggersoft\evo 137 osrose server\world server\stbhandler.cpp
+	"worldserver.h"
+
+1281029818 source:f:\triggersoft\evo 137 osrose server\world server\stlhandler.cpp
+	"worldserver.h"
+
+1433275262 source:f:\triggersoft\evo 137 osrose server\world server\worldmap.cpp
 	"worldmap.h"
 
-1397496008 source:f:\triggersoft\ktrose server svn\trunk\world server\worldpackets.cpp
+1394728025 source:f:\triggersoft\evo 137 osrose server\world server\worldpackets.cpp
 	"worldserver.h"
 
-1397492293 source:f:\triggersoft\ktrose server svn\trunk\world server\worldserver.cpp
+1433958568 source:f:\triggersoft\evo 137 osrose server\world server\worldserver.cpp
 	"worldserver.h"
 

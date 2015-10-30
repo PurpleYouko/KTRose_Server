@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -36,8 +36,7 @@ CMap::CMap( )
     CurrentTime = 0;
     RespawnList.clear();
     MonsterSpawnList.clear();
-    //if(GServer->Config.SpawnType == 0)
-        MobGroupList.clear();
+    MobGroupList.clear();
     MonsterList.clear();
     DropsList.clear();
     PlayerList.clear();
@@ -51,17 +50,13 @@ CMap::~CMap( )
 {
     for(UINT i=0;i<RespawnList.size();i++)
         delete RespawnList.at(i);
-    if(GServer->Config.SpawnType == 0)
-    {
-        for(UINT i = 0; i < MobGroupList.size(); i++)
-        {
-            CMobGroup *thisgroup = MobGroupList.at(i);
-            for (UINT j = 0; j < thisgroup->basicMobs.size(); j++)
-                delete thisgroup->basicMobs.at(j);
-            for (UINT j = 0; j < thisgroup->tacMobs.size(); j++)
-                delete thisgroup->tacMobs.at(j);
-            delete thisgroup;
-        }
+    for(UINT i = 0; i < MobGroupList.size(); i++) {
+      CMobGroup *thisgroup = MobGroupList.at(i);
+      for (UINT j = 0; j < thisgroup->basicMobs.size(); j++)
+        delete thisgroup->basicMobs.at(j);
+      for (UINT j = 0; j < thisgroup->tacMobs.size(); j++)
+        delete thisgroup->tacMobs.at(j);
+      delete thisgroup;
     }
     for(UINT i=0;i<MonsterSpawnList.size();i++)
         delete MonsterSpawnList.at(i);
@@ -98,208 +93,323 @@ bool CMap::RemovePlayer( CPlayer* player, bool clearobject )
             return true;
         }
     }
+    Log(MSG_WARNING, "Player not founded %s", player->CharInfo->charname );
     return false;
 }
 
-
 // add a new monster to this map
-CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spawnid , UINT aggro, bool IsTD, UINT limit, UINT AI)
+//CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, CMDrops* MonsterDrop, CMDrops* MapDrop, UINT spawnid , bool GetDropData, int AINumber)
+CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spawnid , bool IsTD, UINT AI)
 {
     // check if is a valid monster
     CNPCData* thisnpc = GServer->GetNPCDataByID( montype );
-    if(thisnpc == NULL)
+    if(thisnpc==NULL)
     {
-        Log( MSG_WARNING, "Invalid montype %i", montype );
+        Log( MSG_WARNING, "Add Monster:: Invalid montype %u", montype );
         return NULL;
     }
+
     CMonster* monster = new (nothrow) CMonster( position, montype, this->id, owner, spawnid  );
-    if(monster == NULL)
+    if(monster==NULL)
     {
-        Log( MSG_WARNING, "Error allocing memory" );
+        Log( MSG_WARNING, "Add Monster %u:: Error allocing memory",montype);
         return NULL;
     }
+
     monster->thisnpc = thisnpc;
-    monster->Stats->MaxHP = monster->GetMaxHP( );
-    monster->Stats->HP = monster->Stats->MaxHP;
-    monster->Stats->MaxMP = monster->GetMaxMP( );
-    monster->Stats->MP = monster->Stats->MaxMP;
-    monster->thisnpc->_EntityType = ENTITY_MONSTER;
-    monster->Status->Stance = 0;            // WTF is Status->Stance even used for????
-    monster->Stats->stance = 0;             //mWalking
-    monster->Status->spawnid = spawnid;     //this way we can easily find which spawn a mob belongs to
+    monster->life_time=0;
     monster->SetStats( );
-    if(AI != 0 && monster->monAI != 999)
+    monster->Stats->HP = monster->Stats->MaxHP;
+    monster->Stats->MP = monster->Stats->MaxMP;
+    //monster->is_tactical=is_tactic;
+    monster->suicide=false;
+
+    //LMA: test for quest hack (stackable).
+    #ifdef QHACK
+    monster->die_quest=thisnpc->die_quest;
+    #endif
+    //LMA END
+
+    for(int i=0;i<20;i++)
     {
-        //Set monster's AI to the defined value
-        monster->monAI = AI;
-        CAip* script = NULL;
-        for(unsigned j=0; j < GServer->AipList.size(); j++)
-        {
-            if (GServer->AipList.at(j)->AInumber == AI)
-            {
-                script = GServer->AipList.at(j);
-                break;
-            }
-        }
-        if(script == NULL && monster->monAI != 999)
-        {
-            //Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,AI );
-            monster->AItimer = 4000;
-        }
-        else
-        {
-            monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
-        }
-        if (monster->AItimer == 0)
-            monster->AItimer = 4000;
+        monster->AIVar[i] = 0;
+    }
+
+    //LMA: no agressivity in Santa's planetoid ;)
+    if(monster->Position->Map==38)
+    {
+        monster->thisnpc->aggresive=0;
+        monster->thisnpc->helpless=1;
+    }
+
+    //LMA: Little check, for now we "only" have a DWORD for monster's HP so there is a limit
+    //broken by some monsters (Turak boss)
+    if(monster->Stats->HP>MAXHPMOB)
+    {
+        monster->Stats->HP=(long long) MAXHPMOB;
+    }
+
+    monster->Status->spawnid = spawnid; //this way we can easily find which spawn a mob belongs to
+    ///Set the monster's AI value'
+    if(AI == 0)
+    {
+        monster->MonAI = monster->thisnpc->AI;
     }
     else
     {
-        //Set monster's AI to the default value for this monster type
-        monster->monAI = monster->thisnpc->AI;
-        CAip* script = NULL;
-        for(unsigned j=0; j < GServer->AipList.size(); j++)
-        {
-            if (GServer->AipList.at(j)->AInumber == monster->monAI)
-            {
-                script = GServer->AipList.at(j);
-                break;
-            }
-        }
-        if(script == NULL && monster->monAI != 999) //don't give error messag eif it's 999
-        {
-            //Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,AI );
-            monster->AItimer = 4000;
-        }
-        else
-        {
-            monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
-        }
-        if (monster->AItimer == 0)
-            monster->AItimer = 4000;
-    }
-    if(IsTD)
-    {
-        //monster->thisnpc->AI = 331;
-        monster->monAI = 999;
-        monster->thisnpc->aggresive = 0;
-        monster->NextWayPoint = 1;
-        monster->Position->destiny = monster->Position->current;
-        monster->AItimer = 1000; //shorter testing time because it doesn't run an AIP
+        monster->MonAI = AI;
     }
 
-    if(limit == 0)
-    {
-        monster->Status->dayonly = false;
-        monster->Status->nightonly = false;
-    }
-    if(limit == 1)
-    {
-        monster->Status->dayonly = true;
-        monster->Status->nightonly = false;
-    }
-    if(limit == 2)
-    {
-        monster->Status->dayonly = false;
-        monster->Status->nightonly = true;
-    }
-    if(aggro != 1)
-        monster->thisnpc->aggresive = aggro;
-    monster->Stats->HP = monster->Stats->MaxHP;
-        /*                    BEGINPACKET( pak, 0x799 );
-                            ADDWORD    ( pak, monster->clientid );
-                            ADDWORD    ( pak, monster->clientid );
-                            ADDWORD    ( pak, 0x8005 );
-                            GServer->SendToVisible( &pak, monster);*/
     MonsterList.push_back( monster );
-    if(spawnid != 0)
+
+    //LMA: daynight
+    monster->daynight=0;
+    monster->sp_aip=0;
+
+    //LMA: team:
+    monster->team=0;
+
+    if(monster->IsSummon()&&owner!=0)
     {
-        if(GServer->Config.SpawnType == 1)
+        //Trying to get the owner.
+        CPlayer* tempplayer=GServer->GetClientByID(owner,monster->Position->Map);
+        if (tempplayer!=NULL)
         {
-            CSpawnArea* thisspawn = GServer->GetSpawnArea( spawnid, this->id );
-            if(thisspawn!=NULL)
-                thisspawn->amon++;
+            monster->team=tempplayer->pvp_id;
+            Log(MSG_INFO,"ADDMONSTER, overwriting team with owner's pvp_id %i",tempplayer->pvp_id);
+
+            //Tomiz : Get Owner lvl For Summon (the one from job, setup to fix normal atk formula because summon got lvl <= 100 in STB)
+            UINT ownerlevel = 0;
+            ownerlevel += tempplayer->Stats->Level;
+            monster->Stats->Level = ownerlevel;
+            Log(MSG_INFO,"Summon %i, got lvl %i by this owner",thisnpc->id,ownerlevel);
         }
-        if(GServer->Config.SpawnType == 0)
+
+        //LMA: adding a summon :)
+        if (monster->IsSummon())
         {
-            CMobGroup* thisgroup = GServer->GetMobGroup( spawnid, this->id );
-            if(thisgroup != NULL)
-                thisgroup->active++;
+            nb_summons++;
+            Log(MSG_INFO,"Adding a summon in map %i (now %u)",id,nb_summons);
         }
+
     }
-    monster->activecycle = GServer->RandNumber(1, 10);
+
+    if(spawnid!=0)
+    {
+        CMobGroup* thisgroup = GServer->GetMobGroup( spawnid, this->id );
+        if(thisgroup!=NULL)
+        {
+            //LMA: only if not a tactical.
+            if(!monster->is_tactical)
+            {
+                thisgroup->active++;
+            }
+
+        }
+
+        //LMA: daynight
+        monster->daynight=thisgroup->daynight;
+    }
+
     monster->SpawnTime = clock( );
+    monster->lastDegenTime=clock();
+    monster->OnSpawn( false );
     monster->lastAiUpdate = clock();
+    monster->nextAi_attacked=clock();
     monster->hitcount = 0xFF;
-    //monster->OnSpawn( false );
-    monster->hitcount = 0;
+
+    monster->hitcount=0;
+    monster->maxhitcount=0;
+    monster->stay_still=false;
+
+    if(monster->thisnpc->id==659)
+    {
+       monster->maxhitcount=3;   //LMA: MoonChild
+       monster->stay_still=true;
+    }
+
+    if(monster->thisnpc->id==201)
+    {
+       monster->maxhitcount=1;   //LMA: Worm dragon
+    }
+
+    if(monster->thisnpc->id==1572)
+    {
+       monster->maxhitcount=1;   //rl2171: Cursed Ant Vagabond
+    }
+
+    if(monster->thisnpc->id==662 || monster->thisnpc->id==667 || monster->thisnpc->id==673 || monster->thisnpc->id==678)
+    {
+       monster->maxhitcount=3;   //rl2171: Dragon Egg for Clan Wars  - 662, 667, 673, 678
+       monster->stay_still=true;
+    }
+
+     if(monster->thisnpc->id==558)
+    {
+       monster->maxhitcount=1;   //rl2171: 1st Turak
+    }
+
+     if(monster->thisnpc->id==559)
+    {
+       monster->maxhitcount=1;   //rl2171: 2nd Turak
+    }
+
+    /*if(monster->thisnpc->id==560)
+    {
+       monster->maxhitcount=1;   //rl2171: 3rd Turak
+    }
+    */
+    //Sunrise, Sunset and Dusk Crystal in Junon Cartel
+    if (monster->thisnpc->id>=431&&monster->thisnpc->id<=433)
+       monster->stay_still=true;
+
+    //Rune Stone, Green, Blue, Red, White Crystal in Luna
+    //    if (monster->thisnpc->id>=325&&monster->thisnpc->id<=329)
+    //       monster->stay_still=true;
+
+        //Seal Stone
+    //    if (monster->thisnpc->id>=451&&monster->thisnpc->id<=457)
+    //       monster->stay_still=true;
+
+        //Clan Wars gate - wall
+    //    if (monster->thisnpc->id>=1022&&monster->thisnpc->id<=1023)
+    //       monster->stay_still=true;
+
+    //LMA: bonfire (and salamender...) don't move and don't attack ;)
+    if (monster->IsBonfire())
+    {
+       monster->stay_still=true;
+       monster->Battle->target=owner;
+    }
+
+    monster->bonushp=0;
+    monster->bonusmp=0;
+    monster->maxvalue=0;
+    monster->minvalue=0;
+    monster->skillid=0;
+    monster->range=0;
+    monster->buffid=0;
+    monster->char_montype=montype;
+
+    //Log(MSG_INFO,"XCID, Addmonster %i in map %i",montype,monster->Position->Map);
+
+
     return monster;
 }
-
 
 // Delete a monster
 bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
 {
-    if(monster == NULL) return false;
-    GServer->ClearClientID( monster->clientid );
-    if(monster->Position->respawn != 0)
+    if(monster==NULL) return false;
+
+    //LMA: deleting a summon :)
+    if (monster->IsSummon())
     {
-        if(GServer->Config.SpawnType == 1)
+        if (nb_summons>0)
         {
-            CSpawnArea* thisspawn = GServer->GetSpawnArea( monster->Position->respawn, monster->Position->Map );
-            if(thisspawn != NULL)
-            {
-                if(thisspawn->amon >= thisspawn->max)// reset spawn timer if the spawn is full
-                    thisspawn->lastRespawnTime = clock();
-                thisspawn->amon--;
-                UpdateSpawnCounter( thisspawn->montype, thisspawn->id, 2);
-            }
+            nb_summons--;
         }
-        if(GServer->Config.SpawnType == 0)
+
+        Log(MSG_INFO,"Deleting a summon in map %i (now %u)",id,nb_summons);
+    }
+
+    //LMA TEST
+    bool lma_debug=false;
+   if(monster->Position->respawn==4589)
+   {
+       lma_debug=true;
+       Log(MSG_INFO,"DeleteMonster Spawn %u CID %u",monster->Position->respawn,monster->clientid);
+   }
+
+    GServer->ClearClientID( monster->clientid );
+    if(monster->Position->respawn!=0)
+    {
+        CMobGroup* thisgroup = GServer->GetMobGroup( monster->Position->respawn, monster->Position->Map );
+        if(thisgroup!=NULL)
         {
-            CMobGroup* thisgroup = GServer->GetMobGroup( monster->Position->respawn, monster->Position->Map );
-            if(thisgroup!=NULL)
+            /*if(thisgroup->active >= thisgroup->limit)// reset spawn timer if the spawn is full
+                thisgroup->lastRespawnTime = clock();*/
+
+            //LMA: only if the monster isn't tactical...
+
+           if(lma_debug)
+           {
+               Log(MSG_INFO,"DeleteMonster Spawn %u CID %u:: group found, is tactical? %i",monster->Position->respawn,monster->clientid,monster->is_tactical);
+           }
+
+            if(!monster->is_tactical)
             {
-                if(thisgroup->active >= thisgroup->limit)// reset spawn timer if the spawn is full
-                    thisgroup->lastRespawnTime = clock();
                 thisgroup->active--;
                 thisgroup->basicKills++;
+                thisgroup->lastKills++;
+
+               if(lma_debug)
+               {
+                   Log(MSG_INFO,"DeleteMonster Spawn %u CID %u:: not tactical, active %u, basickills %u, lastkills %u",monster->Position->respawn,monster->clientid,thisgroup->active,thisgroup->basicKills,thisgroup->lastKills);
+               }
+
             }
+
         }
+        else
+        {
+            Log(MSG_WARNING,"Spawn %u not found in map %u",monster->Position->respawn,monster->Position->Map);
+        }
+
     }
-    if(clearobject) // is this for clearing Summons?
+
+    if(clearobject)
     {
-        //Log( MSG_INFO, "Deleting monster %i (clearobject)",monster->montype);
         BEGINPACKET( pak, 0x799 );
         ADDWORD    ( pak, monster->clientid );
         ADDWORD    ( pak, monster->clientid );
-        ADDWORD    ( pak, 0x8005 );
-        //ADDDWORD   ( pak, monster->Stats->HP );
-        //ADDDWORD   ( pak, 16 );
+        ADDDWORD   ( pak, monster->Stats->HP );
+        ADDDWORD   ( pak, 16 );
         GServer->SendToVisible( &pak, monster );
+
+       if(lma_debug)
+       {
+           Log(MSG_INFO,"DeleteMonster Spawn %u CID %u:: clearing",monster->Position->respawn,monster->clientid);
+       }
+
     }
-    if(i != 0)
-    {
-         //Log( MSG_INFO, "Deleting monster %i from monster list. montype: %i",i,monster->montype);
-         MonsterList.erase( MonsterList.begin()+i );
-         //Log( MSG_INFO, "erased from list");
-         delete monster;
-         //Log( MSG_INFO, "deleted");
-         return true;
-    }
-    for(UINT j=0;j<MonsterList.size();j++)
+
+    if(i!=0)
     {
 
-        CMonster* othermon = MonsterList.at(j);
-        if(othermon == monster)
+       if(lma_debug)
+       {
+           Log(MSG_INFO,"DeleteMonster Spawn %u CID %u:: erasing with %u",monster->Position->respawn,monster->clientid,i);
+       }
+
+        MonsterList.erase( MonsterList.begin()+i );
+        delete monster;
+        return true;
+    }
+
+    for(UINT i=0;i<MonsterList.size();i++)
+    {
+        CMonster* othermon = MonsterList.at(i);
+        if(othermon==monster)
         {
-            //Log( MSG_INFO, "Deleting monster %i from monster list. No specified position",monster->montype);
-            MonsterList.erase( MonsterList.begin() + j );
+
+           if(lma_debug)
+           {
+               Log(MSG_INFO,"DeleteMonster Spawn %u CID %u:: erasing",monster->Position->respawn,monster->clientid);
+           }
+
+            MonsterList.erase( MonsterList.begin()+i );
             delete monster;
             return true;
         }
+
     }
-    //Log( MSG_INFO, "Deleting monster %i from monster list anyway",monster->montype);
+
+   if(lma_debug)
+   {
+       Log(MSG_INFO,"DeleteMonster Spawn %u CID %u:: erasing, not found in monsterlist",monster->Position->respawn,monster->clientid);
+   }
+
     delete monster;
     return false;
 }
@@ -307,7 +417,6 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
 //add a new drop
 bool CMap::AddDrop( CDrop* drop )
 {
-    drop->droptime = time(NULL);
     DropsList.push_back( drop );
     return true;
 }
@@ -334,6 +443,33 @@ bool CMap::DeleteDrop( CDrop* drop )
 bool CMap::AddNPC( CNPC* npc )
 {
     NPCList.push_back( npc );
+
+    //LMA: We keep a track with a more general map as well since we'll need it
+	//in some QSD...
+    if (GServer->ListAllNpc.find(npc->npctype)==GServer->ListAllNpc.end())
+    {
+        //not found yet.
+        GServer->ListAllNpc[npc->npctype].push_back(npc->posMap);
+        //Log(MSG_WARNING,"Adding NPC %i (didn't exist) in map %i",npc->npctype,npc->posMap);
+        return true;
+    }
+
+    //found, let's see if we already got a NPC in this map.
+    for (int k=0;k<GServer->ListAllNpc[npc->npctype].size();k++)
+    {
+        if(GServer->ListAllNpc[npc->npctype].at(k)==npc->posMap)
+        {
+            //Log(MSG_WARNING,"there is already a NPC %i in map %i",npc->npctype,npc->posMap);
+            return true;
+        }
+
+    }
+
+    //let's add it :)
+    GServer->ListAllNpc[npc->npctype].push_back(npc->posMap);
+    //Log(MSG_WARNING,"Adding NPC %i (already in other maps) in map %i as well",npc->npctype,npc->posMap);
+
+
     return true;
 }
 
@@ -343,10 +479,9 @@ bool CMap::DeleteNPC( CNPC* npc )
     ADDWORD    ( pak, npc->clientid );
     GServer->SendToMap( &pak, npc->posMap );
     GServer->ClearClientID( npc->clientid );
-    Log(MSG_INFO,"Sent message to players in map to delete NPC");
     for(UINT j=0;j<NPCList.size();j++)
     {
-        if(npc == NPCList.at(j))
+        if(npc==NPCList.at(j))
         {
             NPCList.erase( NPCList.begin()+j );
             delete npc;
@@ -355,4 +490,5 @@ bool CMap::DeleteNPC( CNPC* npc )
     }
     delete npc;
     return false;
+    return true;
 }

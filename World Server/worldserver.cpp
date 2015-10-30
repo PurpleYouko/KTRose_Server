@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -16,169 +16,38 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-    developed with Main erose/hrose source server + some change from the original eich source
+    depeloped with Main erose/hrose source server + some change from the original eich source
 */
 #include "worldserver.h"
 
 // Constructor
 CWorldServer::CWorldServer( string fn )
 {
+    #ifdef STATICID
+    //LMA: Client ID Static.
+    last_cid=1;
+    last_pid=1;
+    #endif
+
     filename = fn;
     LoadConfigurations( (char*)fn.c_str() );
 	for(unsigned i=0; i<0xffff; i++)
-        ClientIDList[i] = 1;
+	{
+	    ClientIDList[i] = 1;
+	}
+
     //Clear or Vector list
     PartyList.clear();
     MDropList.clear();
-    SkillList.clear();
+    QuestList.clear();
     FairyList.clear();
     TeleGateList.clear();
-    //
-    CEquip* nullequip = new CEquip;
-    nullequip->id = 0;
-    nullequip->itemtype = 0;
-    nullequip->equiptype = 0;
-    nullequip->type = 0;
-    nullequip->price = 0;
-    nullequip->pricerate = 0;
-    nullequip->weight = 0;
-    nullequip->quality = 0;
-    nullequip->level = 0;
-    nullequip->material = 0;
-    nullequip->defense = 0;
-    nullequip->magicresistence = 0;
-    nullequip->attackdistance = 0;
-    nullequip->movespeed = 0;
-    nullequip->attackpower = 0;
-    nullequip->attackspeed =0;
-    nullequip->itemgrade = 0;
-    for(int i=0;i<3;i++)
-    {
-        nullequip->occupation[i] = 0;
-        nullequip->condition1[i] = 0;
-        nullequip->condition2[i] = 0;
-    }
-    for(int i=0;i<2;i++)
-    {
-        nullequip->stat1[i] = 0;
-        nullequip->stat2[i] = 0;
-    }
-    for(int i=0;i<10;i++)
-    {
-        EquipList[i].nullequip = nullequip;
-        for(UINT j=0;j<5000;j++)
-            EquipList[i].Index[j] = nullequip;
-    }
-    CNaturalData* nullnatural = new CNaturalData;
-    nullnatural->id = 0;
-    nullnatural->itemtype = 0;
-    nullnatural->type = 0;
-    nullnatural->price = 0;
-    nullnatural->pricerate = 0;
-    nullnatural->weight = 0;
-    nullnatural->quality = 0;
-    nullnatural->pricevalue = 0;
-    NaturalList.nullnatural = nullnatural;
 
-    CPatData* nullpat = new CPatData;
-    nullpat->id = 0;
-    nullpat->itemtype = 0;
-    nullpat->type = 0;
-    nullpat->price = 0;
-    nullpat->pricerate = 0;
-    nullpat->weight = 0;
-    nullpat->quality = 0;
-    nullpat->material = 0;
-    nullpat->partversion = 0;
-    nullpat->maxfuel = 0;
-    nullpat->fuelcons = 0;
-    nullpat->speed = 0;
-    nullpat->attackdistance = 0;
-    nullpat->attackpower = 0;
-    nullpat->attackspeed = 0;
-    PatList.nullpat = nullpat;
-    CCSellData* nullsell = new CCSellData;
-    nullsell->id = 0;
-    for(UINT i=0;i<50;i++)
-        nullsell->item[i] = 0;
-    SellList.nullsell = nullsell ;
-    for(UINT i=0;i<1000;i++)
-    {
-        NaturalList.Index[i] = nullnatural;
-        PatList.Index[i] = nullpat;
-        SellList.Index[i] = nullsell;
-    }
-    CMap* nullzone = new CMap( );
-    nullzone->id =0;
-    nullzone->dayperiod = 1;
-    nullzone->morningtime = 0;
-    nullzone->daytime = 0;
-    nullzone->eveningtime = 0;
-    nullzone->nighttime = 0;
-    nullzone->allowpvp = 0;
-    nullzone->allowpat = 0;
-    nullzone->MapTime = 0;
-    nullzone->LastUpdate = 0;
-    nullzone->CurrentTime = 0;
-    for(UINT i=0;i<300;i++)
-        MapList.Index[i] = nullzone;
-    MapList.nullzone = nullzone;
-    CUseData* nulluse = new CUseData;
-    nulluse->id = 0;
-    nulluse->itemtype = 0;
-    nulluse->restriction = 0;
-    nulluse->type = 0;
-    nulluse->price = 0;
-    nulluse->pricerate = 0;
-    nulluse->weight = 0;
-    nulluse->quality = 0;
-    nulluse->pricevalue = 0;
-    for(int i=0;i<2;i++)
-    {
-        nulluse->usecondition[i] = 0;
-        nulluse->useeffect[i] = 0;
-    }
-    UseList.nulluse = nulluse;
-    CProductData* nullproduct = new CProductData;
-    nullproduct->id = 0;
-    for(UINT i=0;i<50;i++)
-    {
-        nullproduct->item[i];
-        nullproduct->amount[i];
-    }
-    ProductList.nullproduct = nullproduct;
-    for(UINT i=0;i<2000;i++)
-    {
-        UseList.Index[i] = nulluse;
-        ProductList.Index[i] = nullproduct;
-    }
-    CJemData* nulljem = new CJemData;
-    nulljem->id = 0;
-    nulljem->itemtype = 0;
-    nulljem->type = 0;
-    nulljem->price = 0;
-    nulljem->pricerate = 0;
-    nulljem->weight = 0;
-    nulljem->quality = 0;
-    nulljem->material = 0;
-    for(int i=0;i<2;i++)
-    {
-        nulljem->stat1[i] = 0;
-        nulljem->stat2[i] = 0;
-    }
-    JemList.nulljem = nulljem ;
-    for(UINT i=0;i<4000;i++)
-        JemList.Index[i] = nulljem;
-    for(UINT i=0;i<500;i++)
-    {
-        StatsList[i].stat[0] = 0;
-        StatsList[i].stat[1] = 0;
-        StatsList[i].value[0] = 0;
-        StatsList[i].value[1] = 0;
-    }
     MapMutex = PTHREAD_MUTEX_INITIALIZER; //fast mutex
     SQLMutex = PTHREAD_MUTEX_INITIALIZER;
     PlayerMutex = PTHREAD_MUTEX_INITIALIZER;
+
+    console_started=false;  //LMA: not in console mode.
 }
 
 // Destructor
@@ -191,34 +60,40 @@ CWorldServer::~CWorldServer( )
         delete PartyList.at(i);
     for(UINT i=0;i<TeleGateList.size();i++)
         delete TeleGateList.at(i);
-    for(UINT i=0;i<SkillList.size();i++)
-        delete SkillList.at(i);
+    for(UINT i=0;i<QuestList.size();i++)
+        delete QuestList.at(i);
     for(UINT i=0;i<MDropList.size();i++)
         delete MDropList.at(i);
-    for(UINT i=0;i<NPCData.size();i++)
-        delete NPCData.at(i);
-    for(UINT i=0;i<JemList.Data.size();i++)
-        delete JemList.Data.at(i);
-    for(UINT i=0;i<NaturalList.Data.size();i++)
-        delete NaturalList.Data.at(i);
-    for(UINT i=0;i<PatList.Data.size();i++)
-        delete PatList.Data.at(i);
-    for(UINT i=0;i<ProductList.Data.size();i++)
-        delete ProductList.Data.at(i);
-    for(UINT i=0;i<SellList.Data.size();i++)
-        delete SellList.Data.at(i);
-    for(UINT i=0;i<UseList.Data.size();i++)
-        delete UseList.Data.at(i);
+
+    //deleting arrays.
+    delete [] SkillList;
+    delete [] NPCData;
+
+    delete [] JemList.Index;
+    delete [] NaturalList.Index;
+    delete [] PatList.Index;
+    delete [] ProductList.Index;
+    delete [] SellList.Index;
+    delete [] UseList.Index;
+
+    for(UINT i=0;i<10;i++)
+    {
+        delete [] EquipList[i].Index;
+    }
+
     for(UINT i=0;i<MapList.Map.size();i++)
         delete MapList.Map.at(i);
-    for(UINT i=0;i<10;i++)
-        for(UINT j=0;j<EquipList[i].Data.size();j++)
-            delete EquipList[i].Data.at(j);
+
     for(UINT i=0;i<ClientList.size();i++)
     {
         delete (CPlayer*)ClientList.at(i)->player;
         delete ClientList.at(i);
     }
+
+    delete [] StatsList;
+    delete [] ClassList;
+    delete [] GradeList;
+
     delete EquipList[0].nullequip;
     delete JemList.nulljem;
     delete NaturalList.nullnatural;
@@ -227,47 +102,61 @@ CWorldServer::~CWorldServer( )
     delete SellList.nullsell;
     delete UseList.nulluse;
     delete MapList.nullzone;
-    delete [] GradeList;
     delete DB;
 }
+
+//LMA BEGIN
+//20070623, 224500
+bool CWorldServer::Ping()
+{
+         //Bogus request (checking if npc ID 1 exists).
+        if(DB->QStore( "SELECT id FROM list_npcs WHERE id='1'")==NULL)
+        {
+             Log( MSG_INFO, "MySQL Ping Time Error on port %u",DB->Port);
+        }
+        else
+        {
+            Log( MSG_INFO, "MySQL Ping Time Ok on port %u",DB->Port);
+            DB->QFree( );
+        }
+
+     return true;
+}
+//LMA END
 
 // This cleans up our clients mess :P
 void CWorldServer::OnClientDisconnect( CClientSocket* thisclient )
 {
-    if(thisclient->player == NULL) return;
+    if(thisclient->player==NULL) return;
 	CPlayer* player = (CPlayer*)thisclient->player;
-	if(player == NULL) return;
 	if(!player->Session->isLoggedIn) return;
     if(!player->Saved)
     {
     	player->savedata();
-    	player->SaveBackupStorage( 2 ); // make a backup of the character's storage on exit
         player->Session->isLoggedIn = false;
         //send packet to change messenger status (offline)
     	BEGINPACKET( pak, 0x7e1 );
     	ADDBYTE    ( pak, 0xfa );
-    	ADDWORD    ( pak, player->Session->userid );//CharInfo->charid );CharInfo->charid );
-    	ADDBYTE    ( pak, 0x00 );
-    //	cryptPacket( (char*)&pak, NULL );
-    //	send( csock, (char*)&pak, pak.Size, 0 );
-        SendISCPacket (&pak);
+    	//ADDWORD    ( pak, player->CharInfo->charid );
+    	ADDDWORD    ( pak, player->CharInfo->charid );
+    	//ADDBYTE    ( pak, 0x00 );
+    	cryptPacket( (char*)&pak, NULL );
+    	send( csock, (char*)&pak, pak.Size, 0 );
     }
+
     if ( player->Fairy )
     {
-        GServer->FairyList.at(player->FairyListIndex)->assigned = false;
-        GServer->FairyList.at(player->FairyListIndex)->LastTime = clock();
-        GServer->FairyList.at(player->FairyListIndex)->ListIndex = 0;
-        GServer->FairyList.at(player->FairyListIndex)->WaitTime = GServer->Config.FairyWait * (rand()% GServer->GetFairyRange(1)+ GServer->GetFairyRange(0));
+        FairyList.at(player->FairyListIndex)->assigned = false;
+        FairyList.at(player->FairyListIndex)->LastTime = clock();
+        FairyList.at(player->FairyListIndex)->ListIndex = 0;
+        FairyList.at(player->FairyListIndex)->WaitTime = Config.FairyWait * (rand()% GetFairyRange(1)+ GetFairyRange(0));
         player->Fairy = false;
         player->FairyListIndex = 0;
-        GServer->DoFairyStuff(player, 0);
+        DoFairyStuff(player, 0);
         // recalculate FairyMax
-        int oldFairyMax = GServer->Config.FairyMax;
-        GServer->Config.FairyMax = (int)ceil((float)GServer->ClientList.size() / 50.0); //(1 fairy more every 50 player)
-	    if( oldFairyMax > GServer->Config.FairyMax ){
-            GServer->FairyList.erase( GServer->FairyList.begin() + GServer->FairyList.size() );
-        }
+        Config.FairyMax = (int)ceil((float)ClientList.size() / 50.0); //(1 fairy more every 50 player)
     }
+
     if(player->Party->party!=NULL)
     {
         CParty* party = player->Party->party;
@@ -296,7 +185,7 @@ void CWorldServer::OnClientDisconnect( CClientSocket* thisclient )
             for(UINT i=0;i<party->Members.size();i++)
             {
                 CPlayer* othermember = party->Members.at(i);
-                RESETPACKET( pak, 0x7d1 );
+                BEGINPACKET( pak, 0x7d1 );
                 ADDBYTE    ( pak, 0x05 );
                 ADDWORD    ( pak, 0x0000 );
                 ADDWORD    ( pak, 0x0000 );
@@ -306,6 +195,7 @@ void CWorldServer::OnClientDisconnect( CClientSocket* thisclient )
             }
             RemoveParty( party );
             delete party;
+            party = NULL;
         }
     }
     DB->QExecute("UPDATE accounts SET online=false where id=%u", player->Session->userid );
@@ -323,27 +213,28 @@ void CWorldServer::ServerLoop( )
 	maxfd = sock;
 	OnServerStep();
 
-	//MySQL Ping (every 10 minutes)
-	UINT time_last_ping = clock();
-	UINT delay_ping = 600000; //10 minutes
-	UINT time_last_update = clock();
-	UINT ServerTimeUpdateDelay = 3600000; //1 hour
+	//LMA BEGIN
+	//MySQL Ping (every hour)
+	//20070623, 221000
+	UINT time_last_ping=clock();
+	UINT delay_ping=3600000;
+
+	//LMA END
+
 	do
 	{
+
+        //LMA BEGIN
         //MySQL Ping
+        //20070623, 221000
         UINT etime = (UINT)round((clock( ) - time_last_ping));
-        if(etime >= delay_ping)
+        if(etime>=delay_ping)
         {
-            time_last_ping = clock();
+            time_last_ping=clock();
             Ping();
         }
-        UINT stime = (UINT)round((clock( ) - time_last_update));
-        if(stime >= ServerTimeUpdateDelay)
-        {
-            ServerRunTime ++;
-            time_last_update = clock();
-            DB->QExecute("UPDATE runtime SET hours = %i WHERE id = %i", ServerRunTime, ThisSession);
-        }
+        //LMA END
+
         timeout.tv_sec = 0;
         timeout.tv_usec = 1000;
         NewSocket = INVALID_SOCKET;
@@ -355,47 +246,13 @@ void CWorldServer::ServerLoop( )
 		activity = select( maxfd+1, &fds, NULL, NULL, &timeout );
 		if ( activity == 0 )
         {
-             FD_SET( sckISCII, &fds );
-             activity = select( maxfd+1, &fds, NULL, NULL, &timeout );
-             if ( activity == 0 )
-             {
-                    pthread_mutex_unlock( &PlayerMutex );
-                	#ifdef _WIN32
-                	Sleep(1);
-                	#else
-                	usleep(1);
-                	#endif
-                    continue;
-             }
-            if ( activity < 0 && errno != EINTR )
-            {
-    			#ifdef _WIN32
-    			Log( MSG_ERROR, "Select command failed. Error #%i", WSAGetLastError() );
-    			#else
-    			Log( MSG_ERROR, "Select command failed. Error #%i", errno );
-    			#endif
-    			isActive = false;
-    		}
-    		if ( FD_ISSET( sckISCII, &fds ) )
-            {
-    			int clientinfolen = sizeof( sockaddr_in );
-                #ifdef _WIN32
-           		NewSocket = accept( sckISCII, (sockaddr*)&ClientInfo, (int*)&clientinfolen );
-           		#else
-        		NewSocket = accept( sckISCII, (sockaddr*)&ClientInfo, (socklen_t*)&clientinfolen );
-                #endif
-    			// TODO: check if server is full
-    			if (NewSocket != INVALID_SOCKET)
-    				AddUser( NewSocket, &ClientInfo, true);
-    			else
-    			{
-    			    #ifdef _WIN32
-    			    Log( MSG_ERROR, "Error accepting socket: %i", WSAGetLastError() );
-    			    #else
-    			    Log( MSG_ERROR, "Error accepting socket: %i", errno );
-    			    #endif
-                }
-    		}
+            pthread_mutex_unlock( &PlayerMutex );
+        	#ifdef _WIN32
+        	Sleep(1);
+        	#else
+        	usleep(1);
+        	#endif
+            continue;
         }
 		if ( activity < 0 && errno != EINTR )
         {
@@ -406,7 +263,7 @@ void CWorldServer::ServerLoop( )
 			#endif
 			isActive = false;
 		}
-		if ( FD_ISSET( sock, &fds ) )
+		if ( FD_ISSET( sock, &fds ) && ConnectedClients < 1024 )
         {
 			int clientinfolen = sizeof( sockaddr_in );
             #ifdef _WIN32
@@ -416,7 +273,15 @@ void CWorldServer::ServerLoop( )
             #endif
 			// TODO: check if server is full
 			if (NewSocket != INVALID_SOCKET)
-				AddUser( NewSocket, &ClientInfo, false);
+			{
+				if(!isBanned(&ClientInfo))
+					AddUser( NewSocket, &ClientInfo );
+				else
+				{
+					Log( MSG_WARNING, "Banned client tried to connect: %s", inet_ntoa( ClientInfo.sin_addr ) );
+					close( NewSocket );
+				}
+			}
 			else
 			{
 			    #ifdef _WIN32
@@ -437,17 +302,10 @@ void CWorldServer::ServerLoop( )
 	} while( isActive );
 }
 
-// load the servers encryption
-void CWorldServer::LoadEncryption()
-{
-	GenerateCryptTables( CryptTable, 0x87654321 );
-	srand ( (unsigned)time(NULL) );
-}
-
 // Return a new clientsocket structure
 CClientSocket* CWorldServer::CreateClientSocket( )
 {
-    //DB->QExecute( "UPDATE channels SET connected=%i where id=%i and type=2", ConnectedClients, Config.ServerID );
+    DB->QExecute( "UPDATE channels SET connected=%i where id=%i and type=2", ConnectedClients, Config.ServerID );
     CClientSocket* client = new CClientSocket;
     CPlayer* player = new CPlayer( client );
     client->player = (void*) player;
@@ -457,32 +315,24 @@ CClientSocket* CWorldServer::CreateClientSocket( )
 // Deletes an old clientsocket structure
 void CWorldServer::DeleteClientSocket( CClientSocket* thisclient )
 {
-    //DB->QExecute( "UPDATE channels SET connected=%i where id=%i and type=2", ConnectedClients, Config.ServerID );
-    if(thisclient->player!=NULL)
+    DB->QExecute( "UPDATE channels SET connected=%i where id=%i and type=2", ConnectedClients, Config.ServerID );
+if(thisclient->player!=NULL)
     {
         CPlayer* player = (CPlayer*) thisclient->player;
+        Log( MSG_INFO, "User disconnected (%s)", player->CharInfo->charname );
         CMap* map = MapList.Index[player->Position->Map];
         pthread_mutex_lock( &MapMutex );
         map->RemovePlayer( player );
         pthread_mutex_unlock( &MapMutex );
-    	delete player;
+        delete player;
+        player = NULL;
     }
-    else delete thisclient;
-	Log( MSG_INFO, "User Disconnected" );
-}
+    else
+    {
+        delete thisclient;
+        thisclient = NULL;
+    }
 
-void CWorldServer::SendISCServerInfo( )
-{
-	BEGINPACKET( pak, 0x400 );
-	ADDBYTE( pak,2 );
-	ADDDWORD( pak, Config.ServerID );
-	ADDDWORD( pak, Config.ParentID );
-	ADDDWORD( pak, Config.WorldPort );
-	ADDSTRING( pak, Config.WorldIP );
-	ADDBYTE( pak, 0 );
-	ADDSTRING( pak, Config.ServerName );
-	ADDBYTE( pak,0 );
-	SendISCPacket( &pak );
 }
 
 // This function is called just before the server starts
@@ -492,17 +342,28 @@ bool CWorldServer::OnServerReady( )
     GServer = this;
 	clock_t timer = clock();
 	LastUpdateTime = clock();
-	ATTK_SPEED_MOD = 120;
-	HIT_DELAY_MOD = 0;
-	MOVE_SPEED_MOD = 100000;
+	ATTK_SPEED_MODIF = 120;
+	HIT_DELAY_MODIF = 0;
+	MOVE_SPEED_MODIF = 100000;
 
-	//SendISCServerInfo( );
+	//LMA: We init ObjVar, just in case.
+	for (int k=0;k<MAX_NPC;k++)
+	{
+	    for (int j=0;j<20;j++)
+	    {
+	        ObjVar[k][j]=0;
+	    }
+	}
 
     //Load our Server Info
     LoadConfig( );
-    LoadLTB( );
+    //LoadLTB( );
     LoadSTBData( );
+    LoadIfoObjects();
+    //LMA: init default values.
+    InitDefaultValues();
     LoadZoneData( );
+    LoadGrids( );   //resetting grids...
     LoadConsItem( );
     LoadSellData( );
     LoadProductItem( );
@@ -511,71 +372,102 @@ bool CWorldServer::OnServerReady( )
     LoadJemItem( );
     LoadEquip( );
     LoadItemStats( );
+    LoadGrades();   //LMA: loading refine (grades) bonuses.
+    LoadJobReq( );
+    // PY new Stat Lookup table
+    LoadStatLookup( );
+    // PY end
+    //LoadBreakList( );     // geo edit for disassemble // 22 oct 07
+    LoadBreakChestBlueList();   //LMA: loading chests, breaks from STB...
     LoadSkillData( );
-    LoadStatusData( );
-    LoadBreak( );
-    LoadNewDrops( );
-    //LoadPYDropsData( );
-    LoadSkillBookDropsData( );
 
+    //LMA: Forcing Union Wars.
+    UWForceFrom=0;  //deactivated.
+    UWNbPlayers=0;  //deactivated
+    //In t + 5 minutes (deactivated, use gm command instead).
+    //pakGMForceUW(NULL,5);
+
+    //LMA: forcing gem quets
+    GemQuestForce=0;
+    GemQuestReset=0;
+
+
+    //LMA: for debug (load old skill system and compares to new one).
+    /*
+    LoadSkillDataOld( );
+    LMACheckSkills();
+    LMACheckStuff();
+    */
+    //End debug.
+
+    //Load our Server Info
+    LoadQuestSTB();
+
+    //hidden
+    // LoadDropsData( );
+    // new drops routine load
+
+    //LMA: Drop And system
+    if(!Config.drop_rev)
+    {
+        LoadPYDropsData( );
+    }
+    else
+    {
+        LoadPYDropsDataAnd();
+    }
+
+    LoadSkillBookDropsData( );
+    // end of new drops data
+
+    //LoadChestData( ); //LMA: loaded now by STB in LoadBreakChestBlueList.
+
+    #ifdef PYCUSTOM
+    // PY custom events start
+    LoadCustomTeleGate( );
+    LoadCustomEvents( );
+    // PY custom events end
+    #endif
 
     LoadNPCData( );
+    LoadQuestItemData( );
     LoadTeleGateData( );
     LoadRespawnData( );
-    if(Config.SpawnType == 1)LoadMonsterSpawn( );
-    if(Config.SpawnType == 0)LoadMobGroups( );
-    LoadAipData( );
+    LoadLTB();  //LMA: Loading LTB for AIP.
+    LoadAipData();  //LMA: loading AIP.
+    TimerForNPC();  //LMA: loading timers for NPCs and Monsters.
+    //LoadMobGroups( );             //PY disabled while testing NMSpawns
+    //LoadNMSpawns();               //PY testing NMSpawns
+    //LoadMobGroupsSpecial( );      //LMA: Special spawns (Halloween for example).
+    LoadMonsterSpawn( );            //PY Using monster loading from KTRose
     LoadNPCs( );
+    LoadNPCsSpecial( );  //Special NPC load
+    LoadNPCsEvents();   //LMA: loading pre defined events.
     LoadMonsters( );
     LoadUpgrade( );
+    LoadWayPoints( );               //PY load the waypoints list ready for Tower Defence
+    //LoadLTB();  //LMA: Loading LTB for AIP.
     LoadQuestData( );
-    LoadGrades();   //LMA: loading refine (grades) bonuses.
-    LoadWayPoints( );
-
-    //LoadZones();
     CleanConnectedList( );
+
     Log(MSG_INFO, "Database Loaded                      " );
     pthread_create( &WorldThread[WORLD_THREAD], &at, WorldProcess, NULL);
     pthread_create( &WorldThread[VISUALITY_THREAD], &at, VisibilityProcess, NULL);
     pthread_create( &MapThread[0], &at, MapProcess, NULL);
+    Log (MSG_INFO, "osRose Revision %s", Config.osRoseVer );
     Log( MSG_INFO, "Process Loaded. WorldDelay %i | MapDelay %i | VisualDelay %i",Config.WorldDelay,Config.MapDelay,Config.VisualDelay);
-    //DB->QExecute( "DELETE FROM channels WHERE id=%u and type=%i", Config.ServerID, Config.ServerType );
-//    if(!DB->QExecute("INSERT INTO channels (id,type,name,host,port,lanip,lansubmask,connected,maxconnections,owner) VALUES (%i,%i,'%s','%s',%u,'%s','%s',0,%i,%i)",
-//            Config.ServerID, Config.ServerType, Config.ServerName, Config.WorldIP, Config.WorldPort, Config.LanIP, Config.LanSubnet, Config.MaxConnections, Config.ParentID))
-//    {
-//        Log(MSG_WARNING, "Error accessing to database, the other server will not connect to WorldServer" );
-//    }
-    DB->QExecute( "DELETE FROM channels WHERE id=%u", Config.ServerID);
-    if(!DB->QExecute("INSERT INTO channels (id,name,host,port,connected,maxconnections,owner) VALUES (%i,'%s','%s',%u,0,%i,%i)",
-            Config.ServerID, Config.ServerName, Config.WorldIP, Config.WorldPort, Config.MaxConnections, Config.ParentID))
+    DB->QExecute( "DELETE FROM channels WHERE id=%u and type=%i", Config.ServerID, Config.ServerType );
+    if(!DB->QExecute("INSERT INTO channels (id,type,name,host,port,lanip,lansubmask,connected,maxconnections,owner) VALUES (%i,%i,'%s','%s',%u,'%s','%s',0,%i,%i)",
+            Config.ServerID, Config.ServerType, Config.ServerName, Config.WorldIP, Config.WorldPort, Config.LanIP, Config.LanSubnet, Config.MaxConnections, Config.ParentID))
     {
         Log(MSG_WARNING, "Error accessing to database, the other server will not connect to WorldServer" );
     }
-    //DB->QFree( );
 
-    // set timestamp for startup
-    time_t rtime;
-    time(&rtime);
-    char *timestamp = ctime(&rtime);
-    timestamp[ strlen(timestamp)-1 ] = ' ';
-    int a1 = 0;
-    DB->QExecute("INSERT INTO runtime (starttime,hours) VALUES ('%s',%i)",timestamp, a1 );
-    MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT id FROM runtime");
-    while(row = mysql_fetch_row(result))
-    {
-        ThisSession = atoi(row[0]);
-    }
-    DB->QFree( );
-    ServerStartTime = clock();
-    ServerRunTime = 0;
 
-  /*
 	MYSQL_ROW row;
     bool pflag = false;
     //Get IP and Port from Charserver
-
-    MYSQL_RES *result = DB->QStore( "SELECT host,port,lanip FROM channels WHERE id=%u", Config.ParentID );
+    MYSQL_RES *result = DB->QStore( "SELECT host,port,lanip FROM channels WHERE id=%u and type=1", Config.ParentID );
     if(result==NULL) return false;
 	if (mysql_num_rows( result ) == 1)
 	{
@@ -589,7 +481,7 @@ bool CWorldServer::OnServerReady( )
                	Config.CharIP = row[2];
             break;
             default://localhost
-               	Config.CharIP = "127.0.0.1";
+               	Config.CharIP = (char*) "127.0.0.1";
             break;
         }
     	Config.CharPort =  atoi(row[1]);
@@ -597,9 +489,9 @@ bool CWorldServer::OnServerReady( )
     }
     DB->QFree( );
     if(pflag)
-    {*/
-        Log(  MSG_INFO, "Initializing Charserver connection" );
-    	// Connect To CharServer
+    {
+        Log(  MSG_INFO, "Initialized Charserver connection" );
+    	// Connect To LoginServer
     	csock = socket( AF_INET, SOCK_STREAM, 0 );
     	if (csock == INVALID_SOCKET)
         {
@@ -610,27 +502,15 @@ bool CWorldServer::OnServerReady( )
        	ain.sin_addr.s_addr	= inet_addr( Config.CharIP );
     	ain.sin_port = htons( Config.CharPort );
     	if ( connect( csock, (SOCKADDR*) &ain, sizeof(ain) ) == SOCKET_ERROR )
-            Log( MSG_WARNING, "Could not access charserver" );
-        else
-            Log( MSG_INFO, "Connected to charserver" );
-
-   		//say hello to char server
+    		Log( MSG_WARNING, "Could not access charserver" );
     	BEGINPACKET( pak, 0x500 );
         ADDDWORD   ( pak, Config.CharPass );
         ADDDWORD   ( pak, Config.ServerID );
-        ADDWORD    ( pak, Config.WorldsPort );
-        SendISCPacket( &pak );
-/*        CPacket *P=&pak;
-        unsigned char* Buffer = (unsigned char*)P;
-	    unsigned Size = P->Size;
-	    EncryptBuffer( CryptTable, Buffer );
-	    send( csock, (char*)Buffer, Size, 0 );
-        //EncryptBuffer(CryptTable,pak);
-    	//cryptPacket( (char*)&pak, NULL );
-    	//send( csock, (char*)&pak, pak.Size, 0 );
+        ADDWORD    ( pak, Config.WorldPort );
+    	cryptPacket( (char*)&pak, NULL );
+    	send( csock, (char*)&pak, pak.Size, 0 );
     }
-    */
-///////////////////////////////////////////////////////////////////////////////////
+
 	float loadtime = (float)( clock() - timer ) / CLOCKS_PER_SEC;
 	Log(  MSG_INFO, "Server took %.4f seconds to load", loadtime );
 
@@ -640,159 +520,13 @@ bool CWorldServer::OnServerReady( )
 // Send Levelup To charserver
 bool CWorldServer::SendLevelUPtoChar(CPlayer *thisclient)
 {
-
 	BEGINPACKET( pak, 0x79e );
-	ADDWORD( pak, thisclient->CharInfo->charid );//Session->userid );//CharInfo->charid );
+	//ADDWORD( pak, thisclient->CharInfo->charid );
+	ADDDWORD( pak, thisclient->CharInfo->charid );
 	ADDWORD( pak, thisclient->Stats->Level );
-	//cryptPacket( (char*)&pak, NULL );
-	//send( csock, (char*)&pak, pak.Size, 0 );
-	SendISCPacket( &pak );
-
-	RESETPACKET( pak, 0x79e );
-	ADDWORD( pak, thisclient->CharInfo->charid );
-	ADDWORD( pak, thisclient->Stats->Level );
-	thisclient->client->SendPacket(&pak);
+	cryptPacket( (char*)&pak, NULL );
+	send( csock, (char*)&pak, pak.Size, 0 );
     return true;
-}
-
-bool CWorldServer::pakGiveItem( CPlayer* thisclient, unsigned char itemtype, unsigned short itemid, unsigned short count )
-{
-	char itemtypes[15] = {4,0,0,0,0,0,0,0,0,0,1,2,2,4,3};
-	CPacket pakout;
-	CItem thisitem;
-
-	thisitem.Clear( );
-	thisitem.itemtype = itemtype;
-	thisitem.itemnum = itemid;
-	thisitem.count = count;
-	if( itemtypes[thisitem.itemtype] == 0 )
-    {
-		thisitem.appraised = true;
-		thisitem.lifespan = 100;
-		thisitem.gem = 0;
-		thisitem.durability = STB_ITEM[thisitem.itemtype-1].rows[thisitem.itemnum][29];
-	}
-
-	pakout.StartPacket( 0x71f );
-	pakout.AddByte( 0 );
-	while( thisitem.count > 0 )
-	{
-		unsigned char thisslot = thisclient->AddItem( thisitem );
-		if( thisslot == 0xff ) break;
-		pakout.AddByte( thisslot );
-		pakout.AddWord( thisclient->items[thisslot].GetPakHeader( ) );
-		pakout.AddDWord( thisclient->items[thisslot].GetPakData( ) );
-		pakout.Buffer[0]++;
-	}
-	thisclient->client->SendPacket( &pakout );
-
-	return true;
-}
-
-bool CWorldServer::pakGiveExp( CPlayer* thisclient, unsigned exp )
-{
-	CPacket pakout;
-	thisclient->CharInfo->Exp+= exp;
-	if(!thisclient->CheckPlayerLevelUP( ))
-    {
-	    pakout.StartPacket( 0x79b );
-	    pakout.AddDWord( thisclient->CharInfo->Exp );
-	    pakout.AddWord( thisclient->CharInfo->stamina );
-	    pakout.AddWord( 0 );
-	    thisclient->client->SendPacket( &pakout );
-    }
-	return true;
-}
-
-bool CWorldServer::pakGiveMoney( CPlayer* thisclient, unsigned amount )
-{
-	CPacket pakout;
-	thisclient->CharInfo->Zulies += amount;
-	pakout.StartPacket( 0x71e );
-	pakout.AddQWord( thisclient->CharInfo->Zulies );
-	thisclient->client->SendPacket( &pakout );
-	return true;
-}
-
-void CWorldServer::DePopulateZone( CPlayer* thisclient, int zonex, int zoney )//compile warning fix by Fluorescent abs -> fabs
-{
-	CPacket pakout, pakout2;
-	if( !thisclient->Session->inGame || fabs( thisclient->Position->current.x - zonex ) > 1 || fabs( thisclient->Position->current.y - zoney ) > 1 )
-	{
-		pakout.StartPacket( 0x794 );
-
-		for( unsigned i=0; i<ClientList.size( ); i++ )
-		{
-			CPlayer* otherclient = (CPlayer*)ClientList[i];
-			if( !otherclient->Session->inGame || thisclient==otherclient ) continue;
-            if( otherclient->Position->current.x == zonex && otherclient->Position->current.y == zoney && otherclient->Position->Map == thisclient->Position->Map )
-			{
-				pakout2.StartPacket( 0x794 );
-				pakout2.AddWord( thisclient->clientid );
-				otherclient->client->SendPacket( &pakout2 );
-
-				pakout.AddWord( otherclient->clientid );
-			}
-		}
-
-		for( unsigned i=0; i<MapList.Map.size( ); i++ )
-		{
-            CMap* thismap = MapList.Map.at(i);
-            for(UINT j=0;j<thismap->MonsterSpawnList.size();j++)
-            {
-                CMonster* thismonster = thismap->MonsterList.at(j);
-                if( thismonster->Position->current.x == zonex && thismonster->Position->current.y == zoney && thismonster->Position->Map == thisclient->Position->Map )
-				pakout.AddWord( thismonster->clientid );
-
-                for( unsigned k=0; k<thismap->NPCList.size( ); k++ )
-                {
-                    CNPC* thisnpc = thismap->NPCList[k];
-                    if( thisnpc->pos.x == zonex && thisnpc->pos.y == zoney && thisnpc->posMap == thisclient->Position->Map )
-                        pakout.AddWord( thisnpc->clientid );
-                }
-
-                for( unsigned k=0; k<thismap->DropsList.size( ); k++ )
-                {
-                    CDrop* thisdrop = thismap->DropsList[k];
-                    if( thisdrop->pos.x == zonex && thisdrop->pos.y == zoney && thisdrop->posMap == thisclient->Position->Map )
-                        pakout.AddWord( thisdrop->clientid );
-                }
-            }
-        }
-
-		if( pakout.Size > 6 ) thisclient->client->SendPacket( &pakout );
-	}
-}
-
-bool CWorldServer::pakTeleport( CPlayer* thisclient, unsigned short map, float x, float y )
-{
-
-     fPoint coord;
-     coord.x = x/100;
-     coord.y = y/100;
-     MapList.Index[map]->TeleportPlayer( thisclient, coord, false );
-    /*
-	CPacket pakout;
-
-	thisclient->Session->inGame = false;
-
-	GServer->MapList.Index[thisclient->Position->Map]->RemovePlayer( thisclient, false );
-
-	ClearClientID( thisclient->clientid );
-	thisclient->Position->Map = map;
-	thisclient->Position->destiny.x = x;
-	thisclient->Position->destiny.y = y;
-	thisclient->Position->current = thisclient->Position->destiny;
-	thisclient->Status->Stance= 0;
-
-	pakout.StartPacket( 0x7a8 );
-	pakout.AddWord( thisclient->clientid );
-	pakout.AddWord( thisclient->Position->Map );
-	pakout.AddFloat( thisclient->Position->current.x );
-	pakout.AddFloat( thisclient->Position->current.y );
-	pakout.AddWord( 1 );
-	thisclient->client->SendPacket( &pakout );*/
-	 return true;
 }
 
 // disconect all the clients
@@ -810,8 +544,50 @@ void CWorldServer::DisconnectAll()
 	}
 }
 
+/**
+	* check on the database if a client is banned
+	* @param ClientInfo sockaddr_in structure
+	* @return true if the client is banned else false
+*/
+bool CWorldServer::isBanned( sockaddr_in* ClientInfo )
+{
+	if(DB==NULL) return false;
+	std::string ip( inet_ntoa( ClientInfo->sin_addr ) );
+	MYSQL_RES* result = DB->QStore( "SELECT id, ip, startban, bantime FROM ban_list" );
+	if(result==NULL)
+		return false;
+	MYSQL_ROW row;
+	while(row=mysql_fetch_row( result ))
+	{
+		unsigned int strsize = strlen( (char*)row[1] );
+		if(strncmp( row[1], (char*)ip.c_str( ), strsize)==0)
+		{	// ip match is banned, now check if is permant ban or temporal
+			if(row[3]==NULL || atoi(row[3])==0)
+			{ // is permant ban
+				DB->QFree( );
+				return true;
+			}
+			unsigned long int finishban = atol(row[2]) + atol(row[3]);
+			if(finishban>=GetServerTime( ))
+			{
+				unsigned int id = atoi(row[0]);
+				DB->QFree( );
+				DB->QExecute( "DELETE FROM ban_list WHERE id=%u", id );
+				return false;
+			}
+			else
+			{
+				DB->QFree( );
+				return true;
+			}
+		}
+	}
+	DB->QFree( );
+	return false;
+}
+
 // Load Server configuration
-void CWorldServer::LoadConfigurations( char* file )
+void CWorldServer::LoadConfigurations( const char* file )
 {
     //Database
 	Config.SQLServer.pcServer   = ConfigGetString ( file, "mysql_host", "localhost" );
@@ -821,41 +597,21 @@ void CWorldServer::LoadConfigurations( char* file )
 	Config.SQLServer.pcPort     = ConfigGetInt    ( file, "mysql_port", 3306 );
     //Server
 	Config.ServerID             = ConfigGetInt    ( file, "serverid", 1 );
-	Config.ServerType           = 2; // World always = 2
+	Config.ServerType           = ConfigGetInt    ( file, "servertype", 2 );
 	Config.WorldPort            = ConfigGetInt    ( file, "serverport", 29200 );
 	Config.WorldIP              = ConfigGetString ( file, "serverip", "127.0.0.1" );
 	Config.ParentID             = ConfigGetInt    ( file, "parentid", 1 );
 	Config.ServerName           = ConfigGetString ( file, "servername", "Channel" );
     Config.MaxConnections       = ConfigGetInt    ( file, "maxconnections", 100 );
-    //Config.Connection           = ConfigGetInt    ( file, "connection", 0 );
-    //Config.LanIP                = ConfigGetString ( file, "lanip", "192.168.0.1" );
-    //Config.LanSubnet            = ConfigGetString ( file, "lansubmask", "192.168.0" );
-    Config.CharIP               = ConfigGetString ( file, "charip", "127.0.0.1" );
-    Config.CharPort             = ConfigGetInt    ( file, "charport", 29110 );
-    Config.WorldsPort           = ConfigGetInt    ( file, "WorldsPort", 29210 );
+    Config.Connection           = ConfigGetInt    ( file, "connection", 0 );
+    Config.LanIP                = ConfigGetString ( file, "lanip", "192.168.0.1" );
+    Config.LanSubnet            = ConfigGetString ( file, "lansubmask", "192.168.0" );
     //World
     Config.MinimumAccessLevel   = ConfigGetInt    ( file, "minimal_access_level", 100 );
 	Config.usethreads           = ConfigGetInt    ( file, "usethreads", 0 )==0?false:true;
-	//Config.EXP_RATE             = ConfigGetInt    ( file, "exp_rate", 10 );
-	//Config.DROP_RATE            = ConfigGetInt    ( file, "drop_rate", 1 );
-    Config.DROP_TYPE            = ConfigGetInt    ( file, "drop_type", 2 );
-	//Config.ZULY_RATE            = ConfigGetInt    ( file, "zuly_rate", 1 );
 	Config.WELCOME_MSG          = ConfigGetString ( file, "welcome_msg", "Welcome to Rose Online" );
-    Config.AUTOSAVE             = ConfigGetInt    ( file, "autosave", 0 );
-	Config.SAVETIME             = ConfigGetInt    ( file, "savetime", 3600 );
-    Config.MapDelay             = ConfigGetInt    ( file, "mapdelay", 10 );
-    Config.WorldDelay           = ConfigGetInt    ( file, "worlddelay", 200 );
-    Config.VisualDelay          = ConfigGetInt    ( file, "visualdelay", 500 );
-    Config.Partygap             = ConfigGetInt    ( file, "partygap", 10 );
-    Config.MaxStat              = ConfigGetInt    ( file, "maxstat", 254 );
-    Config.FairyMode            = ConfigGetInt    ( file, "fairy", 1 );
-    Config.FairyStay            = ConfigGetInt    ( file, "fairystay", 20 );
-    Config.FairyWait            = ConfigGetInt    ( file, "fairywait", 15 );
-    Config.FairyMax             = ConfigGetInt    ( file, "fairymax", 0);
-    Config.FairyTestMode        = ConfigGetInt    ( file, "fairytestmode", 1);
-    //Config.PlayerDmg            = ConfigGetInt    ( file, "playerdmg", 120);
-    //Config.MonsterDmg           = ConfigGetInt    ( file, "monsterdmg", 100);
-    Config.Cfmode               = ConfigGetInt    ( file, "cfmode", 0);
+
+    Log (MSG_INFO, "osRose - http://forum.dev-osrose.com");
 
     //Password
 	Config.LoginPass            = ConfigGetInt    ( file, "loginpass", 123456 );
@@ -863,7 +619,6 @@ void CWorldServer::LoadConfigurations( char* file )
 	Config.WorldPass            = ConfigGetInt    ( file, "worldpass", 123456 );
     if(Config.AUTOSAVE==1)
         Log( MSG_INFO, "Autosaving Every %i minutes", Config.SAVETIME/60 );
-    Config.DeathDelay = 1000;   //delay time in miliseconds.
 
     LoadCommandLevels();
 }
@@ -871,149 +626,147 @@ void CWorldServer::LoadConfigurations( char* file )
 // Load commands from commands.ini [by Paul_T]
 void CWorldServer::LoadCommandLevels( void )
 {
+    Config.Command_Addquest = ConfigGetInt ( "commands.ini", "addquest", 299 );
+    Config.Command_AllSkill = ConfigGetInt ( "commands.ini", "allskill", 299 );
+    Config.Command_GMSkills = ConfigGetInt ( "commands.ini", "gmskills", 299 );
     Config.Command_Ani = ConfigGetInt    ( "commands.ini", "ani", 299 );
     Config.Command_Ann = ConfigGetInt    ( "commands.ini", "ann", 299 );
+    Config.Command_AtkModif = ConfigGetInt    ( "commands.ini", "atkmodif", 299 );
     Config.Command_Ban = ConfigGetInt    ( "commands.ini", "ban", 299 );
+    Config.Command_BonusXp = ConfigGetInt    ( "commands.ini", "bonusxp", 299 );  //LMA: bonusxp
+    Config.Command_Broadcast = ConfigGetInt    ( "commands.ini", "broadcast", 299 );
+    Config.Command_Buff = ConfigGetInt    ( "commands.ini", "buff", 299 );
+    Config.Command_cart = ConfigGetInt    ( "commands.ini", "cart", 299 );  // all Cart Parts
+    Config.Command_Cfmode = ConfigGetInt    ( "commands.ini", "cfmode", 299 );
+    Config.Command_cg = ConfigGetInt    ( "commands.ini", "castlegear", 299 ); //get all CastleGear Parts
     Config.Command_Cha = ConfigGetInt    ( "commands.ini", "cha", 299 );
     Config.Command_ChangeFairyWait = ConfigGetInt    ( "commands.ini", "changefairywait", 299 );
     Config.Command_ChangeFairyStay = ConfigGetInt    ( "commands.ini", "changefairystay", 299 );
     Config.Command_ChangeFairyTestMode = ConfigGetInt    ( "commands.ini", "changefairytestmode", 299 );
     Config.Command_Class = ConfigGetInt    ( "commands.ini", "class", 299 );
+    Config.Command_ConfigReset = ConfigGetInt    ( "commands.ini", "ConfigReset", 299 );
     Config.Command_Convert = ConfigGetInt    ( "commands.ini", "convert", 299 );
-    Config.Command_Cfmode = ConfigGetInt    ( "commands.ini", "cfmode", 299 );
+    Config.Command_Debuff = ConfigGetInt    ( "commands.ini", "debuff", 299 );
+    Config.Command_DelSkills = ConfigGetInt ( "commands.ini", "delskills", 299 );
     Config.Command_DelSpawn = ConfigGetInt    ( "commands.ini", "delspawn", 299 );
+    Config.Command_Dev = ConfigGetInt    ( "commands.ini", "dev", 299 );
     Config.Command_DQuest = ConfigGetInt    ( "commands.ini", "dquest", 299 );
     Config.Command_Drop = ConfigGetInt    ( "commands.ini", "drop", 299 );
     Config.Command_DSpawn = ConfigGetInt    ( "commands.ini", "dspawn", 299 );
     Config.Command_ESpawn = ConfigGetInt    ( "commands.ini", "espawn", 299 );
+    Config.Command_Event = ConfigGetInt    ( "commands.ini", "event", 299 );     //Event
+    Config.Command_EventName = ConfigGetInt    ( "commands.ini", "eventname", 299 );     //Event Name
+    Config.Command_EventIfo = ConfigGetInt    ( "commands.ini", "eventifo", 299 );     //LMA: Events for IFO Objects
     Config.Command_Exp = ConfigGetInt    ( "commands.ini", "exp", 299 );
     Config.Command_Face = ConfigGetInt    ( "commands.ini", "face", 299 );
+    Config.Command_fskill = ConfigGetInt    ( "commands.ini", "fskill", 299 );     //LMA: Force a skill for a monster.
     Config.Command_Give2 = ConfigGetInt    ( "commands.ini", "give2", 299 );
+    Config.Command_GiveClanRp = ConfigGetInt    ( "commands.ini", "giveclanrp", 299 );       //Reward points
+    Config.Command_GiveClanp = ConfigGetInt    ( "commands.ini", "giveclanp", 299 );       //Clan points
     Config.Command_GiveFairy = ConfigGetInt    ( "commands.ini", "givefairy", 299 );
     Config.Command_GiveZuly = ConfigGetInt    ( "commands.ini", "givezuly", 299 );
+    Config.Command_GlobalTime  = ConfigGetInt    ( "commands.ini", "globaldelay", 30 );
+    Config.Command_GlobalPrefix = ConfigGetString    ( "commands.ini", "globalprefix", "[Broadcast]" );
+    Config.Command_GmList = ConfigGetInt ( "commands.ini", "gmlist", 299 );
     Config.Command_Go = ConfigGetInt    ( "commands.ini", "go", 299 );
     Config.Command_Goto = ConfigGetInt    ( "commands.ini", "goto", 299 );
     Config.Command_GoToMap = ConfigGetInt    ( "commands.ini", "gotomap", 299 );
+    Config.Command_grid = ConfigGetInt    ( "commands.ini", "grid", 299 );   //LMA: maps grids.
     Config.Command_Hair = ConfigGetInt    ( "commands.ini", "hair", 299 );
     Config.Command_Heal = ConfigGetInt    ( "commands.ini", "heal", 299 );
     Config.Command_Here = ConfigGetInt    ( "commands.ini", "here", 299 );
     Config.Command_Hide = ConfigGetInt    ( "commands.ini", "hide", 299 );
+    Config.Command_HitModif = ConfigGetInt    ( "commands.ini", "hitmodif", 299 );
+    Config.Command_HurtHim = ConfigGetInt    ( "commands.ini", "hurthim", 299 );
     Config.Command_Info = ConfigGetInt    ( "commands.ini", "info", 299 );
     Config.Command_IQuest = ConfigGetInt    ( "commands.ini", "iquest", 299 );
     Config.Command_Item = ConfigGetInt    ( "commands.ini", "item", 299 );
+    Config.Command_ItemStat = ConfigGetInt    ( "commands.ini", "itemstat", 299 );
     Config.Command_Job = ConfigGetInt    ( "commands.ini", "job", 299 );
     Config.Command_Kick = ConfigGetInt    ( "commands.ini", "kick", 299 );
     Config.Command_KillInRange = ConfigGetInt    ( "commands.ini", "killinrange", 299 );
     Config.Command_Level = ConfigGetInt    ( "commands.ini", "level", 299 );
     Config.Command_LevelUp = ConfigGetInt    ( "commands.ini", "levelup", 299 );
+    Config.Command_Listquest = ConfigGetInt ( "commands.ini", "listquest", 299 );
+    Config.Command_Listqflag = ConfigGetInt ( "commands.ini", "listqflag", 299 );
+    Config.Command_Listqvar = ConfigGetInt ( "commands.ini", "listqvar", 299 );
     Config.Command_ManageFairy = ConfigGetInt    ( "commands.ini", "managefairy", 299 );
+    Config.Command_MaxStats     = ConfigGetInt    ( "commands.ini", "maxstats", 299 );     //MaxStats
     Config.Command_Mdmg = ConfigGetInt    ( "commands.ini", "mdmg", 299 );
     Config.Command_Mon = ConfigGetInt    ( "commands.ini", "mon", 299 );
+    Config.Command_Mon2 = ConfigGetInt    ( "commands.ini", "mon2", 299 );
     Config.Command_Monster    = ConfigGetInt    ( "commands.ini", "monster", 299 );
     Config.Command_Move = ConfigGetInt    ( "commands.ini", "move", 299 );
     Config.Command_Moveto = ConfigGetInt    ( "commands.ini", "moveto", 299 );
     Config.Command_Mute = ConfigGetInt    ( "commands.ini", "mute", 299 );
     Config.Command_Npc = ConfigGetInt    ( "commands.ini", "npc", 299 );
+    Config.Command_NpcObjVar = ConfigGetInt    ( "commands.ini", "npcobjvar", 299 );
+    Config.Command_NpcSetObjVar = ConfigGetInt    ( "commands.ini", "npcsetobjvar", 299 );
+    Config.Command_NpcLtb = ConfigGetInt    ( "commands.ini", "npcltb", 299 );
     Config.Command_Pak = ConfigGetInt    ( "commands.ini", "pak", 299 );
     Config.Command_Pak2 = ConfigGetInt    ( "commands.ini", "pak2", 299 );
     Config.Command_Pakm = ConfigGetInt    ( "commands.ini", "pakm", 299 );
     Config.Command_Partylvl = ConfigGetInt      ( "commands.ini", "partylvl", 299);
-    Config.Command_PlayerInfo = ConfigGetInt    ( "commands.ini", "playerinfo", 299 );
     Config.Command_Pdmg = ConfigGetInt    ( "commands.ini", "pdmg", 299 );
+    Config.Command_PlayerInfo = ConfigGetInt    ( "commands.ini", "playerinfo", 299 );
     Config.Command_Pvp = ConfigGetInt    ( "commands.ini", "pvp", 299 );
+    Config.Command_RaiseCG = ConfigGetInt    ( "commands.ini", "raisecg", 299 );
     Config.Command_Rate = ConfigGetInt    ( "commands.ini", "rate", 299 );
+    Config.Command_Reborn = ConfigGetInt    ( "commands.ini", "reborn", 299 );  //Reborn by core
+    Config.Command_Refine = ConfigGetInt    ( "commands.ini", "refine", 299 );  //Refine by PurpleYouko
     Config.Command_Reload = ConfigGetInt    ( "commands.ini", "reload", 299 );
     Config.Command_ReloadQuest = ConfigGetInt    ( "commands.ini", "reloadquest", 299 );
     Config.Command_Rules = ConfigGetInt    ( "commands.ini", "rules", 99 );
     Config.Command_Save = ConfigGetInt    ( "commands.ini", "save", 299 );
     Config.Command_ServerInfo = ConfigGetInt    ( "commands.ini", "serverinfo", 299 );
     Config.Command_Set = ConfigGetInt    ( "commands.ini", "set", 299 );
+    Config.Command_Setqflag = ConfigGetInt ( "commands.ini", "setqflag", 299 );
+    Config.Command_Setqvar = ConfigGetInt ( "commands.ini", "setqvar", 299 );
     Config.Command_Settime = ConfigGetInt    ( "commands.ini", "settime", 299 );
+    Config.Command_SetUW = ConfigGetInt    ( "commands.ini", "setuw", 299 );
+    Config.Command_SetGemQuest = ConfigGetInt    ( "commands.ini", "setgemquest", 299 );
+    Config.Command_SetUWnb = ConfigGetInt    ( "commands.ini", "setuwnb", 299 );
     Config.Command_ShopType = ConfigGetInt    ( "commands.ini", "shoptype", 299 );
     Config.Command_Shutdown = ConfigGetInt    ( "commands.ini", "shutdown", 299 );
+    Config.Command_SpawnList = ConfigGetInt    ( "commands.ini", "spawnlist", 299 );
+    Config.Command_SpawnDetail = ConfigGetInt    ( "commands.ini", "spawndetail", 299 );
+    Config.Command_SpawnRefresh = ConfigGetInt    ( "commands.ini", "spawnrefresh", 299 );
+    Config.Command_SpeedModif = ConfigGetInt    ( "commands.ini", "speedmodif", 299 );
     Config.Command_SSpawn = ConfigGetInt    ( "commands.ini", "sspawn", 299 );
     Config.Command_Stat = ConfigGetInt    ( "commands.ini", "stat", 299 );
     Config.Command_Summon = ConfigGetInt    ( "commands.ini", "summon", 299 );
     Config.Command_TargetInfo = ConfigGetInt    ( "commands.ini", "targetinfo", 299 );
     Config.Command_Tele = ConfigGetInt    ( "commands.ini", "tele", 299 );
     Config.Command_TeleToMe = ConfigGetInt    ( "commands.ini", "teletome", 299 );
+    Config.Command_Temple = ConfigGetInt    ( "commands.ini", "temple", 299 );
+    Config.Command_tquest = ConfigGetInt    ( "commands.ini", "tquest", 299 );
     Config.Command_Transx = ConfigGetInt    ( "commands.ini", "transx", 299 );
+    Config.Command_Union = ConfigGetInt    ( "commands.ini", "union", 299 );
+    Config.Command_UnionPoints = ConfigGetInt    ( "commands.ini", "unionpoints", 299 );
     Config.Command_Who = ConfigGetInt    ( "commands.ini", "who", 299 );
     Config.Command_Who2 = ConfigGetInt    ( "commands.ini", "who2", 299 );
-    Config.Command_Broadcast = ConfigGetInt    ( "commands.ini", "broadcast", 299 );
-    Config.Command_GlobalTime  = ConfigGetInt    ( "commands.ini", "globaldelay", 30 );
-    Config.Command_GlobalPrefix = ConfigGetString    ( "commands.ini", "globalprefix", "[Broadcast]" );
-
 }
-bool CWorldServer::Ping( )
-{
-  return DB->Ping( );
-}
-
-void CWorldServer::ReceivedISCPacket( CPacket* pak )
-{
-	switch( pak->Command )
-	{
-	case 0x100:
-		break;
-	case 0x101:
-		SendISCServerInfo( );
-		break;
-	case 0x300:
-		break;
-	case 0x301:
-		break;
-	case 0x400:
-		break;
-	case 0x401:
-		break;
-	case 0x500:
-		break;
-	case 0x501:
-		break;
-	case 0x502:
-	{
-		for( unsigned i=0; i<ClientList.size( ); i++ ) {
-			CPlayer* otherclient = (CPlayer*)ClientList[i];
-			if( otherclient->Session->inGame )
-			{
-				BEGINPACKET( pakout, 0x702 );
-				ADDSTRING( pakout, (char*)&pak->Buffer[0] );
-				ADDBYTE( pakout, 0 );
-				otherclient->client->SendPacket( &pakout );
-			}
-		}
-		break;
-	}
-	case 0x503:
-		exit( 0 );
-		break;
-	case 0x580:
-		break;
-	case 0x581:
-		break;
-	default:
-		Log( MSG_DEBUG, "UNKNOWN ISC PACKET - 0x%x %04x %04x", pak->Command, pak->Size, pak->Unused );
-	}
-}
-
 // Incoming packet
 bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
-{//Log( MSG_INFO, "(SID:%i) Received packet. Command:%04x Size:%04x", thisclient->sock, P->Command, P->Size );
+{
+    /*//Maxxon
+    pthread_mutex_lock( &GServer->PlayerMutex );
+    pthread_mutex_lock( &GServer->MapMutex );*/
+
 	switch( P->Command )
 	{
         case 0x0500: return pakCSReady          ( (CPlayer*)thisclient->player, P );
         case 0x0502: return pakCharDSClient     ( (CPlayer*)thisclient->player, P );
     	case 0x0505: return pakCSCharSelect     ( (CPlayer*)thisclient->player, P );
-    	case 0x0700: return pakPing             ( (CPlayer*)thisclient->player, P );
+    	//case 0x0756: return true;//unknown
+    	case 0x0756: return pakChangeRespawn ( (CPlayer*)thisclient->player, P );
+        case 0x0700: return pakPing             ( (CPlayer*)thisclient->player, P );
     	case 0x0707: return pakExit             ( (CPlayer*)thisclient->player, P );
     	case 0x070b: return pakDoIdentify       ( (CPlayer*)thisclient->player, P );
     	case 0x071c: return pakCharSelect       ( (CPlayer*)thisclient->player, P );
-    	case 0x0730: return pakQuestTrigger     ( (CPlayer*)thisclient->player, P );
-    	//case 0x0753: return pakRespawned        ( (CPlayer*)thisclient->player, P );
+    	case 0x0730: return pakGiveQuest        ( (CPlayer*)thisclient->player, P );
     	case 0x0753: return pakDoID             ( (CPlayer*)thisclient->player, P );
     	case 0x0755: return pakUserDied         ( (CPlayer*)thisclient->player, P );
-    	case 0x0756: return pakSaveTown         ( (CPlayer*)thisclient->player, P );
     	case 0x0762: return pakWeight           ( (CPlayer*)thisclient->player, P );
     	case 0x0771: return pakStopChar         ( (CPlayer*)thisclient->player, P );
     	case 0x0781: return pakDoEmote          ( (CPlayer*)thisclient->player, P );
@@ -1021,6 +774,7 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
     	case 0x0783: return pakNormalChat       ( (CPlayer*)thisclient->player, P );
     	case 0x0784: return pakWhisper          ( (CPlayer*)thisclient->player, P );
     	case 0x0785: return pakShout            ( (CPlayer*)thisclient->player, P );
+    	case 0x0789: return pakChatUnion        ( (CPlayer*)thisclient->player, P );    //LMA: Union Chat
     	case 0x0786: return pakPartyChat        ( (CPlayer*)thisclient->player, P );
     	case 0x0798: return pakStartAttack      ( (CPlayer*)thisclient->player, P );
       	case 0x079f: return pakShowHeal         ( (CPlayer*)thisclient->player, P );
@@ -1045,15 +799,16 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
     	case 0x07ae: return pakChangeStorage    ( (CPlayer*)thisclient->player, P );
     	case 0x07ba: return pakidentify         ( (CPlayer*)thisclient->player, P );
     	case 0x07bc: return pakModifiedItem     ( (CPlayer*)thisclient->player, P );
-    	case 0x07bf: return true;//add to wishlist
+    	case 0x07bf: return pakAddWishList      ( (CPlayer*)thisclient->player, P );
     	case 0x07c2: return pakOpenShop         ( (CPlayer*)thisclient->player, P );
     	case 0x07c3: return pakCloseShop        ( (CPlayer*)thisclient->player, P );
         case 0x07c4: return pakShowShop         ( (CPlayer*)thisclient->player, P );
         case 0x07c5: return pakBuyShop          ( (CPlayer*)thisclient->player, P );
         case 0x07c6: return pakSellShop         ( (CPlayer*)thisclient->player, P );
     	case 0x07ca: return pakChangeCart       ( (CPlayer*)thisclient->player, P );
-    	case 0x07cb: return pakRepairHammer      ( (CPlayer*)thisclient->player, P );
-    	case 0x07cd: return pakRepairItem       ( (CPlayer*)thisclient->player, P );
+    	//case 0x07cb: return pakRepairItem       ( (CPlayer*)thisclient->player, P );
+    	case 0x07cb: return pakRepairItem       ( (CPlayer*)thisclient->player, P,2);   //LMA: tool repair.
+    	case 0x07cd: return pakRepairItem       ( (CPlayer*)thisclient->player, P,1);   //LMA: NPC repair.
     	case 0x07d0: return pakPartyActions     ( (CPlayer*)thisclient->player, P );
     	case 0x07d1: return pakPartyManager     ( (CPlayer*)thisclient->player, P );
     	case 0x07d7: return pakPartyOption      ( (CPlayer*)thisclient->player, P );
@@ -1064,11 +819,18 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
     	case 0x07e0: return pakCreateClan       ( (CPlayer*)thisclient->player, P );
     	case 0x07e1: return pakClanManager      ( (CPlayer*)thisclient->player, P );
     	case 0x07eb: return pakPrintscreen      ( (CPlayer*)thisclient->player, P );
+    	case 0x07ed: return pakChatTrade        ( (CPlayer*)thisclient->player, P );    //LMA: Trade Chat
     	case 0x0808: return pakGameGuard        ( (CPlayer*)thisclient->player, P );
+    	case 0x0821: return pakExpTC        ( (CPlayer*)thisclient->player, P );  //LMA: Bonus Time Coupon
+    	case 0x0796: return pakPvp796        ( (CPlayer*)thisclient->player, P );  //LMA: PVP?
     	default:
     		Log( MSG_WARNING, "(SID:%i) Received unknown packet. Command:%04x Size:%04x", thisclient->sock, P->Command, P->Size );
 		break;
 	}
+
+	/*//Maxxon
+    pthread_mutex_unlock( &GServer->MapMutex );
+    pthread_mutex_unlock( &GServer->PlayerMutex );*/
+
 	return true;
 }
-// -----------------------------------------------------------------------------------------

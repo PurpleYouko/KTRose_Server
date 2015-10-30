@@ -1,21 +1,31 @@
-/*******************************************************************************************
-      ___  ___  ___ ___
-  ___| _ \/ _ \/ __| __|
- / -_)   / (_) \__ \ _|
- \___|_|_\\___/|___/___|
+/*
+    Rose Online Server Emulator
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
- eROSE Server Develped by Brett19.
- hROSE Team: Brett19 and bdaan
- Year: 2006
- Release Date: Summer-Winter 2006
-*******************************************************************************************/
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    depeloped with Main erose/hrose source server + some change from the original eich source
+*/
+
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include <ctype.h>
 
 // Find the entry
-bool ConfigGetEntry( char *pcFile, char *pcNameMust, char* &pcResult )
+bool ConfigGetEntry( const char *pcFile, const char *pcNameMust, char* &pcResult )
 {
 	char pcBuffer[ 512 ];
 	char *pcName, *pcPar, *pcPoint;
@@ -79,7 +89,7 @@ bool ConfigGetEntry( char *pcFile, char *pcNameMust, char* &pcResult )
 // -----------------------------------------------------------------------------------------
 // Returns a text
 // -----------------------------------------------------------------------------------------
-char *ConfigGetString( char *pcFile, char *pcName, char *pcDefault )
+char *ConfigGetString( const char *pcFile, const char *pcName, const char *pcDefault )
 {
 	char *pcRet, *pcRetReal, *pcRetOld;
 	if ( !ConfigGetEntry( pcFile, pcName, pcRet ) ) return strdup( pcDefault );
@@ -98,7 +108,7 @@ char *ConfigGetString( char *pcFile, char *pcName, char *pcDefault )
 }
 
 // Returns a number
-unsigned ConfigGetInt( char *pcFile, char *pcName, unsigned uDefault )
+unsigned ConfigGetInt( const char *pcFile, const char *pcName, unsigned uDefault )
 {
 	char *pcRet;
 	unsigned uRet;

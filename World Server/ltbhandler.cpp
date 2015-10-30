@@ -24,19 +24,19 @@
 #include "ltbhandler.h"
 
 
-void LTBStoreData(char* filename, LTBData* data)
+void LTBStoreData(const char* filename, LTBData* data)
 {
-    long int first_data = 0;
-    long int cur_offset  =0;
-    DWORD nb_box = 0;
-    WORD nb_dial_box = 0;
-    int nb_dialogs = 0;
+    long int first_data=0;
+    long int cur_offset=0;
+    DWORD nb_box=0;
+    WORD nb_dial_box=0;
+    int nb_dialogs=0;
     char templma[2];
     //char tempfield[1024];
 
 
     FILE* fh = fopen( filename, "rb" );
-	if (  fh == NULL )
+	if (  fh== NULL )
 	{
 		Log(MSG_WARNING,"Could not load LTB %s",filename);
 		return;
@@ -45,9 +45,9 @@ void LTBStoreData(char* filename, LTBData* data)
     //How many dialogs?
     fread( &nb_box, 4, 1, fh);
 	fread(&nb_dial_box,2,1,fh);
-	nb_dialogs = nb_box*nb_dial_box;
-    
-    data->nb_sentence = nb_box;
+	nb_dialogs=nb_box*nb_dial_box;
+
+    data->nb_sentence=nb_box;
 
     //reading location of first data.
     fseek(fh,8,SEEK_SET);
@@ -57,23 +57,23 @@ void LTBStoreData(char* filename, LTBData* data)
 
 
     //making the offset list.
-    long int cpt = 0;
+    long int cpt=0;
     map <int,Dialog> list_dialog;
 
-	while(cur_offset < first_data)
+	while(cur_offset<first_data)
 	{
 	    Dialog temp_dial;
 
 		//dialog.
 		//offset is 4 bytes, lg is 2 bytes.
-		temp_dial.dialognb = cpt;
+		temp_dial.dialognb=cpt;
 		fread(&temp_dial.offsetd,4,1,fh);
 		fread(&temp_dial.lengthd,2,1,fh);
-		list_dialog[cpt] = temp_dial; //I know, it's faster with .insert...
-		cur_offset += 6;
+		list_dialog[cpt]=temp_dial; //I know, it's faster with .insert...
+		cur_offset+=6;
 		cpt++;
 
-		if(temp_dial.offsetd == 0 && temp_dial.lengthd == 0)
+		if(temp_dial.offsetd==0&&temp_dial.lengthd==0)
 		{
 		    continue;
 		}
@@ -84,28 +84,28 @@ void LTBStoreData(char* filename, LTBData* data)
     int lang=0;
     int no_block=0;
     NPCLTB templtb;
-    string korean_save = "";
+    string korean_save="";
 
-	for (unsigned int k=0;k < list_dialog.size();k++)
+	for (unsigned int k=0;k<list_dialog.size();k++)
 	{
-        lang = k%nb_box;
-	    no_block = int(k/nb_box);
+        lang=k%nb_box;
+	    no_block=int(k/nb_box);
 
-		if(lang == LTBINDEX)
+		if(lang==LTBINDEX)
 		{
-            templtb.name = "NoName";
-            templtb.sentence = "NoSentence";
-            korean_save = "";
+            templtb.name="NoName";
+            templtb.sentence="NoSentence";
+            korean_save="";
 		}
 
-		if(list_dialog[k].offsetd == 0)
+		if(list_dialog[k].offsetd==0)
 		{
-            if (lang == LTBENGLISH)
+            if (lang==LTBENGLISH)
             {
                 //did we have Korean sentence?
-                if (korean_save != "")
+                if (korean_save!="")
                 {
-                    templtb.sentence = korean_save;
+                    templtb.sentence=korean_save;
                 }
 
                 data->record.push_back(templtb);
@@ -141,18 +141,18 @@ void LTBStoreData(char* filename, LTBData* data)
         {
             case LTBKOREAN:
             {
-                korean_save = temp;
+                korean_save=temp;
             }
             break;
             case LTBENGLISH:
             {
-                templtb.sentence = temp;
+                templtb.sentence=temp;
                 data->record.push_back(templtb);
             }
             break;
             default:
             {
-                templtb.name = temp;
+                templtb.name=temp;
             }
             break;
         }

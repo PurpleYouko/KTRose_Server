@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-    developed with Main erose/hrose source server + some change from the original eich source
+    depeloped with Main erose/hrose source server + some change from the original eich source
 */
 #include "worldserver.h"
 
@@ -24,26 +24,22 @@
 bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
 {
     int action = GETBYTE((*P),0);
-    //Log(MSG_DEBUG, "Clan action %i", action );
     switch(action)
     {
-        case 0xfa://new member added
+        case 0xf0:
         {
-        	MYSQL_ROW row;
-            int charid = GETWORD((*P),1);
-            int clanid = GETWORD((*P),3);
-            Log(MSG_INFO, "Adding member %d to clan %d", charid, clanid);
+            //LMA: is this one really used at all?
+            MYSQL_ROW row;
+            /*int charid = GETWORD((*P),1);
+            int clanid = GETWORD((*P),3);*/
+            DWORD charid = GETDWORD((*P),1);
+            int clanid = GETWORD((*P),5);
+
             CPlayer* otherclient = GetClientByCID ( charid );
-            if(otherclient==NULL) {
-                Log(MSG_ERROR, "Char with id %d doesn't exist", charid);
+            if(otherclient==NULL)
                 return true;
-            }
-    	    MYSQL_RES *result = DB->QStore("SELECT logo,back,name,grade FROM list_clan where id = %i", clanid);
-    	    if(result==NULL) 
-    	    {
-                Log(MSG_INFO, "NULL result from query to list_clan");
-                return true;
-            }
+    	    MYSQL_RES *result = DB->QStore("SELECT logo,back,name,grade FROM list_clan where id=%i", clanid);
+    	    if(result==NULL) return true;
         	if(mysql_num_rows(result)!=1)
         	{
                 Log(MSG_WARNING, "Invalid clan %i", clanid );
@@ -56,20 +52,61 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
     	    strcpy(otherclient->Clan->clanname,row[2]);
     	    otherclient->Clan->grade = atoi(row[3]);
         	DB->QFree( );
+            BEGINPACKET( pak, 0x7e0 );
+            ADDBYTE    ( pak, 0x35 );//funcion
+            ADDWORD    ( pak, otherclient->clientid );//cleint id
+            ADDWORD    ( pak, clanid );//?
+            ADDWORD    ( pak, 0x0000 );//?
+            ADDWORD    ( pak, otherclient->Clan->back );//?
+            ADDWORD    ( pak, otherclient->Clan->logo );//?
+            ADDBYTE    ( pak, otherclient->Clan->grade );
+            ADDBYTE    ( pak, otherclient->Clan->clanrank);
+            ADDSTRING  ( pak, otherclient->Clan->clanname );
+            ADDBYTE    ( pak, 0x00 );
+            SendToVisible( &pak, otherclient );
+            Log(MSG_INFO,"[WS] pakClanManager 0x7e1, case 0xf0 (new member too?) %s",otherclient->CharInfo->charname);
+        }
+        case 0xfa://new member added
+        {
+        	MYSQL_ROW row;
+            /*int charid = GETWORD((*P),1);
+            int clanid = GETWORD((*P),3);*/
+            DWORD charid = GETDWORD((*P),1);
+            int clanid = GETWORD((*P),5);
+
+            CPlayer* otherclient = GetClientByCID ( charid );
+            if(otherclient==NULL)
+                return true;
+    	    MYSQL_RES *result = DB->QStore("SELECT logo,back,name,grade FROM list_clan where id=%i", clanid);
+    	    if(result==NULL) return true;
+        	if(mysql_num_rows(result)!=1)
+        	{
+                Log(MSG_WARNING, "Invalid clan %i", clanid );
+                DB->QFree( );
+          	    return true;
+            }
+
+            row = mysql_fetch_row(result);
+        	otherclient->Clan->logo = atoi(row[0]);
+    	    otherclient->Clan->back = atoi(row[1]);
+    	    strcpy(otherclient->Clan->clanname,row[2]);
+    	    otherclient->Clan->grade = atoi(row[3]);
+        	DB->QFree( );
             otherclient->Clan->clanid=clanid;
             otherclient->Clan->clanrank=1;
             BEGINPACKET( pak, 0x7e0 );
             ADDBYTE    ( pak, 0x35 );//funcion
-            ADDWORD    ( pak, otherclient->clientid );//client id
+            ADDWORD    ( pak, otherclient->clientid );//cleint id
             ADDWORD    ( pak, clanid );//?
-            ADDWORD    ( pak, 0x0000 );
-            ADDWORD    ( pak, otherclient->Clan->back );
-            ADDWORD    ( pak, otherclient->Clan->logo );
+            ADDWORD    ( pak, 0x0000 );//?
+            ADDWORD    ( pak, otherclient->Clan->back );//?
+            ADDWORD    ( pak, otherclient->Clan->logo );//?
             ADDBYTE    ( pak, otherclient->Clan->grade );
             ADDBYTE    ( pak, otherclient->Clan->clanrank );
             ADDSTRING  ( pak, otherclient->Clan->clanname );
             ADDBYTE    ( pak, 0x00 );
             SendToVisible( &pak, otherclient );
+            Log(MSG_INFO,"[WS] pakClanManager 0x7e1, new member %s",otherclient->CharInfo->charname);
         }
         break;
         case 0xfb://Member Kicked
@@ -91,6 +128,7 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
                 ADDQWORD   ( pak, 0 );
                 ADDWORD    ( pak, 0x0001 );
                 SendToVisible( &pak, otherclient );
+                Log(MSG_INFO,"[WS] pakClanManager 0x7e1, member kicked, %s",nick);
            }
         }
         break;
@@ -103,15 +141,17 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
            if(otherclient!=NULL)
            {
                 otherclient->Clan->clanrank = newrank;
+                Log(MSG_INFO,"[WS] pakClanManager 0x7e1, change rank for %s to %i",nick,newrank);
            }
         }
         break;
         case 0xfd://disorg
         {
             unsigned int clanid = GETWORD((*P),1);
-            unsigned int charid = GETWORD((*P),3);
+            //unsigned int charid = GETWORD((*P),3);
+            DWORD charid = GETDWORD((*P),3);
             CPlayer* tclient = GetClientByCID( charid );
-            if(tclient == NULL)
+            if(tclient==NULL)
                 return true;
             tclient->Clan->clanid = 0;
             tclient->Clan->clanrank = 1;
@@ -125,6 +165,7 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
             ADDQWORD   ( pak, 0 );
             ADDWORD    ( pak, 0x0001 );
             SendToVisible( &pak, tclient );
+            Log(MSG_INFO,"[WS] pakClanManager 0x7e1, disorg");
         }
         break;
         case 0xfe://Member Leave
@@ -146,6 +187,7 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
                 ADDQWORD   ( pak, 0 );
                 ADDWORD    ( pak, 0x0001 );
                 SendToVisible( &pak, otherclient );
+                Log(MSG_INFO,"[WS] pakClanManager 0x7e1, member left");
            }
         }
         break;
@@ -164,7 +206,7 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
                     BEGINPACKET( pak, 0x7e0 );
                     ADDBYTE    ( pak, 0x35 );//funcion
                     ADDWORD    ( pak, player->clientid );//cleint id
-                    ADDWORD    ( pak, clanid );
+                    ADDWORD    ( pak, clanid );//?
                     ADDWORD    ( pak, 0x0000 );//?
                     ADDWORD    ( pak, player->Clan->back );//?
                     ADDWORD    ( pak, player->Clan->logo );//?
@@ -173,12 +215,13 @@ bool CWorldServer::pakClanManager ( CPlayer* thisclient, CPacket* P )
                     ADDSTRING  ( pak, player->Clan->clanname );
                     ADDBYTE    ( pak, 0x00 );
                     SendToVisible( &pak, player );
+                    Log(MSG_INFO,"[WS] pakClanManager 0x7e1, update clan mark");
                 }
             }
         }
         break;
         default:
-            Log( MSG_INFO, "Clan manager unknow action %i", action );
+            Log( MSG_INFO, "[WS] Clan manager 0x7e1 unknown action %i", action );
     }
     return true;
 }
@@ -189,15 +232,27 @@ bool CWorldServer::pakCreateClan ( CPlayer* thisclient, CPacket* P )
     if(thisclient->CharInfo->Zulies<1000000)
         return true;
     thisclient->CharInfo->Zulies -= 1000000;
-	MYSQL_ROW row;
+	//MYSQL_ROW row;
     int background = GETWORD((*P),1);
     int icon = GETWORD((*P),3);
-    const char *name = "";
-    const char *slogan = "";
-    name=(char*)&P->Buffer[5];
-    slogan=(char*)&P->Buffer[strlen(name)+6];
+    //char *name = "";
+    //char *slogan = "";
+    char *name=(char*)&P->Buffer[5];
+    char *slogan=(char*)&P->Buffer[strlen(name)+6];
 
-    //Check if name already exists
+    //LMA: Check if name already exists and is short enough.
+    if(!CheckValidName(thisclient,name))
+    {
+        return true;
+    }
+
+    //LMA: Checking if it needs to be escaped.
+    if(!CheckEscapeMySQL(name,50,true))
+    {
+        return true;
+    }
+
+    //LMA: checking if the name is ok.
 	MYSQL_RES *result = DB->QStore("SELECT name FROM list_clan WHERE name='%s'", name);
     if(result==NULL) return true;
 	if ( mysql_num_rows( result ) > 0 )
@@ -220,8 +275,23 @@ bool CWorldServer::pakCreateClan ( CPlayer* thisclient, CPacket* P )
 	}
 
     //Add clan to sql table
-    DB->QExecute( "INSERT into list_clan (logo,back,name,cp,grade,slogan,news) values (%i,%i,'%s',0,1,'%s','')",
-                                                            icon,background,name,slogan);
+    //LMA: inserting slogan now
+    char * lma_slogan = new char[strlen(slogan) + 1];
+    //char lma_slogan[200]="";
+	strcpy(lma_slogan,slogan);
+	char * new_slogan = new char[strlen(lma_slogan)*3 +1];
+	mysql_real_escape_string(DB->Mysql, new_slogan,lma_slogan,strlen(lma_slogan));
+	//mysql_real_escape_string(DB->Mysql, new_slogan,"abcdefghijk",11);
+    Log(MSG_INFO,"[WS] New clan %s created, slogan detected=%s, cleaned=%s ",name,slogan,new_slogan);
+
+    //LMA: checking slogan's size.
+    if(strlen(new_slogan)>=100)
+    {
+        Log(MSG_HACK,"%s tried to create clan %s with too long slogan %s (%i>=100)",thisclient->CharInfo->charname,name,new_slogan,strlen(new_slogan));
+        return true;
+    }
+
+    DB->QExecute( "INSERT into list_clan (logo,back,name,cp,grade,slogan,news) values (%i,%i,'%s',0,1,'%s','')",icon,background,name,new_slogan);
 	thisclient->Clan->clanid = mysql_insert_id(DB->Mysql);
 	thisclient->Clan->clanrank = 6;
     thisclient->Clan->logo = icon;
@@ -236,15 +306,17 @@ bool CWorldServer::pakCreateClan ( CPlayer* thisclient, CPacket* P )
 	BEGINPACKET( pak, 0x7e0 );
 	ADDBYTE    ( pak, 0xfa ); //action to update clan informacion (charserver)
 	ADDWORD    ( pak, thisclient->Clan->clanid );
-	ADDWORD    ( pak, thisclient->CharInfo->charid );
+	//ADDWORD    ( pak, thisclient->CharInfo->charid );
+	ADDDWORD    ( pak, thisclient->CharInfo->charid );
 	ADDWORD    ( pak, thisclient->clientid );
-    SendISCPacket( &pak );
+	cryptPacket( (char*)&pak, cct );
+	send( csock, (char*)&pak, pak.Size, 0 );
 
     //Send to other players
     RESETPACKET( pak, 0x7e0 );
     ADDBYTE    ( pak, 0x35 );
     ADDWORD    ( pak, thisclient->clientid );
-    ADDWORD    ( pak, thisclient->Clan->clanid);
+    ADDWORD    ( pak, 0x081b );//???
     ADDWORD    ( pak, 0x0000 );//???
     ADDWORD    ( pak, background );
     ADDWORD    ( pak, icon );
@@ -253,5 +325,10 @@ bool CWorldServer::pakCreateClan ( CPlayer* thisclient, CPacket* P )
     ADDSTRING  ( pak, name );
     ADDBYTE    ( pak, 0x00 );
     SendToVisible( &pak, thisclient );
+
+    delete[] lma_slogan;
+    delete[] new_slogan;
+
+
     return true;
 }

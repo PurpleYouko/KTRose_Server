@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -29,24 +29,25 @@ class CParty
         CParty( );
         ~CParty( );
 
+        UINT PartyId;
+        void RefreshMax();
         CPlayer* GetMember( UINT id );
-        CPlayer* GetMemberByCharID( UINT charid );
+        CPlayer* GetMemberByCharID( DWORD charid );
         void SendToMembers( CPacket* pak, CPlayer* exclient=NULL );
         void SendToVisible( CPacket* pak, CPlayer* thisclient );
         bool AddPlayer( CPlayer* player );
         bool RemovePlayer( CPlayer* player );
-        bool counted; //flag to help assign party exp
 
-        UINT Pending_Exp;  //temporary value to hold exp during calculations
         UINT PartyLevel;
-        UINT Exp;
+        //UINT Exp;
+        unsigned long long Exp;
         UINT Option;
         UINT LastItem;
         UINT LastETC;
         UINT LastZulies;
         UINT Capacity;
         vector<CPlayer*> Members;
-        CPartyExp* PartyExp;
+        //CPartyExp* PartyExp;
 };
 
 #endif

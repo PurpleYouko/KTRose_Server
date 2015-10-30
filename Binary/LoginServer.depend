@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1214488836 source:g:\osprose\common\socketbase.cpp
+1256932896 source:f:\triggersoft\evo 137 osrose server\common\socketbase.cpp
 	"sockets.h"
 
-1295112854 g:\osprose\common\sockets.h
+1281026188 f:\triggersoft\evo 137 osrose server\common\sockets.h
 	<windows.h>
 	<winsock2.h>
 	<unistd.h>
@@ -24,157 +24,38 @@
 	<time.h>
 	<assert.h>
 	<math.h>
-	<cmath>
-	<map>
 	<pthread.h>
-	<vector>
+	<map>
 	<csignal>
 	"log.h"
 	"rosecrypt.hpp"
 	"config.h"
 	"database/database.h"
 
-1335971100 g:\osprose\common\log.h
+1281026190 f:\triggersoft\evo 137 osrose server\common\log.h
 
-1214488836 g:\osprose\common\rosecrypt.hpp
+1281026186 f:\triggersoft\evo 137 osrose server\common\rosecrypt.hpp
+	<windows.h>
 
-1335973828 g:\osprose\common\config.h
+1281026192 f:\triggersoft\evo 137 osrose server\common\config.h
 
-1335971376 g:\osprose\common\database\database.h
+1281026184 f:\triggersoft\evo 137 osrose server\common\database\database.h
 	"../sockets.h"
 
-1246299232 source:g:\osprose\common\socketclient.cpp
-	"sockets.h"
-	"seh.hpp"
-	"config.h"
-
-1236147414 g:\osprose\common\seh.hpp
-	<windows.h>
-	<excpt.h>
-	<setjmp.h>
-
-1241534662 source:g:\osprose\common\socketserver.cpp
+1297434758 source:f:\triggersoft\evo 137 osrose server\common\socketserver.cpp
 	"sockets.h"
 
-1335973828 source:g:\osprose\common\config.cpp
+1281026190 source:f:\triggersoft\evo 137 osrose server\common\config.cpp
 	<cstdio>
 	<cstring>
 	<cstdlib>
 	<ctype.h>
 
-1335971416 source:g:\osprose\common\database\database.cpp
+1281026182 source:f:\triggersoft\evo 137 osrose server\common\database\database.cpp
 	"database.h"
 	"../log.h"
 
-1214488836 source:g:\osprose\common\globals.cpp
-	"sockets.h"
-
-1335971100 source:g:\osprose\common\log.cpp
-	<conio.h>
-	<windows.h>
-	<cstdio>
-	<cstdio>
-	"log.h"
-
-1335970724 source:g:\osprose\common\rosecrypt.cpp
-	<fstream>
-	<iostream>
-	"rosecrypt.hpp"
-	<cstdlib>
-
-1196084064 source:g:\osprose\login server\extrafunction.cpp
-	"loginserver.h"
-
-1227738880 g:\osprose\login server\loginserver.h
-	"../common/sockets.h"
-	"datatype.h"
-
-1196084064 g:\osprose\login server\datatype.h
-
-1240245570 source:g:\osprose\login server\loginpackets.cpp
-	"loginserver.h"
-
-1196084064 source:g:\osprose\login server\loginclient.cpp
-	"loginserver.h"
-
-1227739326 source:g:\osprose\login server\loginserver.cpp
-	"loginserver.h"
-
-1196084064 source:g:\osprose\login server\main.cpp
-	"loginserver.h"
-
-1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\socketbase.cpp
-	"sockets.h"
-
-1369055543 f:\triggersoft\ktrose server svn\trunk\common\sockets.h
-	<windows.h>
-	<winsock2.h>
-	<unistd.h>
-	<netinet/in.h>
-	<sys/socket.h>
-	<sys/types.h>
-	<arpa/inet.h>
-	<sys/ioctl.h>
-	<cstdarg>
-	<errno.h>
-	<mysql/mysql.h>
-	<cstdio>
-	<cstdlib>
-	<iostream>
-	<vector>
-	<string>
-	<cstdio>
-	<exception>
-	<time.h>
-	<assert.h>
-	<math.h>
-	<cmath>
-	<map>
-	<pthread.h>
-	<vector>
-	<csignal>
-	"log.h"
-	"rosecrypt.hpp"
-	"config.h"
-	"database/database.h"
-
-1369054456 f:\triggersoft\ktrose server svn\trunk\common\log.h
-
-1369054454 f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.hpp
-
-1369054454 f:\triggersoft\ktrose server svn\trunk\common\config.h
-
-1369054454 f:\triggersoft\ktrose server svn\trunk\common\database\database.h
-	"../sockets.h"
-
-1369054456 source:f:\triggersoft\ktrose server svn\trunk\common\socketclient.cpp
-	"sockets.h"
-	"seh.hpp"
-	"config.h"
-
-1369054456 f:\triggersoft\ktrose server svn\trunk\common\seh.hpp
-	<windows.h>
-	<excpt.h>
-	<setjmp.h>
-
-1390586063 source:f:\triggersoft\ktrose server svn\trunk\common\socketserver.cpp
-	"sockets.h"
-	<iostream>
-
-1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\config.cpp
-	<cstdio>
-	<cstring>
-	<cstdlib>
-	<ctype.h>
-
-1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\database\database.cpp
-	"database.h"
-	"../log.h"
-
-1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\globals.cpp
-	"sockets.h"
-
-1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\log.cpp
+1281026188 source:f:\triggersoft\evo 137 osrose server\common\log.cpp
 	<conio.h>
 	<windows.h>
 	<cstdio>
@@ -183,30 +64,33 @@
 	<time.h>
 	"log.h"
 
-1369054456 source:f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.cpp
-	<fstream>
-	<iostream>
+1281026192 source:f:\triggersoft\evo 137 osrose server\common\rosecrypt.cpp
 	"rosecrypt.hpp"
-	<cstdlib>
 
-1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\extrafunction.cpp
+1267718494 source:f:\triggersoft\evo 137 osrose server\login server\extrafunction.cpp
 	"loginserver.h"
 
-1369054317 f:\triggersoft\ktrose server svn\trunk\login server\loginserver.h
+1267718494 f:\triggersoft\evo 137 osrose server\login server\loginserver.h
 	"../common/sockets.h"
 	"datatype.h"
 
-1369054317 f:\triggersoft\ktrose server svn\trunk\login server\datatype.h
+1256932080 f:\triggersoft\evo 137 osrose server\login server\datatype.h
 
-1391783719 source:f:\triggersoft\ktrose server svn\trunk\login server\loginpackets.cpp
+1393960462 source:f:\triggersoft\evo 137 osrose server\login server\loginpackets.cpp
 	"loginserver.h"
 
-1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\loginclient.cpp
+1271078306 source:f:\triggersoft\evo 137 osrose server\login server\signal.cpp
 	"loginserver.h"
 
-1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\loginserver.cpp
+1256932080 source:f:\triggersoft\evo 137 osrose server\login server\loginclient.cpp
 	"loginserver.h"
 
-1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\main.cpp
+1393957837 source:f:\triggersoft\evo 137 osrose server\login server\loginserver.cpp
 	"loginserver.h"
+
+1256932080 source:f:\triggersoft\evo 137 osrose server\login server\main.cpp
+	"loginserver.h"
+
+1393960462 source:f:\triggersoft\evo 137 osrose server\common\socketclient.cpp
+	"sockets.h"
 

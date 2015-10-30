@@ -1,6 +1,30 @@
+/*
+    Rose Online Server Emulator
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    depeloped with Main erose/hrose source server + some change from the original eich source
+*/
+
 // Props to ExJam for this code :D
-#define AIACT(act) int F_AI_ACT_ ## act (class CWorldServer* server, class CCharacter* entity, byte* raw)
-typedef int (*fpAiAct)(class CWorldServer*, class CCharacter*, byte*);
+//LMA: we add the AIPId so it's easier to do some patching and easier on logs as well.
+/*#define AIACT(act) int F_AI_ACT_ ## act (class CWorldServer* server, class CCharacter* entity, byte* raw)
+typedef int (*fpAiAct)(class CWorldServer*, class CCharacter*, byte*);*/
+#define AIACT(act) int F_AI_ACT_ ## act (class CWorldServer* server, class CCharacter* entity, byte* raw,int AipId)
+typedef int (*fpAiAct)(class CWorldServer*, class CCharacter*, byte*, int);
 #define GETAIACTDATA(act) STR_AI_ACT_ ## act * data = (STR_AI_ACT_ ## act *)raw;
 
 
@@ -16,7 +40,7 @@ AIACT(024);AIACT(025);AIACT(026);
 AIACT(027);AIACT(028);AIACT(029);
 AIACT(030);AIACT(031);AIACT(032);
 AIACT(033);AIACT(034);AIACT(035);
-AIACT(036);AIACT(037);AIACT(038);
+AIACT(036);AIACT(037);
 
 #define AI_ACT_COUNT 38
 
@@ -132,6 +156,8 @@ struct STR_AI_ACT_020 {
 
 struct STR_AI_ACT_021 {
 	//Unknown (0x00 bytes)
+	dword iX;
+	dword iY;
 };
 
 struct STR_AI_ACT_022 {
@@ -149,14 +175,10 @@ struct STR_AI_ACT_024 {
 	word nMotion;	//Pos: 0x04
 };
 
-struct STR_AI_ACT_025
-{
+struct STR_AI_ACT_025 {
 	//Set Variable (1) (0x0c bytes)
-	union
-    {
-          byte btVarIDX;	//Pos: 0x00
-	      char cVarIdx[4];
-    };
+	union{byte btVarIDX;	//Pos: 0x00
+	char cVarIdx[4];};
 	dword iValue;	//Pos: 0x04
 	byte btOp;	//Pos: 0x08
 };
@@ -177,11 +199,9 @@ struct STR_AI_ACT_027 {
 	byte btOp;	//Pos: 0x08
 };
 
-struct STR_AI_ACT_028
-{
+struct STR_AI_ACT_028 {
 	//Shout/Ann LTB String (0x08 bytes)
-	union
-    {
+	union {
 		byte btMsgType;
 		int iMsgType;
 	};
@@ -235,13 +255,10 @@ struct STR_AI_ACT_036 {
 struct STR_AI_ACT_037 {
 	//Monster (2) (0x0c bytes)
 	word nMonster;	//Pos: 0x00
+	//word nPos;	//Pos: 0x02
 	byte nPos;	//Pos: 0x02
 	dword iDistance;	//Pos: 0x04
 	byte btMaster;	//Pos: 0x08
 };
 
-struct STR_AI_ACT_038
-{
-    //TDEF set destiny position
-    byte cSpeed;
-};
+

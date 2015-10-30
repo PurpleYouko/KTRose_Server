@@ -7,7 +7,7 @@ Ver=1
 IsCpp=1
 Folders=Common,Common/config,Common/crypt,Common/database,Common/log,Common/socket,Login,Login/include
 CommandLine=
-CompilerSettings=0000000000000000000000
+CompilerSettings=0000000000000001000000
 PchHead=-1
 PchSource=-1
 ProfilesCount=1
@@ -223,6 +223,16 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit20]
+FileName=..\Login Server\Signal.cpp
+CompileCpp=1
+Folder=Login
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [VersionInfo]
 Major=0
 Minor=1
@@ -268,14 +278,4 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 compilerType=0
-
-[Unit20]
-FileName=..\Common\globals.cpp
-CompileCpp=1
-Folder=Common/socket
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
 

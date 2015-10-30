@@ -1,6 +1,6 @@
 /*
     Rose Online Server Emulator
-    Copyright (C) 2006,2007 OSRose Team http://osroseon.to.md
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
     
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -21,21 +21,21 @@
 #include "loginserver.h"
 
 unsigned char LOG_THISSERVER = 0;
+bool PRINT_LOG = true;
 class CLoginServer* GServer;
 
 // Main Funtion
 int main(int argc, char *argv[]) 
 {
-    	LOG_THISSERVER = LOG_LOGIN_SERVER;
+    StartSignal( );
+	LOG_THISSERVER = LOG_LOGIN_SERVER;
     InitWinSocket( ); 
     string fileconf = "loginserver.conf";   
     if(argc>1)
     {
         fileconf = argv[1];
     }
-    
 	CLoginServer *server = new (nothrow) CLoginServer( fileconf );
-	
     MYSQL mysql;
 	server->DB = new CDatabase( server->Config.SQLServer.pcServer,
 	                    server->Config.SQLServer.pcUserName,
@@ -53,13 +53,14 @@ int main(int argc, char *argv[])
         #ifdef _WIN32
 		system("pause");
 		#endif
-		return -1;        
+		return -1;
     }
-    server->LoadEncryption ();
-    server->StartServer( );
+    
+	server->StartServer();
     server->DB->Disconnect( );	
 	// Close server
 	delete server;
 	CloseWinSocket( );
+	StopSignal( );
 	return EXIT_SUCCESS;
 }

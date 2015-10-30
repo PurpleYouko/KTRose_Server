@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="default" />
-	<File name="..\Char Server\charclient.cpp" open="0" top="0" tabpos="2">
-		<Cursor position="1111" topLine="0" />
+	<File name="..\Char Server\charpackets.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="14789" topLine="357" />
 	</File>
-	<File name="..\Char Server\charpackets.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="13732" topLine="328" />
+	<File name="..\Char Server\charserver.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="13506" topLine="342" />
 	</File>
-	<File name="..\Char Server\charserver.cpp" open="1" top="1" tabpos="1">
-		<Cursor position="4948" topLine="134" />
+	<File name="..\Char Server\clan.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="25249" topLine="646" />
 	</File>
-	<File name="..\Common\SocketServer.cpp" open="0" top="0" tabpos="4">
-		<Cursor position="2296" topLine="39" />
+	<File name="..\Char Server\community.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="3568" topLine="60" />
+	</File>
+	<File name="..\Char Server\datatypes.h" open="0" top="0" tabpos="0">
+		<Cursor position="944" topLine="22" />
+	</File>
+	<File name="..\Char Server\extrafunctions.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="1357" topLine="13" />
 	</File>
 </CodeBlocks_layout_file>

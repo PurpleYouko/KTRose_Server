@@ -24,7 +24,7 @@
 #include "worldserver.h"
 
 
-int STLStoreData(char* filename, int family);
+int STLStoreData(const char* filename, int family);
 
 struct language
 {

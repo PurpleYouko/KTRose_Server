@@ -1,6 +1,32 @@
+/*
+    Rose Online Server Emulator
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    depeloped with Main erose/hrose source server + some change from the original eich source
+*/
+
 // Props to ExJam for this code :D Ported to OSpRose by Drakia
 #define QUESTREWD(reward) int QUEST_REWD_ ## reward (class CWorldServer* server, class CPlayer* client, byte* raw)
 typedef int (*fpQuestRewd)(class CWorldServer*, class CPlayer*, byte*);
+
+//LMA: AIP
+#define QUESTREWDC(reward) int QUEST_REWDC_ ## reward (class CWorldServer* server, class CCharacter* client, byte* raw)
+typedef int (*fpQuestRewdC)(class CWorldServer*, class CCharacter*, byte*);
+
 #define GETREWDDATA(rewd) STR_REWD_ ## rewd * data = (STR_REWD_ ## rewd *)raw
 
 QUESTREWD(000);QUESTREWD(001);QUESTREWD(002);
@@ -13,7 +39,21 @@ QUESTREWD(018);QUESTREWD(019);QUESTREWD(020);
 QUESTREWD(021);QUESTREWD(022);QUESTREWD(023);
 QUESTREWD(024);QUESTREWD(025);QUESTREWD(026);
 QUESTREWD(027);QUESTREWD(028);QUESTREWD(029);
-QUESTREWD(030);QUESTREWD(050);
+QUESTREWD(034);
+
+//LMA: For AIP
+QUESTREWDC(000);QUESTREWDC(001);QUESTREWDC(002);
+QUESTREWDC(003);QUESTREWDC(004);QUESTREWDC(005);
+QUESTREWDC(006);QUESTREWDC(007);QUESTREWDC(008);
+QUESTREWDC(009);QUESTREWDC(010);QUESTREWDC(011);
+QUESTREWDC(012);QUESTREWDC(013);QUESTREWDC(014);
+QUESTREWDC(015);QUESTREWDC(016);QUESTREWDC(017);
+QUESTREWDC(018);QUESTREWDC(019);QUESTREWDC(020);
+QUESTREWDC(021);QUESTREWDC(022);QUESTREWDC(023);
+QUESTREWDC(024);QUESTREWDC(025);QUESTREWDC(026);
+QUESTREWDC(027);QUESTREWDC(028);QUESTREWDC(029);
+QUESTREWDC(034);
+
 
 struct STR_REWD_000 {
 	dword iQuestSN;
@@ -30,22 +70,15 @@ struct STR_REWD_001 {
 	byte btPartyOpt;
 };
 
-struct STR_REWD_002
-{
+struct STR_REWD_002 {
 	dword iDataCnt;
 	STR_QUEST_DATA* CheckData;
 };
 
-struct STR_REWD_003
-{
-	dword iDataCnt;              //pos 0x00
-	dword iType;                 //pos 0x04
-	dword iValue;                //pos 0x08
-	byte btOp;                   //pos 0x0c
-    //this (below original code) is just plain wrong
-    //dword iDataCnt;
-	//STR_ABIL_DATA* CheckData;
-	//byte btPartyOpt;
+struct STR_REWD_003 {
+	dword iDataCnt;
+	STR_ABIL_DATA* CheckData;
+	byte btPartyOpt;
 };
 
 struct STR_REWD_004 {
@@ -53,24 +86,19 @@ struct STR_REWD_004 {
 	STR_QUEST_DATA* CheckData;
 };
 
-struct STR_REWD_005
-{
-	byte btTarget;            // pos 0x00
-    //union
-    //{
-	//	byte btEquation;      // pos 0x02 apparently should be 0x01
-	//	word nEquation;
-	//};
-	byte btEquation;          // pos 0x01
-	word nEquation;           // pos 0x02
-	int iValue;               // pos 0x04
-	dword iItemSN;            // pos 0x06
-	union
-    {
-		byte btPartyOpt;      // pos 0x0a
+struct STR_REWD_005 {
+	byte btTarget;
+	union {
+		byte btEquation;
+		word nEquation;
+	};
+	int iValue;
+	dword iItemSN;
+	union {
+		byte btPartyOpt;
 		word nPartyOpt;
 	};
-	word nItemOpt;            // pos 0x0c
+	word nItemOpt;
 };
 
 struct STR_REWD_006 {
@@ -108,21 +136,18 @@ struct STR_REWD_009 {
 struct STR_REWD_010 {
 };
 
-struct STR_REWD_011
-{
-	union
-    {
+struct STR_REWD_011 {
+	union	{
 		byte btWho;
 		word usWho;
 	};
 	word nVarNo;
-	dword iValue;
+	int iValue;
 	byte btOp;
 };
 
 struct STR_REWD_012 {
-	union
-    {
+	union {
 		byte btMsgType;
 		int iMsgType;
 	};
@@ -140,10 +165,8 @@ struct STR_REWD_013 {
 	dword m_HashNextTrigger;
 };
 
-struct STR_REWD_014
-{
-	union
-    {
+struct STR_REWD_014 {
+	union {
 		byte btOp;
 		int iOp;
 	};
@@ -168,18 +191,15 @@ struct STR_REWD_018 {
 	string Data;
 };
 
-struct STR_REWD_019
-{
-	word nZoneNo;           //pos 0x00
-	word nTeamNo;           //pos 0x02
-	word nTriggerLength;    //pos 0x04 This is definitely NOT the length of the following name. PY
-	string TriggerName;     //pos 0x06 + nTriggerlength more bytes. Name always appears to be 17 bytes long
-	//dword m_HashTrigger;
-    word m_HashTrigger;     //pos 0x17 only has 2 bytes not 4. PY
+struct STR_REWD_019 {
+	word nZoneNo;
+	word nTeamNo;
+	word nTriggerLength;
+	string TriggerName;
+	//word m_HashTrigger;
 };
 
-struct STR_REWD_020
-{
+struct STR_REWD_020 {
 	byte btNoType;
 };
 
@@ -193,8 +213,7 @@ struct STR_REWD_022 {
 	byte btOp;
 };
 
-struct STR_REWD_023
-{
+struct STR_REWD_023 {
 };
 
 struct STR_REWD_024 {
@@ -203,7 +222,8 @@ struct STR_REWD_024 {
 };
 
 struct STR_REWD_025 {
-	short nPOINT;
+	//short nPOINT;
+	int nPOINT;
 	byte btOP;
 };
 
@@ -224,18 +244,31 @@ struct STR_REWD_028 {
 	dword iY;
 };
 
+// use LUA function
+//LMA: used now.
 struct STR_REWD_029 {
-    word strLen;
+    word unk1;
+    word unk2;
     string LuaName;
 };
 
-struct STR_REWD_030 //reset skills
-{
-
+// skill reset
+struct STR_REWD_030 {
 };
 
-struct STR_REWD_050 //respawn NPC after time delay
-{
+// unknown start
+struct STR_REWD_031 {
+};
 
+struct STR_REWD_032 {
+};
+
+struct STR_REWD_033 {
+};
+// unknown end
+
+// unspawn NPC
+struct STR_REWD_034 {
+    byte btOP;
 };
 

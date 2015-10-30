@@ -1,17 +1,38 @@
+/*
+    Rose Online Server Emulator
+    Copyright (C) 2006,2007 OSRose Team http://www.dev-osrose.com
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    depeloped with Main erose/hrose source server + some change from the original eich source
+*/
+
 // Props to ExJam for this code :D
 
 class CStrStb
 {
 public:
 	CStrStb():_Data(0){}
-	CStrStb(char* filename) : _Data(0){ LoadSTB(filename); }
+	CStrStb(const char* filename) : _Data(0){ LoadSTB(filename); }
 	~CStrStb(){CleanUp();}
 
-	bool LoadSTB(char* path)
+	bool LoadSTB(const char* path)
     {
 		CleanUp();
 
-		CRoseFile* fh = new CRoseFile(path, FM_READ | FM_BINARY);
+		CRoseFile* fh = new CRoseFile((CFILE_CHAR*) path, FM_READ | FM_BINARY);
 		if(!fh->IsOpen()){
 			delete fh;
 			return false;
@@ -19,13 +40,13 @@ public:
 
 		fh->Seek(4, SEEK_CUR);
 		dword offset = fh->Get<dword>();
-		
+
 		_Rows = fh->Get<dword>();
 		_Columns = fh->Get<dword>();
 
 		_Rows--;
 		_Columns--;
-		
+
 		fh->SetAbsPos(offset);
 		_Data = new char**[_Rows];
 		for(dword i = 0; i < _Rows; i++)

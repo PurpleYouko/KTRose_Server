@@ -7,7 +7,7 @@ Ver=1
 IsCpp=1
 Folders=Char,Char/include,Common,Common/config,Common/crypt,Common/database,Common/log,Common/sockets
 CommandLine=
-CompilerSettings=0000000000000000000000
+CompilerSettings=0000000000000001000000
 PchHead=-1
 PchSource=-1
 ProfilesCount=1
@@ -233,6 +233,16 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit22]
+FileName=..\Char Server\signal.cpp
+CompileCpp=1
+Folder=Char
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit23]
 FileName=..\Char Server\signal.cpp
 CompileCpp=1
@@ -298,14 +308,4 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 compilerType=0
-
-[Unit22]
-FileName=..\Common\globals.cpp
-CompileCpp=1
-Folder=Common/sockets
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
 
