@@ -573,6 +573,7 @@ bool CWorldServer::LoadNPCData( )
         newnpc->magicdefense = STB_NPC.rows[i][12];
         newnpc->dodge = STB_NPC.rows[i][13];
         newnpc->atkspeed = STB_NPC.rows[i][14];
+		newnpc->magicattack = STB_NPC.rows[i][15];
         newnpc->AI = STB_NPC.rows[i][16];
         newnpc->exp = STB_NPC.rows[i][17];
 
@@ -593,11 +594,10 @@ bool CWorldServer::LoadNPCData( )
         newnpc->side=0; //hidden
         newnpc->sidechance=0;   //hidden
         newnpc->STLId=STB_NPC.rows[i][40];
+		newnpc->die_quest=STB_NPC.rows[i][41];
 
         //LMA: test for quest hack (stackable).
         #ifdef QHACK
-        newnpc->die_quest=STB_NPC.rows[i][41];
-
         //Adding the quest to the list.
         if(newnpc->die_quest!=0&&(MapStackQuest.find(newnpc->die_quest)!=MapStackQuest.end()))
         {
@@ -621,14 +621,7 @@ bool CWorldServer::LoadNPCData( )
         newnpc->sigskill=0;
         newnpc->delayskill=0;
 
-        NPCData[newnpc->id]=newnpc;
-
-        //LMA: Mass Exporter.
-        if (Config.massexport==1)
-        {
-            NPC_AIP[newnpc->AI].push_back(newnpc->id);
-        }
-
+        NPCData[newnpc->id] = newnpc;
     }
 
     //LMA: test for quest hack (stackable).
@@ -645,6 +638,8 @@ bool CWorldServer::LoadNPCData( )
 }
 
 //LMA: We give a NPC his timer.
+//PY What the fuck? AI timers are included in the AI file. What the hell is he doing here?
+//TO DO: Chase this crap through and find out what is going on
 bool CWorldServer::TimerForNPC( )
 {
 
@@ -709,7 +704,7 @@ bool CWorldServer::LoadStatusData( )
     newstatus->ability[1] = STB_STATUS.rows[i][7];
     newstatus->amount[1] = STB_STATUS.rows[i][8];
     newstatus->decrease = STB_STATUS.rows[i][17];   // 0: Increase 1: Decrease
-    StatusList[i]=newstatus;
+    StatusList[i] = newstatus;
   }
 
   Log( MSG_LOAD, "Stats Data loaded       " );
@@ -1566,7 +1561,6 @@ bool CWorldServer::LoadNPCs( )
             DB->QFree( );
             return false;
         }
-
 		thisnpc->clientid = GetNewClientID();
 		thisnpc->npctype = atoi(row[0]);
 		thisnpc->posMap = atoi(row[1]);
@@ -1747,7 +1741,52 @@ bool CWorldServer::LoadNPCsEvents( )
     return true;
 }
 
+bool CWorldServer::LoadNewDrops( )
+{
+    Log( MSG_INFO, "Loading New Drops Data" );
+    MDropList.clear();
+    MYSQL_ROW row;
+    MYSQL_RES *result = DB->QStore("SELECT * FROM new_drops");
+    if(result==NULL)
+    {
+        DB->QFree( );
+        return false;
+    }
+    while(row = mysql_fetch_row(result))
+    {
+        CMDrops* newdrop = new (nothrow) CMDrops;
+        assert(newdrop);
+
+        UINT readIndex = 1;
+        newdrop->Dropid = atoi(row[0]);
+        for(int i=0;i<50;i++)
+        {
+            newdrop->item[i] = atoi(row[readIndex]);
+            readIndex++;
+            newdrop->chance[i] = atoi(row[readIndex]);
+            readIndex++;
+            if(i == 0)
+            {
+                newdrop->RunningTotal[i] = newdrop->chance[i];
+            }
+            else
+            {
+                newdrop->RunningTotal[i] = newdrop->RunningTotal[i-1] + newdrop->chance[i];
+            }
+            //if(newdrop->Dropid == 26)
+            //    Log( MSG_INFO, "item %i chance %i total %i",newdrop->item[i],newdrop->chance[i],newdrop->RunningTotal[i] );
+
+        }
+        newdrop->TotalChance = newdrop->RunningTotal[49];
+        MDropList.push_back( newdrop );
+    }
+    DB->QFree( );
+    Log( MSG_INFO, "New Drops loaded" );
+    return true;
+}
+
 //hidden
+/*
 bool CWorldServer::LoadPYDropsData( )
 {
    	Log( MSG_LOAD, "PYDrops Data                " );
@@ -1842,6 +1881,9 @@ bool CWorldServer::LoadPYDropsData( )
     return true;
 }
 
+*/
+
+/*
 //LMA: Drops using the AND system.
 bool CWorldServer::LoadPYDropsDataAnd( )
 {
@@ -1991,6 +2033,9 @@ bool CWorldServer::LoadPYDropsDataAnd( )
     return true;
 }
 
+*/
+
+/*
 //hidden
 bool CWorldServer::LoadSkillBookDropsData( )
 {
@@ -2020,27 +2065,11 @@ bool CWorldServer::LoadSkillBookDropsData( )
     Log( MSG_INFO, "Skillbook Data loaded" );
     return true;
 }
-
+*/
 
 // PY: Rewriting LoadMonsters to use MonsterSpawnList with new NMSpawn system
 bool CWorldServer::LoadMonsters( )
 {
-    /*
-    Log( MSG_INFO, "Spawning Monsters" );
-    for (UINT i = 0; i < MapList.Map.size(); i++)
-    {
-        CMap *thismap = MapList.Map.at(i);
-        for (UINT j = 0; j < thismap->MonsterSpawnList.size(); j++)
-        {
-            CNMSpawns* thisspawn = thismap->MonsterSpawnList.at(j);
-            if(thisspawn->MonCount == 0) //only spawn the single spawner if the spawn is empty. Further spawns are handled by AIP only
-            {
-                thismap->AddMonster(thisspawn->MonType,thisspawn->point,0,thisspawn->ID);
-            }
-        }
-    }
-    */
-
     Log( MSG_INFO,"Spawning monster KT method");
     for(UINT i=0;i<MapList.Map.size();i++)
     {
@@ -2416,18 +2445,15 @@ bool CWorldServer::LoadEquip( )
             {
                 newequip->attackpower = STB_ITEM[j].rows[i][35];
                 newequip->attackspeed = STB_ITEM[j].rows[i][36];
-                //LMA: magicattack not handled !!
-                /*
                 newequip->magicattack = STB_ITEM[j].rows[i][37];      //new. Staffs and wands are designated as magic weapons.
                 if(newequip->magicattack > 1)newequip->magicattack = 0; //all the blue named spears have weird numbers here. Maybe why NA had a massive damage glitch with them.
-                */
+                
             }
             else
             {
                 newequip->attackpower = 0;
                 newequip->attackspeed = 0;
-                //LMA: magicattack not handled !!
-                //newequip->magicattack = 0;
+                newequip->magicattack = 0;
             }
 
             //job1 to job3
@@ -3572,7 +3598,7 @@ bool CWorldServer::LoadConfig( )
         refine_chance, rare_refine, kill_on_fail, player_damage, monster_damage, player_acc, monster_acc, \
         pvp_acc, skill_damage, maxlevel, drop_type, savetime, partygap, maxstat, cfmode, autosave, mapdelay, \
         visualdelay, worlddelay, fairymode, fairystay, fairywait, fairytestmode, osrosever, testgrid, jrose, \
-        is_pegasus, monmax, massexport,uwnbplayers,uwside,pc_drop_zuly,drop_rev FROM list_config");
+        is_pegasus, monmax, massexport,uwnbplayers,uwside,pc_drop_zuly,deathdelay FROM list_config");
 
     if(result==NULL)
     {
@@ -3635,20 +3661,13 @@ bool CWorldServer::LoadConfig( )
 
         //LMA: % of getting zuly in drop.
        GServer->Config.pc_drop_zuly=atoi(row[37]);
+	   GServer->Config.DeathDelay = atoi(row[38]); //timer in miliseconds
        if(GServer->Config.pc_drop_zuly<=0||GServer->Config.pc_drop_zuly>=100)
        {
            GServer->Config.pc_drop_zuly=30;
            Log(MSG_WARNING,"Wrong value for percentage zuly drop %i, changed to 30",atoi(row[37]),GServer->Config.pc_drop_zuly);
        }
-
-       //LMA: Using "old" or new drop system.
-       GServer->Config.drop_rev=false;
-       if(atoi(row[38])!=0)
-       {
-           Log(MSG_INFO,"We'll use the new AND drop System");
-           GServer->Config.drop_rev=true;
-        }
-
+		Log(MSG_INFO,"Using the NewDrop System");
     }
 
     //LMA: jRose.

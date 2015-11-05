@@ -30,7 +30,8 @@ class CAip
     		byte* data;
     	};
 
-    	dword AipID;
+    	dword AInumber;
+		dword AipID;
     	dword minDamage;
 	    dword minTime;
 	    byte recordcount[6];
@@ -39,8 +40,8 @@ class CAip
     	SAipDatum** Conditions;
 
     	dword ActionCount;
-    	int offset_ltb;
-    	int offset_qsd_trigger;
+    	int offset_ltb;			//What is this used for?
+    	int offset_qsd_trigger;	//What is this used for?
     	SAipDatum** Actions;
     	int AipVar;
     private:

@@ -24,6 +24,8 @@
 
 void CWorldServer::ReadAIP(strings path, dword index)
 {
+	//PY: This whole function is bullshit I'm commenting it out and replacing it with something that makes sense
+	/*
     //LMA: mass exporter.
     bool lma_export=false;
     if(Config.massexport)
@@ -324,6 +326,81 @@ void CWorldServer::ReadAIP(strings path, dword index)
     }
     else
         Log( MSG_ERROR, "AIP File: '%s'", path );
+    fh->Close();
+	delete fh;
+	*/
+
+	//PY: This is how it should be written
+CRoseFile* fh = new CRoseFile(path, FM_READ | FM_BINARY);
+	
+    if(fh->IsOpen())
+	{ 
+        //Log(MSG_LOAD, "Loading %s                              ", path);
+		dword BlockCount = fh->Get<dword>();
+	    dword mintime = fh->Get<dword>();
+		dword mindamage = fh->Get<dword>();
+		dword titlestringlength = fh->Get<dword>();
+		strings title = new char[titlestringlength+1];
+		strings title2 = new char[32+1];
+		fh->Read(title, titlestringlength, 1);
+		for(dword i = 0; i < BlockCount; i++)
+	    {
+	        titlestringlength = 32;
+	        fh->Read(title2, titlestringlength, 1);//on spawn-idle-attack-attacked-killed target-dead
+			dword RecordCount = fh->Get<dword>();
+
+	    	for(dword j = 0; j < RecordCount; j++)
+	        {
+	            CAip* script = new CAip();
+				fh->Read(title2, titlestringlength, 1);// 00 ==============================
+				script->ConditionCount = fh->Get<dword>();
+				if(script->ConditionCount > 0)
+	            {
+					script->Conditions = new CAip::SAipDatum*[script->ConditionCount];
+					for(dword k = 0; k < script->ConditionCount; k++)
+	                {
+						CAip::SAipDatum* data = new CAip::SAipDatum();
+						data->size = fh->Get<dword>();
+						data->opcode = fh->Get<dword>() - 0x04000001;
+						data->data = new byte[data->size - 8];
+						fh->Read(data->data, data->size - 8, 1);
+						script->Conditions[k] = data;
+					}
+				}
+	            else
+	            {
+					script->Conditions = NULL;
+				}
+				script->ActionCount = fh->Get<dword>();
+
+				if(script->ActionCount > 0)
+	            {
+					script->Actions = new CAip::SAipDatum*[script->ActionCount];
+					for(dword k = 0; k < script->ActionCount; k++)
+	                {
+						CAip::SAipDatum* data = new CAip::SAipDatum();
+						data->size = fh->Get<dword>();
+						data->opcode = fh->Get<dword>() - 0x0B000001;
+						data->data = new byte[data->size - 8];
+						fh->Read(data->data, data->size - 8, 1);
+						script->Actions[k] = data;
+					}
+				}
+	            else
+	            {
+					script->Actions = NULL;
+				}
+				script->AInumber = index;
+                script->AipID=((index*0x10000)+(i*0x100)+j);
+				script->minDamage = mindamage;
+				script->minTime = mintime;
+				script->recordcount[i] = RecordCount;
+				AipList.push_back( script );
+			}
+		}
+    }
+    else
+        Log( MSG_ERROR, "AIP File: '%s' failed to load properly", path );
     fh->Close();
 	delete fh;
 }

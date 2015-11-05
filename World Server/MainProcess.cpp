@@ -329,8 +329,9 @@ PVOID MapProcess( PVOID TS )
                         nb_summons_map++;
                     }
 
-                    //PY handling day only or night only monsters
-                    if(!map->IsNight( ) && monster->Status->nightonly)// if day, delete all night time monsters
+                    //PY handling day only or night only monsters. 
+                    
+					if(!map->IsNight( ) && monster->Status->nightonly)// if day, delete all night time monsters
                     {
                         //Log( MSG_INFO, "Night Only monster deleted. Type %i", monster->montype);
                         map->DeleteMonster( monster, true, j );
@@ -404,239 +405,52 @@ PVOID MapProcess( PVOID TS )
                     }
                     //End TD stuff
 
-                    /*//LMA: Was for log purposes.
-                    if(monster->Stats->HP<0)
-                    {
-                        Log(MSG_INFO,"A monster %i is dead in map %i (position->Map %i)",monster->montype,map->id,monster->Position->Map);
-                    }*/
-
-                    //LMA: AIP CODE
-                    if(monster->hitcount == 0xFF)//this is a delay for new monster spawns this might olso fix invisible monsters(if they attack directly on spawning the client dosn't get the attack packet(its not in it's visible list yet))
-                    {
-                        if(1000 < (UINT)GServer->round((clock( ) - monster->lastAiUpdate)))
-                        {
-                            //LogDebug("DoAIP mainprocess monster loop %i",monster->thisnpc->AI);
-                            monster->hitcount = 0;
-                            monster->DoAi(monster->MonAI, 0);
-                            monster->lastAiUpdate = clock();
-                        }
-
-                    }
-                    //END AIP CODE
-
-                    //LMA: maps (using grid now?)
-                     ok_cont = false;
-                     if (GServer->Config.testgrid!=0)
-                     {
-                         ok_cont = monster->PlayerInGrid( );
-                     }
-                     else
-                     {
-                         ok_cont = monster->PlayerInRange( );
-                     }
-
-                    if (!ok_cont)
-                    {
-                        //LMA: Perhaps not necessary but who knows...
-                        if (monster->IsSummon())
-                        {
-                            monster->SummonUpdate(monster,map, j);
-                            continue;
-                        }
-
-                        if(monster->IsDead( ))
-                        {
-                            //LMA: we do it only if the monster didn't commit suicide, for Chief Turak for now...
-                            if(monster->montype!=1830)
-                            {
-                                LogDebugPriority(3);
-                                //LogDebug("DoAIP mainprocess monster %u is dead %i",monster->montype,monster->MonAI);
-                                LogDebugPriority(4);
-                                monster->DoAi(monster->MonAI, 5);
-
-                            }
-                            else
-                            {
-                                if(monster->suicide)
-                                {
-                                    LogDebugPriority(3);
-                                    //LogDebug("We DON'T DoAIP mainprocess monster %u is dead %i, because chief turak committed suicide.",monster->montype,monster->MonAI);
-                                    LogDebugPriority(4);
-                                }
-                                else
-                                {
-                                    LogDebugPriority(3);
-                                    //LogDebug("DoAIP mainprocess monster chief turak %u is dead %i",monster->montype,monster->MonAI);
-                                    LogDebugPriority(4);
-                                    monster->DoAi(monster->MonAI, 5);
-                                }
-
-                            }
-
-                            monster->OnDie( );
-                        }
-
-                        continue;
-                    }
-
-                    //LMA: daynight stuff :) kinda vampire code for spawns ^_^
-                    //if((monster->daynight!=0)&&((monster->daynight==2&&!map->IsNight())||(monster->daynight==1&&map->IsNight())))
-                    //{
-                        //Bye bye little monster...
-                    //    map->DeleteMonster( monster, true, j );
-                    //    continue;
-                    //}
-
-
-
-                    //General monsters===============================================================
-                    //LMA: moved to beginning...
                     //if(!monster->PlayerInRange( )) continue;
-                    if(!monster->UpdateValues( ))
-                    {
-                        continue;
-                    }
-
-                    monster->UpdatePosition(monster->stay_still);
-
+                    if(!monster->UpdateValues( )) continue;
+                    monster->UpdatePosition( true );
                     if(monster->IsOnBattle( ))
                     {
-                        //monster->DoAttack( );
-                        //LMA: AIP Timer.
-                        //if(2000<(UINT)GServer->round((clock( ) - monster->lastAiUpdate)))
-
-                        if(monster->thisnpc->AiTimer == 0)
-                        {
-                            monster->thisnpc->AiTimer = 6000;
-                            //Log(MSG_WARNING,"Monster %i hadn't timer, file AI=%i",monster->montype,monster->MonAI);
-                        }
-
-                        if(monster->thisnpc->AiTimer<(UINT)GServer->round((clock( ) - monster->lastAiUpdate)))
-                        {
-                            /*Log(MSG_INFO,"Sending back monster HP amount");
-                            BEGINPACKET( pak, 0x79f );
-                            ADDWORD    ( pak, monster->clientid );
-                            ADDDWORD   ( pak, monster->Stats->HP );
-                            GServer->SendToVisible( &pak, monster );*/
-
-                            //LogDebug("DoAIP mainprocess monster on battle %i,2",monster->thisnpc->AI);
-
-                            if(!monster->IsBonfire())
-                            {
-                                 monster->DoAi(monster->MonAI, 2);
-                            }
-                            else
-                            {
-                                //LMA: Bonfires are never on battle, peace and love ^_^
-                                 monster->DoAi(monster->MonAI, 1);
-                            }
-
-                            monster->lastAiUpdate = clock();
-                            //Log(MSG_INFO,"Monster type: %i current HP: %i",monster->montype, monster->Stats->HP);
-
-                        }
-                        else
-                        {
-                             //Log(MSG_INFO,"Monster doing attack instead of AIP.");
-                             monster->DoAttack( );
-
-                             //LMA: We clear battle for bonfires.
-                             if(monster->IsBonfire())
-                             {
-                                 ClearBattle(monster->Battle);
-                             }
-
-                        }
-
-                    }
-                    else if(!monster->IsOnBattle() && !monster->IsDead( ))
-                    {
-                        //LMA: AIP Timer.
-                        //if(2000<(UINT)GServer->round((clock( ) - monster->lastAiUpdate)))
-
-                        if(monster->thisnpc->AiTimer==0)
-                        {
-                            monster->thisnpc->AiTimer=6000;
-                            //Log(MSG_WARNING,"monster (2) %i hadn't timer, file AI=%i",monster->montype,monster->MonAI);
-                        }
-
-                        if(monster->thisnpc->AiTimer<(UINT)GServer->round((clock( ) - monster->lastAiUpdate)))
-                        {
-                            /*Log(MSG_INFO,"Sending back monster HP amount");
-                            BEGINPACKET( pak, 0x79f );
-                            ADDWORD    ( pak, monster->clientid );
-                            ADDDWORD   ( pak, monster->Stats->HP );
-                            GServer->SendToVisible( &pak, monster );*/
-
-                            //LogDebug("DoAIP mainprocess monster iddle? %i,1",monster->MonAI);
-                            monster->DoAi(monster->MonAI, 1);
-                            monster->lastAiUpdate = clock();
-                        }
-
+                         monster->DoAttack( );   // why was this commented? Monsters were not attacking
+                         //monster->DoAi(monster->thisnpc->AI, 2);  //don't use thisnpc->AI any more.
+                         if(etime >= monster->AITimer)
+                         {
+                             monster->DoAi(monster->MonAI, 2);
+                             monster->lastAiUpdate = clock();
+                         }
+                         //Log(MSG_INFO,"Monster type: %i current HP: %i",monster->montype, monster->Stats->HP);
                     }
                     else
                     {
-                        /*
-                        //LMA: Done in summonupdate now.
-                        if(monster->IsSummon( ))
-                        {// if is summon and is not attacking we reduce his life 1%
-                            time_t elapsedTime = time(NULL) - monster->lastLifeUpdate;
-                            if(elapsedTime>=5) // every 5 seconds
-                            {
-                                monster->Stats->HP -= (long int)ceil(monster->GetMaxHP( )/100);
-                                Log(MSG_WARNING,"Bye bye life summon :) %I64i",monster->Stats->HP);
-                                monster->lastLifeUpdate = time(NULL);
-                                if(monster->Stats->HP<=0)
-                                {
-                                    map->DeleteMonster( monster, true, j ); continue;
-                                }
-
-                            }
-
-                        }
-                        */
-
+                         //monster->DoAi(monster->thisnpc->AI, 1);
+                         if(etime >= monster->AITimer)
+                         {
+                            monster->DoAi(monster->MonAI, 1);
+                            monster->lastAiUpdate = clock();
+                         }
                     }
-
                     monster->RefreshBuff( );
-
-                    //osprose
                     if (monster->IsSummon())
                     {
                         monster->SummonUpdate(monster,map, j);
                         continue;
                     }
-
-                    if(monster->IsDead( ))
+                    if(monster->IsDead())
                     {
-                        //LMA: we do it only if the monster didn't commit suicide, for Chief Turak for now...
-                        if(monster->montype!=1830)
+                        if(clock() - monster->DeathDelayTimer > GServer->Config.DeathDelay)
                         {
-                            LogDebugPriority(3);
-                            //LogDebug("DoAIP mainprocess monster %u is dead %i",monster->montype,monster->MonAI);
-                            LogDebugPriority(4);
+                            //Log(MSG_DEBUG,"Found dead monster montype %i",monster->montype);
+                            monster->OnDie( );  //all this does is give exp
+                            //Log(MSG_DEBUG,"back from giving exp");
                             monster->DoAi(monster->MonAI, 5);
-
+                            //Log(MSG_DEBUG,"ran AI");
+                            map->DeleteMonster( monster, true, j );
+                            //Log(MSG_DEBUG,"deleted monster");
+                            continue;
                         }
                         else
                         {
-                            if(monster->suicide)
-                            {
-                                LogDebugPriority(3);
-                                //LogDebug("We DON'T DoAIP mainprocess monster %u is dead %i, because chief turak committed suicide.",monster->montype,monster->MonAI);
-                                LogDebugPriority(4);
-                            }
-                            else
-                            {
-                                LogDebugPriority(3);
-                                //LogDebug("DoAIP mainprocess monster chief turak %u is dead %i",monster->montype,monster->MonAI);
-                                LogDebugPriority(4);
-                                monster->DoAi(monster->MonAI, 5);
-                            }
-
+                            //Log(MSG_DEBUG,"Dead monster found. waiting for death delay timer");
                         }
-
-                        monster->OnDie( );
                     }
 
                 }
@@ -665,63 +479,88 @@ PVOID MapProcess( PVOID TS )
                     continue;
                 }
 
-                if(npc->thisnpc->AI != 0)
+                if(npc->thisnpc->AI != 0 && npc->thisnpc->AI != 30)
                 {
                     //check every minute. Conditions seem to be based on 6 minute segments
                     //LMA: untrue for some NPCs, special case for UW...
+					//PY: NO we don't check every minute. We check whatever interval the AIP file asks for
+
                     bool is_time_ok=false;
 
-                    int delay=60000;    //each AIP 60 seconds.
+                    // int delay=60000;    //each AIP 60 seconds.
                     //LMA: AIP Timer.
-                    delay=npc->thisnpc->AiTimer;
+                    //delay = npc->thisnpc->AiTimer;
 
-                    if(npc->thisnpc->AiTimer==0)
+                    if(npc->thisnpc->AiTimer == 0)
                     {
-                        npc->thisnpc->AiTimer=60000;
-                        Log(MSG_WARNING,"NPC %i hadn't timer, file AI=%i",npc->npctype,npc->thisnpc->AI);
+						//npc->thisnpc->AiTimer = 60000;
+                        //Log(MSG_WARNING,"NPC %i hadn't timer, file AI=%i",npc->npctype,npc->thisnpc->AI);
+						//PY: If the NPC doesn't have a timer then let's give it one
+						CAip* script = NULL;
+						for(unsigned k=0; k < GServer->AipList.size(); k++)
+						{
+							if (GServer->AipList.at(k)->AInumber == npc->thisnpc->AI)
+							{
+								script = GServer->AipList.at(k);
+								break;
+							}
+						}
+						if(script == NULL)
+						{
+							Log( MSG_WARNING, "Invalid AI script for AI %i Setting AI to 30 (blank)", npc->thisnpc->AI );
+							npc->thisnpc->AI = 30;
+							continue;
+						}
+						//Set the timer
+						npc->thisnpc->AiTimer = script->minTime;
                     }
+					//PY: Any npc reaching this point has a valid timer. It has either been set or removed
+					
+                    
+					//PY MORE Bloody lmame special cases
+					//If he had just set the frickin timer correctly like i did above, all this crap would be un-necessary
 
-                    //Leum, for Union War (no need to do his stuff always).
-                    if(npc->npctype==1113&&GServer->ObjVar[1113][1]>0)
-                    {
+					//Leum, for Union War (no need to do his stuff always). //PY: NO this is BS
+                    //if(npc->npctype==1113&&GServer->ObjVar[1113][1]>0)
+                    //{
                         //LogDebug("Doing an update for Leum each 10 seconds since UW is on");
-                        delay=10000;
-                    }
+                    //    delay=10000;
+                    //}
 
-                    //Walls for map 66 (no need to do his stuff always)
-                    if(npc->npctype>=1024&&npc->npctype<=1027&&GServer->ObjVar[1249][2]>0&&GServer->ObjVar[1249][2]<=90)
-                    {
+                    //PY: What the hell is this shit? commenting it out
+					//Walls for map 66 (no need to do his stuff always)
+                    //if(npc->npctype>=1024&&npc->npctype<=1027&&GServer->ObjVar[1249][2]>0&&GServer->ObjVar[1249][2]<=90)
+                    //{
                         //LogDebug("Doing an update for Wall %i each second quest from Hope is on",npc->npctype);
-                        delay=1000;
-                    }
+                    //    delay=1000;
+                    //}
 
-                    //Hope map 66 (no need to do his stuff always)
-                    if(npc->npctype==1249&&GServer->ObjVar[1249][2]>0&&GServer->ObjVar[1249][2]<=90)
-                    {
+                    //PY: Seriously??
+					//Hope map 66 (no need to do his stuff always)
+                    //if(npc->npctype==1249&&GServer->ObjVar[1249][2]>0&&GServer->ObjVar[1249][2]<=90)
+                    //{
                         //LogDebug("Doing an update for Hope each 10 seconds quest from Hope is on",npc->npctype);
-                        delay=10000;
-                    }
+                    //    delay=10000;
+                    //}
 
-                    //Williams
-                    if(npc->npctype==1075)
-                    {
+                    //PY and more special cases........
+					//Williams
+                    //if(npc->npctype==1075)
+                    //{
                         //Each 5 minutes
-                        delay=300000;
-                    }
+                    //    delay=300000;
+                    //}
 
                     //LMA END
 
+
                      //if(60000<(UINT)GServer->round((clock( ) - npc->lastAiUpdate)))
                      //if(is_time_ok)
-                     if(delay<(UINT)GServer->round((clock( ) - npc->lastAiUpdate)))
-                     {
-                         //Log(MSG_INFO,"Doing AIP for NPC %i",npc->npctype);
-
-                         //LMA: Debug Log
-                         /*LogDebugPriority(3);
-                         LogDebug("We do AIP for NPC %i",npc->npctype);
-                         LogDebugPriority(4);*/
-
+                     //if(delay<(UINT)GServer->round((clock( ) - npc->lastAiUpdate)))
+                     //PY NOPE!! How about we do it right
+					UINT thistimer = npc->thisnpc->AiTimer * 1000; //this is always set in seconds in AIP
+					if(thistimer<(UINT)GServer->round((clock( ) - npc->lastAiUpdate))) //check AIP conditions when the timer calls for it
+					{
                          CNPCData* thisnpc = GServer->GetNPCDataByID( npc->npctype );
                          if(thisnpc == NULL)
                          {
@@ -753,8 +592,10 @@ PVOID MapProcess( PVOID TS )
                          NPCmonster->DoAi(NPCmonster->MonAI, 1);
                          //Log(MSG_INFO,"XCIDAIEND NPC %i map %i cid %i",npc->npctype,map->id,npc->clientid);
 
-                        //Williams (temple of Oblivion)
-                        if(npc->npctype == 1075)
+                        
+						 //PY: AAAAAAAAAGGGGGGGGGGHHHHHHHHHH. NO! just NO!!. Stop with the bloody special cases. Fix the damn core code already!!!!!!!
+						 //Williams (temple of Oblivion)
+                        /*if(npc->npctype == 1075)
                         {
                             //each 5 minutes
                             //saving values for him
@@ -763,18 +604,22 @@ PVOID MapProcess( PVOID TS )
                                 GServer->DB->QExecute("UPDATE list_npcs SET eventid=%i, extra_param=%i WHERE type=1075",GServer->ObjVar[1075][0],GServer->ObjVar[1075][1]);
                                 /*Log(MSG_WARNING,"Doing an update for Williams each 5 minutes, values changed (%i->%i, %i->%i)",
                                 GServer->LastTempleAccess[0],GServer->ObjVar[npc->npctype][0],
-                                GServer->LastTempleAccess[1],GServer->ObjVar[npc->npctype][1]);*/
-                            }
+                                GServer->LastTempleAccess[1],GServer->ObjVar[npc->npctype][1]);
+                            }*/
                             /*else
                             {
                                 Log(MSG_WARNING,"Doing an update for Williams each 5 minutes.");
                             }*/
-
+							/*
                             GServer->LastTempleAccess[0]=GServer->ObjVar[npc->npctype][0];
                             GServer->LastTempleAccess[1]=GServer->ObjVar[npc->npctype][1];
-                        }
+                        }*/
 
-                         //LMA: check if eventID changed, if we do it in AIP conditions / actions, it just fails...
+                         
+						 //PY: I have absolutely no idea what this bit does. I suspuct it's also a load of bollux but I'm leaving it in for now
+						 //ToDo Figure this out and tidy it up
+
+						 //LMA: check if eventID changed, if we do it in AIP conditions / actions, it just fails...
                          if (lma_previous_eventID!=NPCmonster->thisnpc->eventid)
                          {
                             //Log(MSG_WARNING,"(1)Event ID not the same NPC %i from %i to %i in map %i, npc->thisnpc->eventid=%i !",npc->npctype,lma_previous_eventID,NPCmonster->thisnpc->eventid,map->id,npc->thisnpc->eventid);

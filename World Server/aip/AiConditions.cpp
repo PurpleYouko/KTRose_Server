@@ -82,12 +82,14 @@ AICOND(001)
 	}
     else
     {
-		if(entity->damagecounter < data->iDamage)
+		//PY this is wrong. if data->cRecvOrGive is 1 then it should return FALSE
+		/*if(entity->damagecounter < data->iDamage)
         {
             entity->damagecounter = 0;
             //Log(MSG_DEBUG, "AIcond(001) Success ");
             return AI_SUCCESS;
-        }
+        }*/
+        return AI_FAILURE;
 	}
     return AI_FAILURE;
 
@@ -244,7 +246,7 @@ AICOND(004)
 	return AI_FAILURE;
 }
 
-//Check AB (1)
+//Check Ability of my Target
 AICOND(005)
 {
 	/*
@@ -254,7 +256,12 @@ AICOND(005)
 	*/
 	//Log(MSG_DEBUG, "AICOND(005) called");
     GETAICONDDATA(005);
-
+    CCharacter* target = entity->GetCharTarget( );
+	if(target == NULL)
+    {
+        //Log(MSG_DEBUG, "AICOND(004) found no valid target");
+        return AI_FAILURE;
+    }
 	//cAbType
 	//0 = Level
 	//1 = Attack
@@ -265,7 +272,7 @@ AICOND(005)
 
 	//Check if "ability" (cMoreLess == 0 then >= else <=) iDiff
 	//Log(MSG_DEBUG, "Check AB (1)");
-	int value = AI_GetAbility(entity, data->cAbType);
+	int value = AI_GetAbility(target, data->cAbType); //PY This should be checking my target's ability NOT MY OWN. Corrected now
     //Log(MSG_DEBUG, "Check AB (1) type %i diff %i", data->cAbType, data->iDiff);
 	if(value < 0) return AI_FAILURE;
 	if(data->cMoreLess == 0)
@@ -395,12 +402,16 @@ AICOND(008)
 }
 
 //check target
+//PY This is actually incorrect. Should be comparing my target with my destination character. TRUE if they are different
+//To be corrected!!!
 AICOND(009)
 {
 	//Do i have a target?
     //CWorldEntity* target = entity->thisZone->GetEntity(entity->_TargetID);
     //if(target == NULL){entity->_TargetID = 0; return AI_FAILURE;}
     //return AI_SUCCESS;
+
+    //TO BE RECODED
     CCharacter* target = entity->GetCharTarget( );
     if(target == NULL) return AI_FAILURE;
     return AI_SUCCESS;
@@ -413,6 +424,10 @@ AICOND(010)
 	//byte cMoreLess;	//Pos: 0x01
 
 	//Is my ability >= or <= than my targets
+	//PY This is wrong too. Should be comparing ability of my target against the one that just hit me
+	//NOT against MY ability
+
+	//TO BE RECODED
 	GETAICONDDATA(010);
     //CWorldEntity* target = entity->thisZone->GetEntity(entity->_TargetID);
     CCharacter* target = entity->GetCharTarget( );
@@ -436,6 +451,7 @@ AICOND(010)
 }
 
 //Check AB (3)
+//PY Again this has to be my Attacker's ability. NOT my own or even my Target's
 AICOND(011)
 {
 	//byte cAbType;	//Pos: 0x00
@@ -445,7 +461,13 @@ AICOND(011)
 	GETAICONDDATA(011);
 	dword tValue = data->iValue;
 	//if(tValue == 0)tValue = AI_GetAbility(entity, data->cAbType);
-	int myValue = AI_GetAbility(entity, data->cAbType);
+	CCharacter* target = entity->GetCharTarget( );
+	if(target == NULL)
+    {
+        //Log(MSG_DEBUG, "AICOND(004) found no valid target");
+        return AI_FAILURE;
+    }
+	int myValue = AI_GetAbility(target, data->cAbType);
 	//CCharacter* target = entity->GetCharTarget( );
 	//if(target == NULL)
     //{
@@ -528,13 +550,17 @@ AICOND(013)
        return AI_FAILURE;
     }
 
-    if (data->btStatusType == 1) // check for buffs
+    switch(data->btStatusType)
     {
-        buffs = GServer->BuildUpBuffs(target);
-    }
-    else  // check for debuffs
-    {
-        buffs = GServer->BuildDeBuffs(target);
+        case 0: //debuff
+            buffs = GServer->BuildDeBuffs(target);
+        break;
+        case 1: //buff
+            buffs = GServer->BuildUpBuffs(target);
+        break;
+        case 2: //effect such as burning
+            //not sure how to handle this so i will come back to it. PY
+        break;
     }
     //Log(MSG_DEBUG, "Target: %i btStutusType: %i buffs: %i btHave: %i", target->clientid, data->btStatusType, buffs, data->btHave);
     if (data->btHave == 1) //True if HAS buffs
@@ -607,7 +633,7 @@ AICOND(014)
 	return AI_FAILURE;
 }
 
-//Check Variable (2) (WorldVAR)
+//Check Variable (2) (WorldVAR) //PY should work just like NPC ObjVar.  To Be Coded later
 AICOND(015)
 {
 	//word nVarIDX;	//Pos: 0x00
@@ -654,8 +680,8 @@ AICOND(018)
 	CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
 	CMap* map = GServer->MapList.Index[thisMonster->Position->Map];
 	CCharacter* caller = map->GetCharInMap( thisMonster->owner );
-	//if(caller == NULL) return AI_FAILURE; // I think this is wrong. It should return true if there is no owner. Otherwise orphaned bonfires will live forever
-    if(caller == NULL) return AI_SUCCESS;
+	if(caller == NULL ) return AI_FAILURE; // I think this is wrong. It should return true if there is no owner. Otherwise orphaned bonfires will live forever
+    if(thisMonster->owner == 0) return AI_FAILURE; //Monster has no owner
     //Log(MSG_DEBUG, "AICOND(018 2)");
     //if(entity->_EntityType != ENTITY_MONSTER) return AI_FAILURE;
     //CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
@@ -688,7 +714,7 @@ AICOND(019)
 	return AI_FAILURE;
 }
 
-//Check AB (4)
+//Check My AB (4) NOT target's
 AICOND(020)
 {
 	//byte btAbType;	//Pos: 0x00
@@ -704,30 +730,8 @@ AICOND(020)
 	//4 = HP
 	//5 = Charm
 	GETAICONDDATA(020);
-
-	//LMA: in some occasions, the monster tests itselfs (when it's ==).
-	if(data->btOp==0)
-	{
-	    int value = AI_GetAbility(entity, data->btAbType);
-
-	    //LMA: TODO: test, special cases for hatchling...
-	    if (entity->char_montype==662)
-	    {
-	        value=100;
-	    }
-
-	    Log(MSG_WARNING,"AIC4:: %i %i %i, value %i",data->btOp,data->btAbType, data->iValue,value);
-	    if(value < 0) return AI_FAILURE;
-	    if(OperateValues<int>(data->btOp, &value, data->iValue)) return AI_SUCCESS;
-	    return AI_SUCCESS;
-	}
-
-	CCharacter* target = NULL;
-	target = entity->GetCharTarget( );
-	if(target == NULL)
-	    return AI_FAILURE;
     //Log(MSG_DEBUG, "Check AB (4) type %i iValue %i", data->btAbType, data->iValue);
-	int value = AI_GetAbility(target, data->btAbType);
+	int value = AI_GetAbility(entity, data->btAbType);
 	if(value < 0) return AI_FAILURE;
 	if(OperateValues<int>(data->btOp, &value, data->iValue)) return AI_SUCCESS;
     //Log(MSG_INFO,"check ab (4) successfull");
@@ -735,42 +739,17 @@ AICOND(020)
 }
 
 //Do I have a caller
-//LMA: actually the question is, "am I an orphan?").
+//PY. Needs to return AI_SUCCESS if I have no owner
 AICOND(021)
 {
 	//Do i have a "CALLER" ??Possibly the one who summoned the monster??
 	// more like Am I an orphan?
 	GETAICONDDATA(021);
-    //LogDebug( "AICOND(021) Do i have a 'CALLER'?");
 
 	if(!entity->IsMonster())return AI_SUCCESS;
     CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-    //Log(MSG_DEBUG, "AICOND(021) Checking now");
-    //if(entity->_EntityType != ENTITY_MONSTER) return AI_FAILURE;
-    //CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-    //CWorldEntity* caller = thisMonster->thisZone->GetEntity(thisMonster->_CallerID);
 	if(thisMonster->owner == 0) return AI_SUCCESS;
-	//Log(MSG_DEBUG, "AICOND(021) Yes I am an orphan");
-	//LMA: checking if the player is in the same map (should handle warp and if player died).
-	CMap* map = GServer->MapList.Index[thisMonster->Position->Map];
-    CCharacter* caller = map->GetCharInMap( thisMonster->owner );
-	if(caller == NULL)
-	{
-        thisMonster->owner = 0;
-        return AI_SUCCESS;
-	}
-	else
-	{
-	    if (caller->IsDead())
-	    {
-	        thisMonster->owner = 0;
-            return AI_SUCCESS;
-	    }
-
-	}
-
-
-    LogDebug( "AICOND(021) Yes I have a caller");
+    //Log(MSG_DEBUG, "AICOND(021) Yes I Have no owner");
 	return AI_FAILURE;
 }
 
@@ -789,96 +768,13 @@ AICOND(022)
 	if(caller == NULL) return AI_FAILURE;
     //Log(MSG_DEBUG, "AICOND(022 2)");
 	CCharacter* target = map->GetCharInMap(caller->Battle->target);
-	if(target == NULL||target == entity) return AI_FAILURE;
-
-	//LMA: Summon won't attack his master :) would be bad ^_^
-	//monster can't attack another summon if it belongs to the same player.
-	//monster can't attack allies.
-	if (entity->IsSummon()&&caller->IsPlayer())
-	{
-	    if((thisMonster->owner==target->clientid)||(thisMonster->owner==target->char_owner))
-	    {
-	        return AI_FAILURE;
-	    }
-
-	    //LMA: non pvp map...
-	    if (map->allowpvp==0&&(!target->IsMonster()))
-	    {
-	        return AI_FAILURE;
-	    }
-
-	    //LMA: pvp map...
-	    if(map->allowpvp!=0)
-	    {
-	        if (target->IsMonster())
-	        {
-	            //Do they have the same team ID?
-	            CMonster* thisTarget = reinterpret_cast<CMonster*>(target);
-	            if(thisMonster->team==thisTarget->team)
-	            {
-	                Log(MSG_INFO,"Monster %i is friend to monster %i (same team %i)",thisMonster->montype,thisTarget->montype,thisMonster->team);
-	                return AI_FAILURE;
-	            }
-
-	        }
-	        else if (target->IsPlayer())
-	        {
-	            //Are they on the same team?
-	            CPlayer* thisTarget = reinterpret_cast<CPlayer*>(target);
-	            CPlayer* thisPlayer = reinterpret_cast<CPlayer*>(caller);
-	            if(thisMonster->team==thisTarget->pvp_id)
-	            {
-	                Log(MSG_INFO,"Monster %i is friend to %s (same team %i as caller %s)",thisMonster->montype,thisTarget->CharInfo->charname,thisMonster->team,thisPlayer->CharInfo->charname);
-	                return AI_FAILURE;
-	            }
-
-	            //in the same party?
-	            if (thisTarget->Party->party!=NULL&&thisPlayer->Party->party!=NULL)
-	            {
-	                if(thisTarget->Party->party==thisPlayer->Party->party)
-	                {
-	                    Log(MSG_INFO,"Monster %i is friend to %s (in party with caller %s)",thisMonster->montype,thisTarget->CharInfo->charname,thisPlayer->CharInfo->charname);
-	                    return AI_FAILURE;
-	                }
-
-	            }
-
-
-	        }
-	        else
-	        {
-	            Log(MSG_WARNING,"Weird case, target is something else, chartype %i",target->CharType);
-	            return AI_FAILURE;
-	        }
-
-	    }
-
-	    Log(MSG_INFO,"Monster %i sees caller's master target",thisMonster->montype);
-	}
-	else if(!entity->IsSummon()&&caller->IsMonster())
-	{
-	    //LMA: some monsters have a monster as a master (mini warbiz for example).
-	    if (target->IsMonster())
-	    {
-	        Log(MSG_INFO,"A monster can't target a monster");
-	        return AI_FAILURE;
-	    }
-
-	    Log(MSG_INFO,"Monster %i sees monster's master target",thisMonster->montype);
-	}
-	else
-	{
-	    Log(MSG_WARNING,"AIP CDT022: Weird case");
-	    return AI_FAILURE;
-	}
-
-    LogDebug( "AICOND(022 3)");
-
-
-	return AI_SUCCESS;
+	if(target == entity) return AI_FAILURE;
+	if(target != NULL) return AI_SUCCESS;
+    //Log(MSG_DEBUG, "AICOND(022 3)");
+	return AI_FAILURE;
 }
 
-//Check Time (3) (Game map time?)
+//Check Time (3) (World time?)
 AICOND(023)
 {
 	//dword ulTime;	//Pos: 0x00
@@ -906,162 +802,11 @@ AICOND(024)
     	if(sTIME.wDay != data->btDate)
     		return AI_FAILURE;
     }
-
     word wMin = ((sTIME.wHour * 60) + sTIME.wMinute);
     word wFrom = (data->btHour1 * 60) + data->btMin1;
     word wTo = (data->btHour2 * 60) + data->btMin2;
-
-    //LMA: patch for the gem quest, 1104 = historian Jones.
-    if(AipId==1104&&GServer->GemQuestForce!=0)
-    {
-        //In this case we discard the end quest times.
-        if(wFrom==22||wFrom==00)
-        {
-            return AI_FAILURE;
-        }
-
-        SYSTEMTIME TimeFrom;
-        SYSTEMTIME TimeTo;
-        TimeFrom.wHour=0;
-        TimeFrom.wMinute=0;
-        TimeFrom.wSecond=0;
-        TimeTo.wHour=0;
-        TimeTo.wMinute=0;
-        TimeTo.wSecond=0;
-
-        if(wFrom==19)
-        {
-            //quest start time check (19:56:00 to 19:58:00)
-            TimeFrom.wMinute=GServer->GemQuestForce;
-            TimeTo.wMinute=TimeFrom.wMinute+2;
-        }
-        else
-        {
-            //quest LTB shout (20:00:00 to 20:01:00)
-            TimeFrom.wMinute=GServer->GemQuestForce+4;
-            TimeTo.wMinute=TimeFrom.wMinute+1;
-        }
-
-        //The rest should be handled by normal code...
-        wFrom=((TimeFrom.wHour * 60) + TimeFrom.wMinute);
-        wTo=((TimeTo.wHour * 60) + TimeTo.wMinute);
-    }
-    //end of trick for gem quest.
-
-
-    //LMA: Trick to Force UW...
-    if(GServer->UWForceFrom!=0)
-    {
-        SYSTEMTIME TimeFrom;
-        SYSTEMTIME TimeTo;
-        TimeFrom.wHour=0;
-        TimeFrom.wMinute=0;
-        TimeFrom.wSecond=0;
-        TimeTo.wHour=0;
-        TimeTo.wMinute=0;
-        TimeTo.wSecond=0;
-
-        //We only use the "00:28:00" slot.
-        int delay[6];
-        delay[0]=0;     //+0
-        delay[1]=31;    //+31
-        delay[2]=42;    //+11
-        delay[3]=52;    //+10
-        delay[4]=57;    //+5
-        delay[5]=61;    //+4
-        word from=0;
-        word to=0;
-        bool is_ok=false;
-
-        //0 is fine.
-        for (int k=0;k<12;k++)
-        {
-            if(k==0)
-            {
-                for (int j=0;j<6;j++)
-                {
-                    TimeFrom.wMinute=28+delay[j];
-                    TimeTo.wHour=TimeFrom.wHour;
-                    TimeTo.wMinute=TimeFrom.wMinute+1;
-                    from = ((TimeFrom.wHour * 60) + TimeFrom.wMinute);
-                    to = ((TimeTo.wHour * 60) + TimeTo.wMinute);
-
-                    LogDebug("testing time [%i:%i:00;%i:%i:00] (index %i)",data->btHour1,data->btMin1,data->btHour2,data->btMin2,j);
-
-                    if(wFrom==from&&wTo==to)
-                    {
-                        //We take TimeFrom and TomeTo as temp var.
-                        TimeFrom.wHour=0;
-                        TimeFrom.wMinute=0;
-                        TimeFrom.wSecond=0;
-                        TimeTo.wHour=0;
-                        TimeTo.wMinute=0;
-                        TimeTo.wSecond=0;
-                        TimeFrom.wMinute=GServer->UWForceFrom+delay[j];
-                        TimeTo.wMinute=TimeFrom.wMinute+1;
-
-                        wFrom = ((TimeFrom.wHour * 60) + TimeFrom.wMinute);
-                        wTo = ((TimeTo.wHour * 60) + TimeTo.wMinute);
-
-                        //We found something ok...
-                        int temph=wFrom/60;
-                        int tempm=wFrom-temph*60;
-                        int temph1=wTo/60;
-                        int tempm1=wTo-temph1*60;
-                        LogDebug("We changed time from [%i:%i:00;%i:%i:00] to [%i:%i:00;%i:%i:00] (index %i)",data->btHour1,data->btMin1,data->btHour2,data->btMin2,temph,tempm,temph1,tempm1,j);
-                        is_ok=true;
-                        break;
-                    }
-
-                }
-
-            }
-
-            if (is_ok)
-                break;
-
-            for (int j=0;j<6;j++)
-            {
-                TimeFrom.wHour=k*2;
-                TimeFrom.wMinute=28+delay[j];
-                TimeTo.wHour=TimeFrom.wHour;
-                TimeTo.wMinute=TimeFrom.wMinute+1;
-                from = ((TimeFrom.wHour * 60) + TimeFrom.wMinute);
-                to = ((TimeTo.wHour * 60) + TimeTo.wMinute);
-
-                if(wFrom==from&&wTo==to)
-                {
-                    LogDebug("We rejected UW time [%i:%i:00;%i:%i:00], hour %i, index %i",data->btHour1,data->btMin1,data->btHour2,data->btMin2,k,j);
-                    return AI_FAILURE;
-                }
-
-            }
-
-        }
-
-    }
-    //END of trick
-
-    int temph=wFrom/60;
-    int tempm=wFrom-temph*60;
-    int temph1=wTo/60;
-    int tempm1=wTo-temph1*60;
-
-    //LogDebug("AIC24 time h(%i>=%i>=%i)? m(%i>=%i>=%i)?",data->btHour2,sTIME.wHour,data->btHour1,data->btMin2,sTIME.wMinute,data->btMin1);
-    LogDebug("AIC24 time h(%i>=%i>=%i)? m(%i>=%i>=%i)?",temph1,sTIME.wHour,temph,tempm1,sTIME.wMinute,tempm);
     if(wMin >= wFrom && wMin <= wTo)
-    {
-        //LMA: debug for Leum.
-        /*if(AipId==1113)
-        {
-            Log(MSG_WARNING,"AIC24 LEUM time h(%i>=%i>=%i)? m(%i>=%i>=%i) SUCCESS",temph1,sTIME.wHour,temph,tempm1,sTIME.wMinute,tempm);
-        }*/
-
-        LogDebug("Time check success");
     	return AI_SUCCESS;
-    }
-
-    LogDebug("Time check failure");
 	return AI_FAILURE;
 }
 
@@ -1135,7 +880,8 @@ AICOND(027)
             int iDistance = (int)GServer->distance( other->Position->current, entity->Position->current );
             if(iDistance > searchDistance) continue;
     		chrCount++;
-    		if(iDistance < nearestDistance){
+    		if(iDistance < nearestDistance)
+    		{
     			nearestDistance = iDistance;
     			entity->nearChar = other;
     		}
@@ -1183,10 +929,6 @@ AICOND(028)
 	CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
 	if(data->nVarIDX >19)return AI_FAILURE;
     UINT tempval = thisMonster->AIVar[data->nVarIDX];
-
-    //LogDebug("AIC028:: check var[%i] ?%i? %i (is %i now)",data->nVarIDX,data->btOp,data->iValue,tempval);
-    //Log(MSG_INFO,"AIC028:: check var[%i] ?%i? %i (is %i now) for monster %i",data->nVarIDX,data->btOp,data->iValue,tempval,thisMonster->montype);
-
 	switch(data->btOp)
 	{
         case 0:
@@ -1233,34 +975,11 @@ AICOND(029)
 //LMA: Timer since spawn (seconds).
 AICOND(030)
 {
-    GETAICONDDATA(030);
-    CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-    if(thisMonster==NULL)
-    {
-        return AI_FAILURE;
-    }
-
-    if(thisMonster->IsSummon()&&thisMonster->life_time!=data->Timer)
-    {
-        thisMonster->life_time=data->Timer;
-        //Log(MSG_INFO,"Setting life time for monster %i to %u",thisMonster->montype,thisMonster->life_time);
-    }
-
-    clock_t diff_time=clock()-thisMonster->SpawnTime;
-
-    if(diff_time>=(data->Timer*CLOCKS_PER_SEC))
-    {
-        LogDebug("AIC030:: timer ok %u>=%u",diff_time,data->Timer*CLOCKS_PER_SEC);
-        return AI_SUCCESS;
-    }
-    else
-    {
-        LogDebug("AIC030:: timer NOT ok %u<%u",diff_time,data->Timer*CLOCKS_PER_SEC);
-    }
-
-
 	return AI_FAILURE;
 }
+
+//from here on this is 100% server sided. AIP scripts with these elements in should not be uploaded to the client
+
 
 //LMA: Unknown and emtpy...
 AICOND(031)

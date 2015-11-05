@@ -32,6 +32,24 @@ unsigned int CCharacter::GetDefense( )
     return 0;
 }
 
+// virtual [return xprate]
+unsigned int CCharacter::GetXPRate( )
+{
+    return 0;         
+}
+
+// virtual [return item drop rate]
+unsigned int CCharacter::GetItemDropRate( )
+{
+    return 0;
+}
+
+// virtual [return item drop rate]
+unsigned int CCharacter::GetItemDropCountRate( )
+{
+    return 0;
+}
+
 // virtual [return dodge]
 unsigned int CCharacter::GetDodge( )
 {
@@ -48,6 +66,12 @@ unsigned int CCharacter::GetAccury( )
 unsigned int CCharacter::GetMagicDefense( )
 {
     return 0;
+}
+
+// virtual [return magic attack]
+unsigned int CCharacter::GetMagicAttack( )
+{
+    return 0;         
 }
 
 // virtual [return critical]

@@ -332,7 +332,8 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
         Log(MSG_INFO,"END GiveExp Spawn %u CID %u",thismon->Position->respawn,thismon->clientid);
     }
 
-    MapList.Index[thismon->Position->Map]->DeleteMonster( thismon );
+    //PY: This bloody line of code has been driving me mad by deleting monsters out of time and place. Good ridance to it. More lmame stuff i suspect
+	//MapList.Index[thismon->Position->Map]->DeleteMonster( thismon );
 
 
     return true;

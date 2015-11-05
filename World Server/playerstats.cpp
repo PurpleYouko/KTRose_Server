@@ -774,6 +774,15 @@ unsigned int CPlayer::GetCritical( )
     return Critical;
 }
 
+// Return Magic Attack based on the weapon currently equipped
+unsigned int CPlayer::GetMagicAttack( )
+{
+    if(GServer->EquipList[WEAPON].Index[items[7].itemnum]->magicattack == 1)
+        return 1;
+    else
+        return 0;
+}
+
 // Return Magic Defense with and without PAT         //A_MRESIST(21) / MAGIC_RESISTENCE_2(98) ok
 unsigned int CPlayer::GetMagicDefense( )
 {
@@ -4746,6 +4755,272 @@ float CPlayer::GetAttackDistance( )
     return AttackDistance;
 }
 
+// Return XPRate
+unsigned int CPlayer::GetXPRate( )
+{
+    UINT XPRate = 0;
+    if(Stats->ItemXPRate == -1)
+        return 0; // sends back a rate of 0. Used for exp nulification
+
+    for(UINT i=1;i<12;i++)
+    {
+        if( items[i].count != 0 )
+        {
+            if(items[i].itemtype>9)
+            {
+                Log(MSG_WARNING, "Char %s have equip invalid item: %i,%i", CharInfo->charname, items[i].itemtype, items[i].itemnum );
+                continue;
+            }
+            if( GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat1[0] == XP_RATE)
+                XPRate += GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat1[1];
+            if( GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat2[0] == XP_RATE)
+                XPRate += GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat2[1];
+            if(items[i].stats > 0 && items[i].stats < 500)
+            {
+				if(GServer->StatsList[items[i].stats]->stat[0] == XP_RATE)
+                    XPRate += GServer->StatsList[items[i].stats]->value[0];
+                if(GServer->StatsList[items[i].stats]->stat[1] == XP_RATE)
+                    XPRate += GServer->StatsList[items[i].stats]->value[1];
+            }
+        }
+    }
+    if(Stats->ItemXPRate != 0 && Stats->ItemXPRate != 1 && Stats->ItemXPRate != 2)
+        Stats->ItemXPRate = 0;
+    XPRate += Stats->ItemXPRate; // add timed XPRate buffs
+    UINT Extra = 0;
+    
+	for(UINT i=0;i<MAX_ALL_SKILL;i++)   //xp rate From Pasive Skills
+    {
+        //Some skills are not worthy to search in
+        if(cskills[i].id==0&&i<60)
+        {
+            i=89;
+            continue;
+        }
+        if(cskills[i].id==0&&(i>60&&i<120))
+        {
+            i=119;
+            continue;
+        }
+        if(cskills[i].id==0&&i>=120)
+        {
+            break;
+        }
+        if(cskills[i].thisskill==NULL)
+        {
+            continue;
+        }
+
+        if(cskills[i].thisskill->type == 15)//Passive SKill
+        {
+            for(UINT j=0;j<3;j++)
+            {
+                if(cskills[i].thisskill->buff[j] == XP_RATE)
+                {
+                    if(cskills[i].thisskill->value2[j] > 0)
+                    {
+						Extra += XPRate * cskills[i].thisskill->value2[j] / 100;
+                    }
+                    if(cskills[i].thisskill->value1[j] > 0)
+                    {
+						Extra += cskills[i].thisskill->value1[j];
+                    }
+                }
+            }
+        }
+    }
+	
+	//code from KT. Completely different skill structures. Include here only for reference. To be removed later
+	/*
+	for(UINT i=0;i<30;i++)
+    {
+        if (pskill[i] == 0)
+		    continue;
+        CSkills* skill = GServer->GetSkillByID( (pskill[i])+(pskilllvl[i]));
+        if( skill == NULL )
+            continue;
+        for(UINT j = 0; j < 2; j++ )
+        {
+            if( skill->buff[j] == sEXPRate )
+            {
+                if( skill->value2[j] > 0 )
+                    Extra += XPRate * skill->value2[j] / 100;
+                if( skill->value1[j] > 0 )
+                    Extra += skill->value1[j];
+            }
+        }
+    }
+	*/
+    CMap* map = GServer->MapList.Index[Position->Map];
+    
+    XPRate += Extra;
+
+    if(XPRate < 1)
+        XPRate = 1;
+    XPRate = XPRate * map->mapXPRate;
+    //Log( MSG_INFO, "XP rate calculated as = %i", XPRate);
+    Log( MSG_INFO, "XPRate: %i Map XP rate: %i for map %i",XPRate,map->mapXPRate, map->id);
+    return XPRate;
+}
+
+// Return Item Drop Rate
+unsigned int CPlayer::GetItemDropRate( )
+{
+    int itemdroprate = 0;
+    for(UINT i=1;i<12;i++)
+    {
+        if( items[i].count != 0 )
+        {
+            if(items[i].itemtype > 9)
+            {
+                Log(MSG_WARNING, "Char %s have equip invalid item: %i,%i", CharInfo->charname, items[i].itemtype, items[i].itemnum );
+                continue;
+            }
+            if( GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat1[0] == 79 ) //ITEM_DROP_RATE
+                itemdroprate += GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat1[1];
+            if( GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat2[0] == 79 ) //ITEM_DROP_RATE
+                itemdroprate += GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat2[1];
+            if(items[i].stats > 0 && items[i].stats < 500)
+            {
+                if(GServer->StatsList[items[i].stats]->stat[0] == 79 ) //ITEM_DROP_RATE
+                    itemdroprate += GServer->StatsList[items[i].stats]->value[0];
+                if(GServer->StatsList[items[i].stats]->stat[1] == 79 ) //ITEM_DROP_RATE
+                    itemdroprate += GServer->StatsList[items[i].stats]->value[1];
+            }
+        }
+    }
+    UINT Extra = 0;
+
+	for(UINT i=0;i<MAX_ALL_SKILL;i++)   //item drop rate From Pasive Skills
+    {
+        //Some skills are not worthy to search in
+        if(cskills[i].id==0&&i<60)
+        {
+            i=89;
+            continue;
+        }
+        if(cskills[i].id==0&&(i>60&&i<120))
+        {
+            i=119;
+            continue;
+        }
+        if(cskills[i].id==0&&i>=120)
+        {
+            break;
+        }
+        if(cskills[i].thisskill==NULL)
+        {
+            continue;
+        }
+
+        if(cskills[i].thisskill->type == 15)//Passive SKill
+        {
+            for(UINT j=0;j<3;j++)
+            {
+                if(cskills[i].thisskill->buff[j] == 79)
+                {
+                    if(cskills[i].thisskill->value2[j] > 0)
+                    {
+						Extra += itemdroprate * cskills[i].thisskill->value2[j] / 100;
+                    }
+                    if(cskills[i].thisskill->value1[j] > 0)
+                    {
+						Extra += cskills[i].thisskill->value1[j];
+                    }
+                }
+            }
+        }
+    }
+    
+    itemdroprate += Extra;
+    //Log( MSG_INFO, "item drop rate calculated as = %i", itemdroprate);
+    if(itemdroprate < 0)
+        itemdroprate = 0;
+    //itemdroprate += GServer->Config.DROP_RATE;
+    //Log( MSG_INFO, "item drop rate calculated as = %i", itemdroprate);
+    //Log( MSG_INFO, "Server item drop rate = %i", GServer->Config.DROP_RATE);
+    return itemdroprate;
+}
+
+// Return Item Drop count increase
+unsigned int CPlayer::GetItemDropCountRate( )
+{
+    int itemdroprate = 0;
+    for(UINT i=1;i<12;i++)
+    {
+        if( items[i].count != 0 )
+        {
+            if(items[i].itemtype > 9)
+            {
+                Log(MSG_WARNING, "Char %s have equip invalid item: %i,%i", CharInfo->charname, items[i].itemtype, items[i].itemnum );
+                continue;
+            }
+            if( GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat1[0] == 63 ) //ITEM_DROP_Count RATE
+                itemdroprate += GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat1[1];
+            if( GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat2[0] == 63 ) //ITEM_DROP_Coiunt RATE
+                itemdroprate += GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->stat2[1];
+            if(items[i].stats > 0 && items[i].stats < 500)
+            {
+                if(GServer->StatsList[items[i].stats]->stat[0] == 63 ) //ITEM_DROP_Count RATE
+                    itemdroprate += GServer->StatsList[items[i].stats]->value[0];
+                if(GServer->StatsList[items[i].stats]->stat[1] == 63 ) //ITEM_DROP_Count RATE
+                    itemdroprate += GServer->StatsList[items[i].stats]->value[1];
+            }
+        }
+    }
+    UINT Extra = 0;
+
+	for(UINT i=0;i<MAX_ALL_SKILL;i++)   //item drop rate From Pasive Skills
+    {
+        //Some skills are not worthy to search in
+        if(cskills[i].id==0&&i<60)
+        {
+            i=89;
+            continue;
+        }
+        if(cskills[i].id==0&&(i>60&&i<120))
+        {
+            i=119;
+            continue;
+        }
+        if(cskills[i].id==0&&i>=120)
+        {
+            break;
+        }
+        if(cskills[i].thisskill==NULL)
+        {
+            continue;
+        }
+
+        if(cskills[i].thisskill->type == 15)//Passive SKill
+        {
+            for(UINT j=0;j<3;j++)
+            {
+                if(cskills[i].thisskill->buff[j] == 63)
+                {
+                    if(cskills[i].thisskill->value2[j] > 0)
+                    {
+						Extra += itemdroprate * cskills[i].thisskill->value2[j] / 100;
+                    }
+                    if(cskills[i].thisskill->value1[j] > 0)
+                    {
+						Extra += cskills[i].thisskill->value1[j];
+                    }
+                }
+            }
+        }
+    }
+    
+    itemdroprate += Extra;
+    //Log( MSG_INFO, "item drop rate calculated as = %i", itemdroprate);
+    if(itemdroprate < 0)
+        itemdroprate = 0;
+    //itemdroprate += GServer->Config.DROP_RATE;
+    //Log( MSG_INFO, "item drop rate calculated as = %i", itemdroprate);
+    //Log( MSG_INFO, "Server item drop rate = %i", GServer->Config.DROP_RATE);
+    return itemdroprate;
+}
+
 // calculate Player Stats
 void CPlayer::SetStats( )
 {
@@ -4768,6 +5043,7 @@ void CPlayer::SetStats( )
     Stats->Critical = GetCritical( );
     Stats->Move_Speed = GetMoveSpeed( );
     Stats->Magic_Defense = GetMagicDefense( );
+	Stats->magicattack = GetMagicAttack( );
     Stats->Accury = GetAccury( );
     Stats->Dodge = GetDodge( );
     Stats->Attack_Speed = GetAttackSpeed( );

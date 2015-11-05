@@ -77,6 +77,16 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         }
 		return true;
     }
+	if (strcmp(command, "aiwatch")==0) // set a skill for mobs to use. testing
+    {
+        //SendPM(thisclient, "trying to use aiwatch");
+        if(thisclient->Session->accesslevel < 300 || thisclient->CharInfo->isDev == 0)
+            return true;
+        if ((tmp = strtok(NULL, " "))==NULL)return true;
+        UINT newval = atoi(tmp);
+        Config.AIWatch = newval;
+        SendPM(thisclient, "AI script watching set to %i",newval);
+    }
 	if (strcmp(command, "allskill")==0) /* Give all Skill to a Player - By CrAshInSiDe */
     {
         if(Config.Command_AllSkill > thisclient->Session->accesslevel)
@@ -2877,15 +2887,16 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
              GServer->LoadNPCData( );
          else if(strcmp(tmp, "drops")==0)
          {
-             //LMA: And system.
-            if(!Config.drop_rev)
-            {
-                GServer->LoadPYDropsData( );
-            }
-            else
-            {
-                GServer->LoadPYDropsDataAnd();
-            }
+			GServer->LoadNewDrops( );
+			 //LMA: And system.
+            //if(!Config.drop_rev)
+            //{
+            //    GServer->LoadPYDropsData( );
+            //}
+            //else
+            //{
+            //    GServer->LoadPYDropsDataAnd();
+            //}
 
          }
          else if(strcmp(tmp, "cmd")==0)

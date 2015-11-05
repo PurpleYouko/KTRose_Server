@@ -218,24 +218,9 @@ void CMonster::AddDamage( CCharacter* enemy, long long hitpower)
 //hidden
 CDrop* CMonster::GetDrop( )
 {
-    //added a new functionality to PYGetDrop.
-    //now requires an input value for droptype. A droptype of 1 is a normal drop while a droptype of 2 can be sent to generate a drop while the monster is still alive
-    //Code for these 'side drops' is still under development and will follow soon
-    //GServer->PYGetDrop( this, 1 );
-
     if (IsDead())
     {
         drop_dead=true;
     }
-
-    //LMA: And system
-    if(!GServer->Config.drop_rev)
-    {
-        return GServer->GetPYDrop( this, 1 );
-    }
-    else
-    {
-        return GServer->GetPYDropAnd( this, 1 );
-    }
-
+    return GServer->GetNewDrop( this );
 }

@@ -292,8 +292,13 @@ class CPlayer: public CCharacter
     unsigned int GetAttackPower( );
     unsigned int GetDefense( );
     unsigned int GetDodge( );
+	unsigned int GetXPRate( );
+    unsigned int GetItemDropRate( );
+    unsigned int GetItemDropCountRate( );
+    unsigned int GetZulyDropRate( );
     unsigned int GetAccury( );
     unsigned int GetMagicDefense( );
+	unsigned int GetMagicAttack( );
     unsigned int GetCritical( );
     unsigned int GetAttackSpeed( );
     unsigned int GetMoveSpeed( );

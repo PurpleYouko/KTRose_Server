@@ -146,9 +146,13 @@ class CCharacter
         // stats
         virtual unsigned int GetAttackPower( );
         virtual unsigned int GetDefense( );
+		virtual unsigned int GetXPRate( );
+		virtual unsigned int GetItemDropRate( );
+		virtual unsigned int GetItemDropCountRate( );
         virtual unsigned int GetDodge( );
         virtual unsigned int GetAccury( );
         virtual unsigned int GetMagicDefense( );
+		virtual unsigned int GetMagicAttack( );
         virtual unsigned int GetCritical( );
         virtual unsigned int GetAttackSpeed( );
         virtual unsigned int GetMoveSpeed( );

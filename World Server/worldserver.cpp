@@ -391,36 +391,8 @@ bool CWorldServer::OnServerReady( )
     GemQuestForce=0;
     GemQuestReset=0;
 
-
-    //LMA: for debug (load old skill system and compares to new one).
-    /*
-    LoadSkillDataOld( );
-    LMACheckSkills();
-    LMACheckStuff();
-    */
-    //End debug.
-
     //Load our Server Info
     LoadQuestSTB();
-
-    //hidden
-    // LoadDropsData( );
-    // new drops routine load
-
-    //LMA: Drop And system
-    if(!Config.drop_rev)
-    {
-        LoadPYDropsData( );
-    }
-    else
-    {
-        LoadPYDropsDataAnd();
-    }
-
-    LoadSkillBookDropsData( );
-    // end of new drops data
-
-    //LoadChestData( ); //LMA: loaded now by STB in LoadBreakChestBlueList.
 
     #ifdef PYCUSTOM
     // PY custom events start
@@ -435,7 +407,10 @@ bool CWorldServer::OnServerReady( )
     LoadRespawnData( );
     LoadLTB();  //LMA: Loading LTB for AIP.
     LoadAipData();  //LMA: loading AIP.
-    TimerForNPC();  //LMA: loading timers for NPCs and Monsters.
+
+	//PY NO Don't do this TimerForNPC crap. It's stupid and pointless
+    //TimerForNPC();  //LMA: loading timers for NPCs and Monsters.
+
     //LoadMobGroups( );             //PY disabled while testing NMSpawns
     //LoadNMSpawns();               //PY testing NMSpawns
     //LoadMobGroupsSpecial( );      //LMA: Special spawns (Halloween for example).
@@ -448,6 +423,7 @@ bool CWorldServer::OnServerReady( )
     LoadWayPoints( );               //PY load the waypoints list ready for Tower Defence
     //LoadLTB();  //LMA: Loading LTB for AIP.
     LoadQuestData( );
+	LoadNewDrops( );
     CleanConnectedList( );
 
     Log(MSG_INFO, "Database Loaded                      " );

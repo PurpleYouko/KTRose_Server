@@ -42,69 +42,83 @@ AICOND(030);AICOND(031);
 
 #define AI_COND_COUNT 32
 
-struct STR_AI_COND_000 {
+struct STR_AI_COND_000
+{
 	//Hold or Attack (0x04 bytes)
 	byte cNotfightOrDelay;	//Pos: 0x00
 };
 
-struct STR_AI_COND_001 {
+struct STR_AI_COND_001
+{
 	//Damage (0x08 bytes)
 	dword iDamage;	//Pos: 0x00
 	byte cRecvOrGive;	//Pos: 0x04
 };
 
-struct STR_AI_COND_002 {
+struct STR_AI_COND_002
+{
 	//Check Near (1) (0x0c bytes)
 	int iDistance;	//Pos: 0x00
-	union{byte btIsAllied;	//Pos: 0x04
-	word nIsAllied;};
+	union
+	{
+	    byte btIsAllied;	//Pos: 0x04
+	    word nIsAllied;
+	};
 	short nLevelDiff;	//Pos: 0x06
 	short nLevelDiff2;	//Pos: 0x08
-	word wChrNum;	//Pos: 0x0a
+	word wChrNum;	    //Pos: 0x0a
 };
 
-struct STR_AI_COND_003 {
+struct STR_AI_COND_003
+{
 	//Check Distance (1) (0x04 bytes)
 	int iDistance;	//Pos: 0x00
 };
 
-struct STR_AI_COND_004 {
+struct STR_AI_COND_004
+{
 	//Check Distance (2) (0x08 bytes)
 	int iDistance;	//Pos: 0x00
 	byte cMoreLess;	//Pos: 0x04
 };
 
-struct STR_AI_COND_005 {
+struct STR_AI_COND_005
+{
 	//Check AB (1) (0x0c bytes)
 	byte cAbType;	//Pos: 0x00
 	int iDiff;	//Pos: 0x04
 	byte cMoreLess;	//Pos: 0x08
 };
 
-struct STR_AI_COND_006 {
+struct STR_AI_COND_006
+{
 	//Check HP (0x08 bytes)
 	dword wHP;	//Pos: 0x00
 	byte cMoreLess;	//Pos: 0x04
 };
 
-struct STR_AI_COND_007 {
+struct STR_AI_COND_007
+{
 	//Random Chance (0x04 bytes)
 	byte cPercent;	//Pos: 0x00
 };
 
-struct STR_AI_COND_008 {
+struct STR_AI_COND_008
+{
 	//Check Near (2) (0x0c bytes)
 	dword iDistance;	//Pos: 0x00
-	word nLevelDiff;	//Pos: 0x04
-	word nLevelDiff2;	//Pos: 0x06
+	short nLevelDiff;	//Pos: 0x04
+	short nLevelDiff2;	//Pos: 0x06
 	byte btIsAllied;	//Pos: 0x08
 };
 
-struct STR_AI_COND_009 {
+struct STR_AI_COND_009
+{
 	//Unknown (0x00 bytes)
 };
 
-struct STR_AI_COND_010 {
+struct STR_AI_COND_010
+{
 	//Check AB (2) (0x04 bytes)
 	byte cAbType;	//Pos: 0x00
 	byte cMoreLess;	//Pos: 0x01
@@ -113,99 +127,103 @@ struct STR_AI_COND_010 {
 struct STR_AI_COND_011 {
 	//Check AB (3) (0x0c bytes)
 	byte cAbType;	//Pos: 0x00
+	word tBuffer; //Pos: 0x02
 	dword iValue;	//Pos: 0x04
 	byte cMoreLess;	//Pos: 0x08
 };
 
-struct STR_AI_COND_012 {
+struct STR_AI_COND_012
+{
 	//Check Time (1) (0x04 bytes)
 	byte cWhen;	//Pos: 0x00
 };
 
-struct STR_AI_COND_013 {
+struct STR_AI_COND_013
+{
 	//Check Target (1) (0x04 bytes)
 	byte btCheckTarget;	//Pos: 0x00
 	byte btStatusType;	//Pos: 0x01
 	byte btHave;	//Pos: 0x02
 };
 
-struct STR_AI_COND_014 {
+struct STR_AI_COND_014
+{
 	//Check Variable (1) (0x0c bytes)
 	byte btVarIDX;	//Pos: 0x00
+	word tBuffer; //Pos: 0x02
 	dword iValue;	//Pos: 0x04
 	byte btOp;	//Pos: 0x08
 };
 
-//LMATEST:
-struct STR_AI_COND_0141 {
-	//Check Variable (1) (0x0c bytes)
-	union
-	{
-        byte btVarIDX;	//Pos: 0x00
-        dword nVarIDX;  //Pos: 0x00
-	};
-
-	dword iValue;	//Pos: 0x04
-	byte btOp;	//Pos: 0x08
-};
-
-
-struct STR_AI_COND_015 {
+struct STR_AI_COND_015
+{
 	//Check Variable (2) (0x0c bytes)
 	word nVarIDX;	//Pos: 0x00
+	word tBuffer; //Pos: 0x02
 	dword iValue;	//Pos: 0x04
 	byte btOp;	//Pos: 0x08
 };
 
-struct STR_AI_COND_016 {
+struct STR_AI_COND_016
+{
 	//Check Variable (3) (0x00 bytes)
 	word nVarIDX;	//Pos: 0x00
+	word tBuffer; //Pos: 0x02
 	dword iValue;	//Pos: 0x04
 	byte btOp;	//Pos: 0x08
 };
 
-struct STR_AI_COND_017 {
+struct STR_AI_COND_017
+{
 	//Select NPC (0x04 bytes)
 	dword iNpcNo;	//Pos: 0x00
 };
 
-struct STR_AI_COND_018 {
+struct STR_AI_COND_018
+{
 	//Check Distance (3) (0x08 bytes)
 	dword iDistance;	//Pos: 0x00
 	byte btOp;	//Pos: 0x04
 };
 
-struct STR_AI_COND_019 {
+struct STR_AI_COND_019
+{
 	//Check Time (2) (0x08 bytes)
 	dword ulTime;	//Pos: 0x00
 	dword ulEndTime;	//Pos: 0x04
 };
 
-struct STR_AI_COND_020 {
+struct STR_AI_COND_020
+{
 	//Check AB (4) (0x0c bytes)
-	union{byte btAbType;	//Pos: 0x00
-	dword iAbType;};
+	union
+	{
+	    byte btAbType;	//Pos: 0x00
+	    dword iAbType;
+	};
 	dword iValue;	//Pos: 0x04
 	byte btOp;	//Pos: 0x08
 };
 
-
-
-struct STR_AI_COND_021 {
+struct STR_AI_COND_021
+{
 	//Unknown (0x00 bytes)
 };
 
-struct STR_AI_COND_022 {
+struct STR_AI_COND_022
+{
 	//Unknown (0x00 bytes)
 };
 
-struct STR_AI_COND_023 {
+struct STR_AI_COND_023
+{
 	//Check Time (3) (0x08 bytes)
 	dword ulTime;	//Pos: 0x00
 	dword ulEndTime;	//Pos: 0x04
 };
 
-struct STR_AI_COND_024 {
+struct STR_AI_COND_024
+{
 	//Check Date Time (4) (0x08 bytes)
 	byte btDate;	//Pos: 0x00
 	byte btHour1;	//Pos: 0x01
@@ -214,7 +232,8 @@ struct STR_AI_COND_024 {
 	byte btMin2;	//Pos: 0x04
 };
 
-struct STR_AI_COND_025 {
+struct STR_AI_COND_025
+{
 	//Check Weekday Time (5) (0x08 bytes)
 	byte btWeekDay;	//Pos: 0x00
 	byte btHour1;	//Pos: 0x01
@@ -223,13 +242,15 @@ struct STR_AI_COND_025 {
 	byte btMin2;	//Pos: 0x04
 };
 
-struct STR_AI_COND_026 {
+struct STR_AI_COND_026
+{
 	//Check Position (0x04 bytes)
 	word nMin;	//Pos: 0x00
 	word nMax;	//Pos: 0x02
 };
 
-struct STR_AI_COND_027 {
+struct STR_AI_COND_027
+{
 	//Check Near Character (0x10 bytes)
 	int iDistance;	//Pos: 0x00
 	byte btIsAllied;	//Pos: 0x04
@@ -239,19 +260,22 @@ struct STR_AI_COND_027 {
 	byte btOp;	//Pos: 0x0c
 };
 
-struct STR_AI_COND_028 {
+struct STR_AI_COND_028
+{
 	//Check Variable (4) (0x0c bytes)
 	word nVarIDX;	//Pos: 0x00
 	dword iValue;	//Pos: 0x04
 	byte btOp;	//Pos: 0x08
 };
 
-struct STR_AI_COND_029 {
+struct STR_AI_COND_029
+{
 	//Check Target (2) (0x04 bytes)
 	byte btTargetType;	//Pos: 0x00
 };
 
-struct STR_AI_COND_030 {
+struct STR_AI_COND_030
+{
 	//Unknown (0x04 bytes)
 	//dword Unknown;	//Pos: 0x00
 	dword Timer;	//Pos: 0x00, LMA: timer.

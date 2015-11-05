@@ -568,27 +568,38 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
         if(!Enemy->IsSummon( ) && !Enemy->IsPlayer( ))
         {
             //LMA: looping the drops (double drop medal for example).
-            int nb_drops=1;
+			CMonster* monster = reinterpret_cast<CMonster*>(Enemy);
+            if(monster == NULL)
+            {
+                //Log(MSG_DEBUG,"Monster killed. Failed to create monster object");
+                return;
+            }
+            else
+            {
+                //Log(MSG_DEBUG,"Monster killed. Setting death delay timer");
+                monster->DeathDelayTimer = clock();
+            }
+            int nb_drops = Stats->itemdroprate + GServer->Config.DROP_RATE;
             if (IsPlayer())
             {
                 CPlayer* plkiller=(CPlayer*) this;
-                nb_drops=plkiller->bonusddrop;
-                Log(MSG_INFO,"Drop time, there should be %i drops",nb_drops);
+                nb_drops = plkiller->bonusddrop;
+                //Log(MSG_INFO,"Drop time, there should be %i drops",nb_drops);
             }
 
             //No drop if already dead and drop done.
             if(Enemy->drop_dead)
             {
-                Log(MSG_WARNING,"Trying to make a monster (CID %u, type %u) drop again but already did.",Enemy->clientid,Enemy->char_montype);
+                //Log(MSG_WARNING,"Trying to make a monster (CID %u, type %u) drop again but already did.",Enemy->clientid,Enemy->char_montype);
                 nb_drops=0;
             }
-
+			//nb_drops = 3;	//PY: drops code testing
             for (int k=0;k<nb_drops;k++)
             {
                 thisdrop = Enemy->GetDrop( );
                 if(thisdrop!=NULL)
                 {
-                    Log(MSG_INFO,"Dropping Nb %i",k);
+                    //Log(MSG_INFO,"Dropping Nb %i",k);
                     CMap* map = GServer->MapList.Index[thisdrop->posMap];
                     map->AddDrop( thisdrop );
                 }
@@ -1565,7 +1576,7 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
         if(!Enemy->IsSummon( ) && !Enemy->IsPlayer( ))
         {
             //LMA: looping the drops (double drop medal for example).
-            int nb_drops=1;
+            int nb_drops = Stats->itemdroprate + GServer->Config.DROP_RATE;
             if (IsPlayer())
             {
                 CPlayer* plkiller=(CPlayer*) this;

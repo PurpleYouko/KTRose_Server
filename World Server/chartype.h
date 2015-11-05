@@ -93,6 +93,12 @@ struct STATS
     unsigned int side; //future expansion of drop system
     unsigned int sidechance; //future expansion of drop system
     unsigned int ExtraDamage_add;
+	unsigned int magicattack;
+	int ItemXPRate;
+    int ItemDropRate;
+    clock_t ItemXPTimer;
+    unsigned int ItemXPTime;
+    clock_t ItemDropRateTimer;
 //    unsigned int ShieldDamage;
 };
 

@@ -143,7 +143,7 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
         //if(AI == 999) Log( MSG_WARNING, "AddMonster Setting monAI " );
         monster->MonAI = AI;
         if(monster->MonAI == 999) AI = 30; //should create an AIP script that does nothing
-        /*
+       
         //this stuff is from KT where we were re-writing the entire AIP code. don't want to mess with that right now
         CAip* script = NULL;
         //if(AI == 999) Log( MSG_WARNING, "AddMonster Created CAip script " );
@@ -157,25 +157,25 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
             }
         }
         //if(monster->monAI == 999) Log( MSG_WARNING, "AddMonster finished scanning the AIPList " );
-        if(script == NULL && monster->monAI != 999)
+        if(script == NULL && monster->MonAI != 999)
         {
-            Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,monster->monAI );
-            monster->AItimer = 4000;
+            Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,monster->MonAI );
+            monster->AITimer = 4000;
         }
         else
         {
             //Log( MSG_WARNING, "Setting timer for monster type %i using AI %i", montype,monster->monAI );
-            if(monster->monAI == 999)
+            if(monster->MonAI == 999)
             {
-                monster->AItimer = 4000;
+                monster->AITimer = 4000;
             }
             else
             {
-                monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
+                monster->AITimer = script->minTime * 1000; //set AI timer value for this monster
             }
             //Log( MSG_WARNING, "Set the timer from the script" );
         }
-        */
+        
         if (monster->AITimer == 0)
             monster->AITimer = 4000;
         //Log( MSG_WARNING, "AddMonster end of main clause " );
@@ -185,26 +185,26 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
         //Set monster's AI to the default value for this monster type
         monster->MonAI = monster->thisnpc->AI;
 
-        /*
+        
         CAip* script = NULL;
         for(unsigned j=0; j < GServer->AipList.size(); j++)
         {
-            if (GServer->AipList.at(j)->AInumber == monster->monAI)
+            if (GServer->AipList.at(j)->AInumber == monster->MonAI)
             {
                 script = GServer->AipList.at(j);
                 break;
             }
         }
-        if(script == NULL && monster->monAI != 999) //don't give error messag eif it's 999
+        if(script == NULL && monster->MonAI != 999) //don't give error message if it's 999
         {
             //Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,AI );
-            monster->AItimer = 4000;
+            monster->AITimer = 4000;
         }
         else
         {
-            monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
+            monster->AITimer = script->minTime * 1000; //set AI timer value for this monster
         }
-        */
+        
         if (monster->AITimer == 0)
             monster->AITimer = 4000;
         //if(AI == 999) Log( MSG_WARNING, "AddMonster end of ELSE clause " );
@@ -314,11 +314,11 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
     }
     if(i != 0)
     {
-         //Log( MSG_INFO, "Deleting monster %i from monster list. montype: %i",i,monster->montype);
+         Log( MSG_INFO, "Deleting monster %i from monster list. montype: %i",i,monster->montype);
          MonsterList.erase( MonsterList.begin()+i );
-         //Log( MSG_INFO, "erased from list");
+         Log( MSG_INFO, "Monster %i erased from list", monster->montype);
          delete monster;
-         //Log( MSG_INFO, "deleted");
+         Log( MSG_INFO, "deleted monster %i", monster->montype);
          return true;
     }
     for(UINT j=0;j<MonsterList.size();j++)
@@ -329,12 +329,15 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
         {
             //Log( MSG_INFO, "Deleting monster %i from monster list. No specified position",monster->montype);
             MonsterList.erase( MonsterList.begin() + j );
+			Log( MSG_INFO, "deleted monster %i in the othermon loop", monster->montype);
             delete monster;
+			Log( MSG_INFO, "deleted monster %i", monster->montype);
             return true;
         }
     }
-    //Log( MSG_INFO, "Deleting monster %i from monster list anyway",monster->montype);
+    Log( MSG_INFO, "Wasn't caught in any conditionals. Deleting monster %i from monster list anyway",monster->montype);
     delete monster;
+	Log( MSG_INFO, "deleted monster %i", monster->montype);
     return false;
 }
 

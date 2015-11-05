@@ -283,14 +283,65 @@ bool CMonster::SummonUpdate(CMonster* monster, CMap* map, UINT j)
 //ainumber is monster->AI type is add=0 idle=1 attacking=2 attacked=3 after killing target=4 hp<1=5
 void CMonster::DoAi(int ainumberorg,char type)
 {
-    //LMA: reseting some timers.
+    //PY: Whole lot imported from KT cuz this isn't working properly
+	int ainumber = ainumberorg;
+	CAip* script = NULL;
+    int AIWatch = GServer->Config.AIWatch;
+    int aiindex = (ainumber*0x10000)+(type*0x100);
+    if(type == 5)
+    {
+        //Log(MSG_INFO,"Monster died. Activating AI type 5");
+    }
+    for(unsigned j=0; j < GServer->AipList.size(); j++)
+    {
+        if (GServer->AipList.at(j)->AipID == aiindex)
+        {
+            script = GServer->AipList.at(j);
+            
+            //if(ainumber == AIWatch)Log(MSG_DEBUG, "Record count = %i",script->recordcount[type]);
+            if(ainumber == AIWatch)Log(MSG_DEBUG, "aiCondition type: %i Index: %i condition count %i", type, aiindex, script->ConditionCount);
+            int success = AI_SUCCESS; //needs to be AI_SUCCESS otherwise would not perform conditionless actions
+            int thisaction = 0;
+            for (dword i = 0; i < script->ConditionCount; i++)
+            {
+                int command = script->Conditions[i]->opcode;
+                if (command > 30 || command < 0) continue;
+                //success = (*GServer->aiCondFunc[command])(GServer, this, script->Conditions[i]->data);
+				success = (*GServer->aiCondFunc[command])(GServer, this, script->Conditions[i]->data,ainumber);
+                if(ainumber == AIWatch)Log(MSG_DEBUG, "aiCondition %03u returned %d", command, success);
+                if (success == AI_FAILURE)
+                    break;
+            }
+            if (success == AI_SUCCESS)
+            {
+                for (dword i = 0; i < script->ActionCount; i++)
+                {
+                    int command = script->Actions[i]->opcode;
+                    if (command > 38 || command < 0) continue;
+                    //success = (*GServer->aiActFunc[command])(GServer, this, script->Actions[i]->data);
+					success = (*GServer->aiActFunc[command])(GServer, this, script->Actions[i]->data,ainumber);
+                    if(ainumber == AIWatch)Log(MSG_DEBUG, "aiAction: %03u returned %d", command, success);
+                }
+                if(success == AI_SUCCESS)
+                    return; //automatically return after performing the first successful action
+            }
+            aiindex++;
+        }
+        else if(GServer->AipList.at(j)->AipID > aiindex)return;
+    }
+    return;
+	
+	
+	
+	/*
+	//LMA: reseting some timers.
     if (type==0||type==1||type==4||type==5)
     {
         nextAi_attacked=clock();
     }
 
     //LMA: does the monster have a special AIP?
-    int ainumber=ainumberorg;
+    int ainumber = ainumberorg;
     if (sp_aip!=0)
     {
         ainumber=sp_aip;
@@ -303,7 +354,7 @@ void CMonster::DoAi(int ainumberorg,char type)
 
     bool lma_debug=false;
     int nb_turns=0;
-
+	*/
 
     /*if(ainumber==25||ainumber==499)
     {
@@ -336,6 +387,7 @@ void CMonster::DoAi(int ainumberorg,char type)
         LogDebugPriority(3);
     }*/
 
+	/*
     //LMA: findchar and nearchar set to NULL.
     nearChar=NULL;
     findChar=NULL;
@@ -498,4 +550,5 @@ void CMonster::DoAi(int ainumberorg,char type)
 
 
     return;
+	*/
 }

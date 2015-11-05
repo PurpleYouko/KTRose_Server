@@ -3050,9 +3050,9 @@ UINT CWorldServer::GetTimerFromAIP(dword script_id, bool is_npc)
     UINT my_timer=0;
 
 
-    if(AipListTimer.find(script_id)!=AipListTimer.end())
+    if(AipListTimer.find(script_id) != AipListTimer.end())
     {
-        my_timer=AipListTimer[script_id];
+        my_timer = AipListTimer[script_id];
         if(my_timer==0)
         {
             Log(MSG_WARNING,"Timer is 0 for script %i!",script_id);

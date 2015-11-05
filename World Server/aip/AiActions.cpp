@@ -24,11 +24,14 @@
 
 // extern CRandomMersenne rg;
 
-//Unknown
+//Stop all actions
 AIACT(000)
 {
 	//SetCMD_Stop (Stop all actions i guess?)
     //entity->StopAll();
+    CMonster* monster = reinterpret_cast<CMonster*>(entity);
+    ClearBattle( monster->Battle );
+    monster->Position->destiny = monster->Position->current;
 	return AI_SUCCESS;
 }
 
@@ -60,11 +63,23 @@ AIACT(001)
 AIACT(002)
 {
 	//Client side say text
-	//LMA: Client Side?
-	/*GETAIACTDATA(002);
-	CMonster* monster = reinterpret_cast<CMonster*>(entity);
-	LogDebug( "AIC2 :: %i (%s) Says LTB String %i (%s)",monster->montype,GServer->GetSTLMonsterNameByID(monster->montype),data->iStrID,GServer->Ltbstring[data->iStrID]->LTBstring);*/
+	//Log(MSG_DEBUG, "Say LTB String");
+	//dword iStrID;	      Pos: 0x00
+	GETAIACTDATA(002);
 
+	//Think this is crashing the server. Taken out for the time being.
+    //lets have the NPC also say the LTB string over the regular message system. This will show up green ^-^
+	CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
+    //if(thisMonster->CharType == TNPC) // check if it is an NPC and not a normal monster.
+	//{
+    	// NPCname and LTBstring not set up correctly. commenting for now
+		//BEGINPACKET( pak, 0x0784 );
+        //ADDSTRING( pak, GServer->Ltbstring[data->iStrID].NPCname );
+        //ADDBYTE( pak, 0 );
+        //ADDSTRING( pak, GServer->Ltbstring[data->iStrID].LTBstring );
+        //ADDBYTE( pak, 0 );
+        //GServer->SendToVisible(&pak, thisMonster);
+    //}
 	return AI_SUCCESS;
 }
 
@@ -95,7 +110,7 @@ AIACT(003)
     //srand(time(NULL));
     randDis = rand()%(iDist << 1);
 	float nY = (entity->Position->current.y + randDis) - iDist;
-	entity->Position->destiny.y=nY;
+	entity->Position->destiny.y = nY;
 	monster->thisnpc->stance = data->cSpeed;
 	monster->SetStats(false);
     entity->Position->lastMoveTime = clock();
@@ -110,8 +125,8 @@ AIACT(003)
 	ADDWORD    ( pak, 0xcdcd );
 	ADDBYTE    ( pak, monster->thisnpc->stance );
 	GServer->SendToVisible(&pak, entity);
-    LogDebug( "move1 monster %i, stance %i",monster->montype,data->cSpeed);
-    LogDebug( "move(1)");
+    //Log(MSG_DEBUG, "move1 stance %i",data->cSpeed);
+    //Log(MSG_DEBUG, "move(1)");
 	return AI_SUCCESS;
 }
 
@@ -132,8 +147,6 @@ AIACT(004)
     monster->UpdatePosition(monster->stay_still);
 
 	int iDist = data->iDistance;//Get it to our coord system!
-
-    //int randDis = rg.IRandom(0, iDist << 1);
     int randDis = rand()%(iDist << 1);
 	float nX = (entity->Position->source.x + randDis) - iDist;
 	entity->Position->destiny.x=nX;

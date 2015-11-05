@@ -488,7 +488,8 @@ class CWorldServer : public CServerSocket
         fpQuestCond qstCondFunc[31];
         fpQuestRewd qstRewdFunc[35];
 
-        //LMA: for AIP:
+        //AIP:
+		vector<CAip*> AipList;
         fpQuestCondC qstCondFuncC[31];
         fpQuestRewdC qstRewdFuncC[35];
 
@@ -529,10 +530,11 @@ class CWorldServer : public CServerSocket
         void ExportAipDataA(byte* dataorg,int size,int opcode);  //LMA: exporting AIP actions data
         //LMA: END exporting.
 
-        bool LoadDropsData( );
-        bool LoadPYDropsData( );    //hidden
-        bool LoadPYDropsDataAnd( );    //hidden
-        bool LoadSkillBookDropsData( ); //hidden
+        bool LoadNewDrops( );
+		//bool LoadDropsData( );
+        //bool LoadPYDropsData( );    //hidden
+        //bool LoadPYDropsDataAnd( );    //hidden
+        //bool LoadSkillBookDropsData( ); //hidden
         bool LoadConfig( );
         //bool LoadLTB( );
         bool LoadChestData( );
@@ -625,7 +627,7 @@ class CWorldServer : public CServerSocket
 
         map<int,vector<int> >    ListAllNpc;             //LMA: we store all the NPC in a single map.
 
-        //CItemStas               StatsList[500];
+       // CItemStas               StatsList[500];
         CItemStas               **StatsList;            //LMA: without limits...
         int                     maxStats;               //Nb Stats.
         //CExtraStats             StatLookup[301];        //PY: Item Stats

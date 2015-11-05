@@ -35,6 +35,7 @@ class CMonster : public CCharacter
      	clock_t lastSighCheck;
      	clock_t lastDegenTime;
 		time_t lastLifeUpdate;
+		clock_t DeathDelayTimer;
 		UINT life_time; //LMA: life time, for summons mainly...
 
 
@@ -104,8 +105,13 @@ class CMonster : public CCharacter
         unsigned int GetAttackPower();
         unsigned int GetDefense();
         unsigned int GetDodge();
+		unsigned int GetXPRate( );
+        unsigned int GetItemDropRate( );
+        unsigned int GetItemDropCountRate( );
+        unsigned int GetZulyDropRate( );
         unsigned int GetAccury();
         unsigned int GetMagicDefense();
+		unsigned int GetMagicAttack( );
         unsigned int GetCritical();
         unsigned int GetAttackSpeed();
         unsigned int GetMoveSpeed();

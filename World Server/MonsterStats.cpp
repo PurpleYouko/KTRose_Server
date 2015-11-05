@@ -301,6 +301,12 @@ bool CMonster::ForceMaxHP( )
     return true;
 }
 
+// return magic attack
+unsigned int CMonster::GetMagicAttack( )
+{
+    return thisnpc->magicattack;             
+}
+
 // Get Mob Critical
 unsigned int CMonster::GetCritical()
 {
@@ -313,71 +319,47 @@ float CMonster::GetAttackDistance()
     return thisnpc->atkdistance;
 }
 
+unsigned int CMonster::GetXPRate( )
+{
+    return 0;         
+}
+
+unsigned int CMonster::GetItemDropRate( )
+{
+    return 0;         
+}
+
+unsigned int CMonster::GetItemDropCountRate( )
+{
+    return 0;         
+}
+
+unsigned int CMonster::GetZulyDropRate( )
+{
+    return 0;         
+}
+
 //Set Monster Stats Values
 bool CMonster::SetStats(bool all)
 {
-    if(thisnpc==NULL)
+    if(thisnpc == NULL) return false;
+    Stats->Level = thisnpc->level;    
+    Stats->Attack_Power = GetAttackPower( );
+    Stats->Defense = GetDefense( );
+    Stats->xprate = GetXPRate( );
+    Stats->itemdroprate = GetItemDropRate( );
+    Stats->zulydroprate = GetZulyDropRate( );
+    Stats->Attack_Speed = GetAttackSpeed( );
+    Stats->Move_Speed = GetMoveSpeed( );
+    Stats->Dodge = GetDodge( );
+    Stats->Accury = GetAccury( );
+    Stats->Critical = GetCritical( );
+    Stats->Magic_Defense = GetMagicDefense( );
+    Stats->magicattack = GetMagicAttack( );
+    Stats->Attack_Distance = GetAttackDistance( );
+    for(int i=0;i<20;i++)
     {
-        return false;
+        AIVar[i] = 0;        
     }
-
-    if(!IsSummon())//Tomiz : Check Monster lvl if is not a Summon(the one from job, setup to fix normal atk formula because summon got lvl <= 100 in STB)
-    {
-        Stats->Level=thisnpc->level;
-    }
-
-    if (all||Stats->Attack_Power==0)
-    {
-    	Stats->Attack_Power = GetAttackPower();
-    }
-
-    if (all||Stats->Defense==0)
-    {
-    	Stats->Defense = GetDefense();
-    }
-
-    if (all||Stats->Dodge==0)
-    {
-    	Stats->Dodge = GetDodge();
-    }
-
-    if (all||Stats->Accury==0)
-    {
-    	Stats->Accury = GetAccury();
-    }
-
-    if (all||Stats->Magic_Defense==0)
-    {
-    	Stats->Magic_Defense = GetMagicDefense();
-    }
-
-    if (all||Stats->Critical==0)
-    {
-    	Stats->Critical = GetCritical();
-    }
-
-    if (all||Stats->Move_Speed==0)
-    {
-    	Stats->Move_Speed = GetMoveSpeed();
-    }
-
-    if (all||Stats->Attack_Speed==0)
-    {
-    	Stats->Attack_Speed = GetAttackSpeed();
-    }
-
-    if (all||Stats->Attack_Distance==0)
-    {
-    	Stats->Attack_Distance = GetAttackDistance();
-    }
-
-    Stats->MaxHP = GetMaxHP();
-    Stats->MaxMP = GetMaxMP();
-
-    /*for(int i=0;i<20;i++)
-    {
-        AIVar[i] = 0;
-    }*/
-
     return true;
 }
