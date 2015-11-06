@@ -1,0 +1,10 @@
+upgrade_level (to),percentage,percentage_with_venurune
+1,100,100
+2,90,100
+3,75,85
+4,55,65
+5,35,45
+6,25,35
+7,10,20
+8,5,15
+9,1,11

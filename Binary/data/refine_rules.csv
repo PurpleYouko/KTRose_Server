@@ -1,0 +1,15 @@
+itemgrade_family,refine_safe_until,refine_can_degrade_until
+1,5,8
+2,4,8
+3,3,8
+4,2,7
+5,2,7
+6,2,7
+7,1,6
+8,1,6
+9,1,6
+11,1,7
+12,1,9
+13,1,9
+14,1,9
+16,1,9
