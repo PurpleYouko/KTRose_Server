@@ -1,26 +1,17 @@
--- phpMyAdmin SQL Dump
--- version 2.10.3
--- http://www.phpmyadmin.net
--- 
--- Host: localhost
--- Generation Time: Nov 05, 2015 at 11:10 AM
--- Server version: 5.0.45
--- PHP Version: 5.2.3
+/*
+MySQL Data Transfer
+Source Host: localhost
+Source Database: osrose
+Target Host: localhost
+Target Database: osrose
+Date: 12/18/2008 8:32:20 AM
+*/
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
--- 
--- Database: `osrose`
--- 
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `list_config`
--- 
-
-DROP TABLE IF EXISTS `list_config`;
-CREATE TABLE IF NOT EXISTS `list_config` (
+SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for list_config
+-- ----------------------------
+CREATE TABLE `list_config` (
   `id` int(10) NOT NULL auto_increment,
   `exp_rate` int(11) NOT NULL,
   `kill_on_fail` tinyint(1) NOT NULL default '0',
@@ -62,13 +53,10 @@ CREATE TABLE IF NOT EXISTS `list_config` (
   `uwside` int(11) NOT NULL default '0',
   `pc_drop_zuly` int(11) NOT NULL default '30',
   `drop_rev` int(11) NOT NULL default '1',
-  `deathdelay` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table `list_config`
--- 
-
-INSERT INTO `list_config` (`id`, `exp_rate`, `kill_on_fail`, `drop_rate`, `zuly_rate`, `blue_chance`, `slot_chance`, `stat_chance`, `refine_chance`, `rare_refine`, `conf`, `player_damage`, `monster_damage`, `player_acc`, `monster_acc`, `pvp_acc`, `skill_damage`, `maxlevel`, `drop_type`, `savetime`, `partygap`, `maxstat`, `cfmode`, `autosave`, `mapdelay`, `visualdelay`, `worlddelay`, `fairymode`, `fairystay`, `fairywait`, `fairytestmode`, `osRoseVer`, `testgrid`, `jrose`, `is_pegasus`, `monmax`, `massexport`, `uwnbplayers`, `uwside`, `pc_drop_zuly`, `drop_rev`, `deathdelay`) VALUES 
-(1, 1, 0, 2, 3, 5, 5, 5, 5, 0, 'default', 100, 100, 100, 100, 100, 100, 215, 2, 500, 10, 400, 0, 1, 10, 200, 700, 1, 45, 30, 0, '81.361', 1, 0, 0, 10, 0, 0, 0, 30, 1, 500);
+-- ----------------------------
+-- Records 
+-- ----------------------------
+INSERT INTO `list_config` VALUES ('1', '8', '0', '80', '3', '5', '5', '5', '5', '0', 'default', '100', '100', '100', '100', '100', '100', '220', '2', '500', '10', '400', '0', '1', '10', '200', '700', '1', '45', '30', '0', '81.361', '1', '0', '0', '10','0','0','0','30','1');

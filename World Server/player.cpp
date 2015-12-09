@@ -79,6 +79,11 @@ CPlayer::CPlayer( CClientSocket* CLIENT )
     CharInfo->SkillPoints = 0;
     CharInfo->stamina = 0;
     CharInfo->isGM = 0; // GM Security
+	CharInfo->isDev = 0;
+
+	Stats->CheatMaxHP = 0;
+	Stats->CheatMaxMP = 0;
+	
 
     // RIDE
     Ride = new RIDE;
@@ -195,6 +200,7 @@ CPlayer::CPlayer( CClientSocket* CLIENT )
     Attr->Econ = 0;
     Attr->Echa = 0;
     Attr->Esen = 0;
+
 
     CharType = TPLAYER;
 
@@ -439,7 +445,7 @@ long int CPlayer::ReturnPvp( CPlayer* player, CPlayer* otherclient )
 
 // Spawn Another User on the Screen
 //We send "otherclient" to "player"
-bool CPlayer::SpawnToPlayer( CPlayer* player, CPlayer* otherclient )
+bool CPlayer::SpawnToPlayer( CPlayer* player, CPlayer* otherclient )		//PY: This seems to be all kinds of wrong. The packets don't match correctly and all the stats should be for OTHERCLIENT, not player (this)
 {
     BEGINPACKET( pak, 0x793 );
 	ADDWORD( pak, clientid);				// USER ID ANYONE?
@@ -489,11 +495,11 @@ bool CPlayer::SpawnToPlayer( CPlayer* player, CPlayer* otherclient )
         default:
            ADDBYTE( pak, 0x0b );
     }
-    ADDWORD( pak, 0x0000 );
-    ADDWORD( pak, 0x0000 );
+    ADDWORD( pak, Stats->HP );		//PY: this is hp not 0x0000
+    ADDWORD( pak, 0x0000 );			//PY: this should be team number
 
     //LMA: new simpler way.
-    pvp_id=otherclient->ReturnPvp(player,otherclient);
+    pvp_id = otherclient->ReturnPvp(player,otherclient);	//PY: No idea what this is for. Can't find an equivalent in the client
     ADDDWORD(pak,pvp_id);
 
     ADDDWORD( pak, GServer->BuildBuffs( this ) );//BUFFS

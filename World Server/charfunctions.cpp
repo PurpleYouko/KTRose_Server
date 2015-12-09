@@ -40,7 +40,7 @@ bool CCharacter::IsPlayer( )
 // return true if HP is lower to 1
 bool CCharacter::IsDead( )
 {
-    if(Stats->HP<=0)
+    if(Stats->HP <= 0)
         return true;
     return false;
 }
@@ -458,7 +458,7 @@ bool CCharacter::stopMoving()
 }
 
 // VIRTUAL [add player damage]
-void CCharacter::AddDamage( CCharacter* enemy, long long hitpower)
+void CCharacter::AddDamage( CCharacter* enemy, int hitpower)
 {
     Log(MSG_INFO,"In CCharacter::AddDamage");
 }
@@ -467,6 +467,12 @@ void CCharacter::AddDamage( CCharacter* enemy, long long hitpower)
 CCharacter* CCharacter::GetCharTarget( )
 {
     return GServer->MapList.Index[Position->Map]->GetCharInMap( Battle->target );
+}
+
+// return character target
+CCharacter* CCharacter::GetCharAttacker( )
+{
+    return GServer->MapList.Index[Position->Map]->GetCharInMap( Battle->hitby );
 }
 
 // return character Buff target

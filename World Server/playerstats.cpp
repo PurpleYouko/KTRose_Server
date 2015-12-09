@@ -981,7 +981,9 @@ unsigned int CPlayer::GetMagicDefense( )
 // Return Attack with and without PAT [TODO] : Cart Weapon       //A_ATTACK(18) and the other for weapon type (104-117) (42-48)
 unsigned int CPlayer::GetAttackPower( )
 {
-    UINT attack = 0;
+    if(Stats->CheatAttackPower > 0)
+		return Stats->CheatAttackPower;
+	UINT attack = 0;
     UINT weapontype = 0;
     UINT weaponatk = 0;
     UINT pattack = 0;//Passive Skill % Value
@@ -3281,7 +3283,7 @@ unsigned int CPlayer::GetCartSpeed( )
 
         for(int k=135;k<138;k++)
         {
-          mspeed+=GServer->PatList.Index[items[k].itemnum]->speed;
+          mspeed += GServer->PatList.Index[items[k].itemnum]->speed;
         }
 
     return mspeed;
@@ -3299,6 +3301,13 @@ unsigned int CPlayer::GetMoveSpeed( )
     {
         Status->Stance = WALKING;
     }
+
+	if(Stats->CheatMoveSpeed != 0)
+	{
+		//Log(MSG_WARNING, "Cheat Max HP has been set to %i", Stats->CheatMaxHP);
+		Stats->Move_Speed = Stats->CheatMoveSpeed;
+		return Stats->Move_Speed;		//PY cheat method 
+	}
 
     switch(Status->Stance)
     {
@@ -3599,11 +3608,17 @@ unsigned int CPlayer::GetMoveSpeed( )
 }
 
 // Return Max HP with and without PAT           //A_MAX_HP(38) / A_HP(16) / MAX_HP(54)
-unsigned long long CPlayer::GetMaxHP( )
+unsigned int CPlayer::GetMaxHP( )
 {
 	if(Stats->Level<1)
 	{
         Stats->Level=1;
+	}
+	if(Stats->CheatMaxHP != 0)
+	{
+		//Log(MSG_WARNING, "Cheat Max HP has been set to %i", Stats->CheatMaxHP);
+		Stats->MaxHP = Stats->CheatMaxHP;
+		return Stats->MaxHP;		//PY cheat method for testing client connection
 	}
 
 	unsigned int hpmax = (unsigned int)floor(((sqrt((double)Stats->Level + 20) * (Stats->Level + 5 )) * 3.5) + ((Attr->Str + Attr->Estr) << 1));
@@ -4830,37 +4845,20 @@ unsigned int CPlayer::GetXPRate( )
         }
     }
 	
-	//code from KT. Completely different skill structures. Include here only for reference. To be removed later
-	/*
-	for(UINT i=0;i<30;i++)
-    {
-        if (pskill[i] == 0)
-		    continue;
-        CSkills* skill = GServer->GetSkillByID( (pskill[i])+(pskilllvl[i]));
-        if( skill == NULL )
-            continue;
-        for(UINT j = 0; j < 2; j++ )
-        {
-            if( skill->buff[j] == sEXPRate )
-            {
-                if( skill->value2[j] > 0 )
-                    Extra += XPRate * skill->value2[j] / 100;
-                if( skill->value1[j] > 0 )
-                    Extra += skill->value1[j];
-            }
-        }
-    }
-	*/
+	
     CMap* map = GServer->MapList.Index[Position->Map];
     
     XPRate += Extra;
 
     if(XPRate < 1)
         XPRate = 1;
+	if(map->mapXPRate < 1)
+		map->mapXPRate = 1;
     XPRate = XPRate * map->mapXPRate;
     //Log( MSG_INFO, "XP rate calculated as = %i", XPRate);
-    Log( MSG_INFO, "XPRate: %i Map XP rate: %i for map %i",XPRate,map->mapXPRate, map->id);
-    return XPRate;
+	GServer->SendPM(this, "XPRate: %i Map XP rate: %i for map %i",XPRate,map->mapXPRate, map->id);
+   
+	return XPRate;
 }
 
 // Return Item Drop Rate
@@ -5021,6 +5019,8 @@ unsigned int CPlayer::GetItemDropCountRate( )
     return itemdroprate;
 }
 
+
+
 // calculate Player Stats
 void CPlayer::SetStats( )
 {
@@ -5051,5 +5051,19 @@ void CPlayer::SetStats( )
     Stats->MaxWeight = GetMaxWeight( );
     Stats->MaxSummonGauge = GetMaxSummonGauge( );
     Stats->MPReduction = GetMPReduction( );
+	Stats->xprate = GetXPRate( );
+	
+}
+
+void CPlayer::SetMaxHP(unsigned int MaxHP )		//PY: test code to artificially set MaxHP to a different level than it should be. Intention is to force the client to accept server stats
+{
+	Stats->MaxHP = MaxHP;
+}
+
+void CPlayer::SetCurrentHP(unsigned int HP )		//PY: test code to artificially set MaxHP to a different level than it should be. Intention is to force the client to accept server stats
+{
+	if(HP >Stats->MaxHP)	//can't have current HP bigger than MaxHP. Could maybe increase MaxHP instead but whatever
+		HP = Stats->MaxHP;
+	Stats->HP = HP;
 }
 

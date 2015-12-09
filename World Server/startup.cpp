@@ -204,7 +204,8 @@ bool CWorldServer::LoadLTB( )
     for (unsigned int k=0;k<MyLTB.record.size();k++)
     {
         //cout << "IndexMyLTB " << k << " NPC: " << MyLTB.record.at(k).name.c_str() << ", sentence: " << MyLTB.record.at(k).sentence.c_str() << endl;
-        CLTBstring* tempLTB = new CLTBstring;
+        //Log(MSG_INFO, "Loading AIP LTB string %i",k);
+		CLTBstring* tempLTB = new CLTBstring;
         tempLTB->NPCname=new char[MyLTB.record.at(k).name.size()+1];
         strcpy (tempLTB->NPCname, MyLTB.record.at(k).name.c_str());
         tempLTB->LTBstring=new char[MyLTB.record.at(k).sentence.size()+1];
@@ -218,7 +219,8 @@ bool CWorldServer::LoadLTB( )
     for (unsigned int k=0;k<MyLTBQSD.record.size();k++)
     {
         //cout << "IndexMyLTBQSD " << k << " NPC: " << MyLTBQSD.record.at(k).name.c_str() << ", sentence: " << MyLTBQSD.record.at(k).sentence.c_str() << endl;
-        CLTBstring* tempLTB = new CLTBstring;
+        //Log(MSG_INFO, "Loading QSD LTB string %i",k);
+		CLTBstring* tempLTB = new CLTBstring;
         tempLTB->NPCname=new char[2];
         strcpy (tempLTB->NPCname, " ");
         tempLTB->LTBstring=new char[MyLTBQSD.record.at(k).sentence.size()+1];
@@ -562,11 +564,12 @@ bool CWorldServer::LoadNPCData( )
         newnpc->stance = mRUNNING;  //AIP
         newnpc->wspeed = STB_NPC.rows[i][2];
         newnpc->rspeed = STB_NPC.rows[i][3];
-        //newnpc->dspeed = STB_NPC.rows[i][4]; //row 4 is monster size ...
+        //newnpc->dspeed = STB_NPC.rows[i][4];	//row 4 is monster size ...
         newnpc->weapon = STB_NPC.rows[i][5];
         newnpc->subweapon = STB_NPC.rows[i][6];
         newnpc->level = STB_NPC.rows[i][7];
         newnpc->hp = STB_NPC.rows[i][8];
+		newnpc->MaxHP = STB_NPC.rows[i][8];		//same as hp
         newnpc->atkpower = STB_NPC.rows[i][9];
         newnpc->hitrate = STB_NPC.rows[i][10];
         newnpc->defense = STB_NPC.rows[i][11];
@@ -587,12 +590,12 @@ bool CWorldServer::LoadNPCData( )
 
         newnpc->atkdistance = STB_NPC.rows[i][26]/100;
         newnpc->aggresive = STB_NPC.rows[i][27];
-        newnpc->helpless=0;
+        newnpc->helpless = 0;
         newnpc->shp = STB_NPC.rows[i][42];
-        newnpc->dialogid = 0;   //handled in list_npc now
-        newnpc->eventid = 0;   //handled in list_npc now
-        newnpc->side=0; //hidden
-        newnpc->sidechance=0;   //hidden
+        newnpc->dialogid = 0;					//handled in list_npc now
+        newnpc->eventid = 0;					//handled in list_npc now
+        newnpc->side=0;							//hidden
+        newnpc->sidechance=0;					//hidden
         newnpc->STLId=STB_NPC.rows[i][40];
 		newnpc->die_quest=STB_NPC.rows[i][41];
 
@@ -2394,7 +2397,8 @@ bool CWorldServer::LoadEquip( )
     Log( MSG_LOAD, "Equip Data - STB         " );
     for(int j=0;j<9;j++)
     {
-        for(unsigned int i=0;i<STB_ITEM[j].rowcount;i++)
+        EquipList[j+1].STBMax = STB_ITEM[j].rowcount;
+		for(unsigned int i=0;i<STB_ITEM[j].rowcount;i++)
         {
             CEquip* newequip = new (nothrow) CEquip;
             if(newequip==NULL)
@@ -2518,6 +2522,7 @@ bool CWorldServer::LoadEquip( )
 bool CWorldServer::LoadJemItem( )
 {
     Log( MSG_LOAD, "Jem Data - STB        " );
+	EquipList[11].STBMax = STB_ITEM[10].rowcount;
     for(unsigned int i=0;i<STB_ITEM[10].rowcount;i++)
     {
         CJemData* thisjem = new (nothrow) CJemData;
@@ -2591,6 +2596,7 @@ bool CWorldServer::LoadNaturalItem( )
 bool CWorldServer::LoadPatItem( )
 {
     Log( MSG_LOAD, "PAT Data - STB         " );
+	EquipList[14].STBMax = STB_ITEM[13].rowcount;
     for(unsigned int i=0;i<STB_ITEM[13].rowcount;i++)
     {
         CPatData* newpat = new (nothrow) CPatData;
@@ -3598,7 +3604,7 @@ bool CWorldServer::LoadConfig( )
         refine_chance, rare_refine, kill_on_fail, player_damage, monster_damage, player_acc, monster_acc, \
         pvp_acc, skill_damage, maxlevel, drop_type, savetime, partygap, maxstat, cfmode, autosave, mapdelay, \
         visualdelay, worlddelay, fairymode, fairystay, fairywait, fairytestmode, osrosever, testgrid, jrose, \
-        is_pegasus, monmax, massexport,uwnbplayers,uwside,pc_drop_zuly,deathdelay FROM list_config");
+        is_pegasus, monmax, massexport,uwnbplayers,uwside,pc_drop_zuly,deathdelay,maxoverkill FROM list_config");
 
     if(result==NULL)
     {
@@ -3661,7 +3667,9 @@ bool CWorldServer::LoadConfig( )
 
         //LMA: % of getting zuly in drop.
        GServer->Config.pc_drop_zuly=atoi(row[37]);
-	   GServer->Config.DeathDelay = atoi(row[38]); //timer in miliseconds
+	   GServer->Config.DeathDelay = atoi(row[38]);	//timer in miliseconds
+	   GServer->Config.MaxOverkill = atof(row[39]);	//Maximum Overkill Exprate
+
        if(GServer->Config.pc_drop_zuly<=0||GServer->Config.pc_drop_zuly>=100)
        {
            GServer->Config.pc_drop_zuly=30;

@@ -1,388 +1,361 @@
-SET FOREIGN_KEY_CHECKS=0;
--- ----------------------------
--- Table structure for list_npcs
--- ----------------------------
-CREATE TABLE `list_npcs` (
-`id` int(11) NOT NULL auto_increment,
-`name` varchar(255) NOT NULL,
-`type` int(11) NOT NULL,
-`map` int(11) NOT NULL,
-`dir` float NOT NULL,
-`x` float NOT NULL,
- `y` float NOT NULL,
- `dialogid` int(11) NOT NULL default '0',
- `eventid` int(11) NOT NULL default '0',
- `tempdialogid` int(11) NOT NULL default '0',
- `extra_param` int(11) NOT NULL default '0',
- PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-INSERT INTO `list_npcs` VALUES (0, '[Livestock Farmer] Lampa', 1016, 1, 173.934, 5109.42, 5363.68, 116,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Crow', 1004, 1, 6.067, 5094.38, 5259.90, 104,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Ulysses', 1012, 1, 84.014, 5071.26, 5206.92, 112,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Junon Order Co-Founder] Francis', 1003, 1, 157.957, 5080.30, 5066.28, 103,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Righteous Crusader] Leonard', 1005, 1, 16.102, 5261.08, 5166.96, 105,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Designer] Keenu', 1010, 1, 343.898, 5273.50, 5256.83, 110,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Eccentric Inventor] Spero', 1011, 1, 14.293, 5212.36, 5254.66, 111,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Tavern Owner] Sharlin', 1013, 1, 333.435, 5131.56, 5218.14, 113,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Resident] Luth', 1015, 1, 270.003, 5130.61, 5154.58, 115,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Guide] Lena', 1014, 1, 169.135, 5240.40, 5124.57, 114,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Info] Judy', 1201, 1, 162.011, 5261.88, 5212.97, 305,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Teleporter] Idiosel', 1119, 1, 167.450, 5244.93, 5220.95, 219,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Kingdom Minister] Warren', 1002, 1, 178.499, 5208.78, 5112.94, 102,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Village Chief] Cornell', 1001, 1, 183.008, 5217.51, 5113.18, 101,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cornell''s Grandson] Cheney', 1018, 1, 22.043, 5435.30, 5492.26, 118,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Merchant] Tryteh', 1006, 1, 258.128, 5313.26, 5153.74, 106,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gypsy Merchant] Mina', 1007, 1, 197.989, 5292.56, 5127.66, 107,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Weapon Seller] Raffle', 1008, 1, 322.406, 5302.32, 5232.34, 108,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Armor Seller] Carrion', 1009, 1, 275.986, 5313.53, 5198.14, 109,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Keenu''s Daughter] Arisa', 1020, 1, 275.985, 5428.17, 5082.68, 120,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lena''s Sister] Shirley', 1019, 1, 322.406, 5504.69, 5274.08, 119,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) Christmas Event 2008', 3040, 2, 0.000, 4829.88, 4645.83, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) NPC2', 3041, 2, 0.000, 4833.84, 4645.52, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(200) NPC1791', 1791, 2, 0.000, 4838.05, 4644.56, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(200) NPC1792', 1792, 2, 0.000, 4841.91, 4644.57, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(200) NPC1793', 1793, 2, 0.000, 4845.60, 4644.59, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(200) NPC1794', 1794, 2, 0.000, 4849.58, 4644.48, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(200) NPC1795', 1795, 2, 0.000, 4853.38, 4644.49, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Righteous Crusader] Gawain', 1090, 2, 84.016, 5334.58, 5353.91, 190,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Righteous Crusader] Huffe', 1111, 2, 90.000, 5334.84, 5345.81, 211,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Clan Owner] Burtland', 1115, 2, 90.000, 5289.10, 5264.10, 215,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Clan War Manager] Regina', 1751, 2, 90.000, 5290.17, 5244.25, 751,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Clan Merchant] Aliche Patt', 1752, 2, 90.000, 5288.35, 5260.53, 224,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Teleporter] Idiosel', 1119, 2, 283.797, 5344.59, 5176.35, 219,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Founder of Junon Order] Raw', 1088, 2, 181.501, 5319.27, 5095.36, 188,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Junon Order Elder] Gorthein', 1109, 2, 181.501, 5325.54, 5095.31, 209,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Guide] Eva', 1082, 2, 153.435, 5505.78, 5346.09, 182,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Soldier] Odelo', 1116, 2, 0.000, 5507.31, 5397.40, 216,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Soldier] Winters', 1117, 2, 0.000, 5522.99, 5397.75, 217,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mayor] Darren', 1081, 2, 178.499, 5514.48, 5238.20, 181,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Info] Felice Fete', 1202, 2, 206.565, 5562.00, 5164.83, 306,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Ambassador] Adalric', 1108, 2, 150.956, 5461.70, 5167.42, 226,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Interplanetary Guide] Alphonso', 1118, 2, 178.499, 5520.56, 5063.66, 218,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Historian] Jones', 1104, 2, 162.011, 5578.19, 4890.44, 204,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Vicious Captain] Ruven', 1125, 2, 270.000, 5597.76, 4918.87, 220,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Manager of Ferrell] Arothel', 1089, 2, 270.000, 5713.43, 5360.16, 189,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Armor Merchant] Saki', 1094, 2, 258.129, 5721.80, 5290.79, 194,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Charrs', 1110, 2, 270.000, 5713.38, 5368.71, 210,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gypsy Merchant] Bellia', 1092, 2, 217.594, 5725.11, 5199.04, 192,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Weapon Merchant] Crune', 1093, 2, 335.763, 5728.67, 5224.89, 193,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Designer] Lisa', 1095, 2, 220.893, 5729.06, 5136.33, 195,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Merchant] Mildun', 1096, 2, 165.707, 5673.16, 5193.89, 196,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Tavern Owner] Harin', 1097, 2, 90.000, 5681.79, 5131.11, 197,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Merchant] Chelsie', 1091, 2, 211.693, 5723.96, 5087.24, 191,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Kiroth', 1098, 2, 275.984, 5603.58, 5058.10, 198,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Hayen', 1099, 2, 258.129, 5603.77, 5046.12, 199,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Itz', 1100, 2, 270.000, 5603.69, 5034.52, 200,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Researcher] Carasia', 1112, 2, 197.989, 5730.57, 5094.06, 212,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Livestock Farmer] Sicru', 1107, 2, 187.631, 5818.02, 5487.59, 207,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Rooen', 1513, 3, 0.000, 5104.48, 5019.71, 303,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Rodath', 1086, 5, 90.000, 5155.07, 5279.92, 186,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Mel', 1087, 5, 270.000, 5247.07, 5279.96, 187,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Gamp', 1084, 6, 271.999, 5248.14, 5279.20, 185,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Referee] Leum', 1113, 9, 0.000, 5199.99, 5390.04, 213,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Referee] Pirre', 1114, 9, 180.500, 5200.09, 4704.69, 214,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 11, 84.016, 4953.37, 4992.35, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 11, 10.865, 4978.48, 5478.60, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 11, 337.957, 5455.57, 5478.99, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 11, 335.763, 5521.94, 5020.66, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 12, 84.016, 4953.37, 4992.35, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 12, 10.865, 4978.48, 5478.60, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 12, 337.957, 5455.57, 5478.99, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 12, 335.763, 5521.94, 5020.66, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 13, 84.016, 4953.37, 4992.35, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 13, 10.865, 4978.48, 5478.60, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 13, 337.957, 5455.57, 5478.99, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Nell', 1085, 13, 335.763, 5521.94, 5020.66, 184,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Common Wares] Frederic', 2011, 15, 319.107, 5207.90, 5153.57, 85,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Dealer Merchandise] Rosie', 2013, 15, 271.999, 5175.76, 5199.74, 87,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Soldier Equipment] Leonid', 2014, 15, 342.011, 5208.64, 5248.82, 88,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hawker Gear] William', 2012, 15, 183.513, 5207.26, 5161.95, 86,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Muse Goods] Cleo', 2015, 15, 303.017, 5235.19, 5217.05, 89,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Common Wares] Rhys', 2001, 16, 12.550, 5192.77, 5153.68, 85,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hawker Gear] Hunter', 2002, 16, 342.011, 5211.92, 5248.35, 86,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Dealer Merchandise] Claudia', 2003, 16, 82.039, 5226.49, 5199.78, 87,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Soldier Equipment] Theodor', 2004, 16, 24.237, 5172.74, 5227.37, 88,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Muse Goods] Jora', 2005, 16, 180.500, 5199.20, 5160.35, 89,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Common Wares] Henry', 2021, 17, 345.707, 5206.12, 5153.88, 85,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hawker Gear] Markos', 2022, 17, 183.513, 5201.29, 5160.48, 86,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Dealer Merchandise] Phoebe', 2023, 17, 349.135, 5201.83, 5270.70, 87,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Soldier Equipment] Klaas', 2024, 17, 93.995, 5224.49, 5199.66, 88,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Muse Goods] Petra', 2025, 17, 16.102, 5166.07, 5221.68, 89,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Common Wares] Pierre', 2031, 18, 14.293, 5192.81, 5154.43, 85,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hawker Gear] Enzo', 2032, 18, 16.102, 5167.82, 5222.89, 86,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Dealer Merchandise] Milla', 2033, 18, 349.135, 5200.11, 5175.43, 87,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Muse Goods] Faith', 2035, 18, 358.499, 5199.99, 5268.84, 89,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Soldier Equipment] Charles', 2034, 18, 266.005, 5237.24, 5200.48, 88,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Researcher] Lutis', 1051, 21, 160.035, 5118.14, 5374.91, 151,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cleric] Karitte', 1053, 21, 95.984, 5112.44, 5385.08, 153,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mountain Guide] Shannon', 1052, 21, 353.933, 5357.27, 5282.19, 152,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Melendino', 1473, 22, 212.618, 5095.21, 5312.66, 16,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Boy in the Hut]Huey', 1021, 22, 283.797, 5357.55, 5394.47, 142,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Little Street Vendor] Pony', 1035, 22, 165.707, 5751.58, 5189.86, 135,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Peron', 1511, 22, 9.228, 5832.20, 5315.54, 301,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Visitor Guide] Arua''s Fairy', 1030, 22, 193.124, 5845.23, 5321.77, 130,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Mairard', 1032, 22, 333.435, 5882.36, 5263.18, 132,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Old Fisherman] Myad', 1037, 22, 252.423, 5868.20, 5137.12, 137,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Smith] Ronk', 1034, 22, 16.102, 5779.71, 5276.76, 134,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Seyon', 1036, 22, 342.011, 5796.58, 5278.06, 136,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Visitor Guide] Ronway', 1031, 22, 153.435, 5763.28, 5169.43, 131,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Novice Designer] Cassirin', 1040, 22, 152.626, 5773.95, 5150.52, 140,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Village Chief] Gray', 1038, 22, 275.984, 5879.09, 5105.12, 138,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Storage Keeper] Fabrizio', 1042, 22, 180.500, 5827.86, 5096.17, 143,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Belz', 1061, 23, 270.000, 5358.63, 5058.99, 161,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Smith] Punwell', 1062, 23, 24.237, 5340.65, 5070.26, 162,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Little Street Vendor] Mile', 1063, 23, 307.514, 5356.41, 5043.28, 163,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Weapon Craftsman] Mairath', 1064, 23, 180.000, 5349.02, 5033.95, 164,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Archaeologist] Williams', 1075, 24, 0.000, 5473.20, 5137.21, 174,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Merchant] Lina', 1071, 24, 293.031, 5567.26, 4927.03, 171,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gypsy Merchant] Methio', 1072, 24, 192.550, 5563.13, 4895.45, 172,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ikaness Staff] Orias', 1073, 24, 95.984, 5515.26, 4925.14, 173,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ikaness Staff] Shroon', 1121, 25, 9.228, 5375.78, 5188.33, 221,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mountain Guide] Pein', 1122, 25, 307.514, 5503.22, 5350.93, 222,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gypsy Merchant] Edone', 1123, 25, 187.631, 5448.14, 4976.37, 223,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mountain Guide] Kay', 1131, 26, 22.043, 5669.16, 5105.24, 231,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Merchant ] Bith', 1143, 27, 197.989, 5259.72, 5147.64, 243,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Robin', 1512, 27, 264.016, 5239.23, 5040.74, 302,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Resident] Hotch', 1144, 27, 189.228, 5384.23, 5180.10, 244,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Righteous Crusader] Gallahad', 1141, 27, 178.499, 5345.20, 5047.71, 241,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Minister] Luce', 1142, 27, 101.871, 5320.52, 5081.27, 242,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gypsy Merchant] Tobar', 1130, 28, 118.187, 5587.22, 4732.54, 250,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Shop Waitress] Betty', 1127, 28, 272.000, 5688.74, 4802.46, 247,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Storage Keeper] Marcus', 1128, 28, 34.535, 5625.19, 4853.54, 248,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Merchant] Med', 1151, 28, 345.707, 5686.58, 4902.11, 251,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Blacksmith] Brock', 1129, 28, 182.002, 5667.78, 4701.27, 249,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Dead Priest] Lantore', 1154, 29, 241.813, 5114.61, 5131.16, 254,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Town Girl] Lithia', 1156, 29, 24.237, 5091.98, 5181.81, 256,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ghost] Harry', 1157, 29, 109.425, 5050.08, 5123.27, 257,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ranger] Paul', 1155, 29, 330.956, 5157.10, 5176.39, 255,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Beach Resident] Judith', 1204, 37, 358.499, 5115.68, 5324.15, 308,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Info] Santa Claus', 1205, 38, 3.012, 5069.18, 5362.51, 309,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Info] Loelsch', 1206, 38, 66.941, 5057.19, 5351.61, 310,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Evil Reindeer] Bob', 1490, 38, 97.961, 5065.61, 5206.88, 318,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Info] Lilly', 1164, 39, 30.790, 5054.89, 5347.89, 77,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Festival Manager] Lero', 1050, 39, 0.000, 5072.25, 5363.08, 97,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cherry Berry Pie Crush] Anya', 1175, 39, 315.541, 5061.64, 5094.96, 76,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cherry Berry Pie Crush] Anya', 1177, 39, 14.293, 5133.83, 5360.16, 73,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Snowmobile Races] Chilly', 1169, 39, 155.763, 5232.15, 5168.86, 82,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lunaris Bear Throw] Mighail', 1165, 39, 12.550, 5220.76, 5196.75, 78,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Penguin Races] Penny', 1166, 39, 254.300, 5276.52, 5276.63, 79,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ice Fishing] Val', 1174, 39, 144.470, 5208.38, 5258.55, 75,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lunaris RPS] Evanna', 1168, 39, 340.035, 5298.56, 5206.56, 81,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Snowplowing for Treasure] Magnus', 1167, 39, 243.497, 5303.99, 5171.08, 80,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cherry Berry Pie Crush] Anya', 1176, 39, 254.300, 5381.49, 5260.66, 72,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Snow Valley Biathlon] Viktoria', 1170, 39, 243.497, 5393.62, 5044.77, 83,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cherry Berry Pie Crush] Anya', 1178, 39, 197.989, 5305.58, 5095.40, 74,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Info] Lucille Fete', 1203, 40, 333.435, 5254.64, 5216.39, 307,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Serenity', 1078, 41, 19.965, 5014.03, 5298.40, 266,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 1', 1771, 41, 0.000, 4969.53, 5427.82, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 2', 1772, 41, 0.000, 4973.50, 5427.39, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 3', 1773, 41, 0.000, 4977.33, 5427.88, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 4', 1774, 41, 0.000, 4981.46, 5427.93, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 5', 1775, 41, 0.000, 4969.81, 5422.09, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 6', 1776, 41, 0.000, 4974.24, 5421.48, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 7', 1777, 41, 0.000, 4978.03, 5421.83, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 8', 1778, 41, 0.000, 4981.50, 5421.61, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 9', 1779, 41, 0.000, 4969.99, 5416.66, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 10', 1780, 41, 0.000, 4974.77, 5415.91, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 11', 1781, 41, 0.000, 4978.62, 5416.18, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 12', 1782, 41, 0.000, 4981.52, 5416.73, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 13', 1783, 41, 0.000, 4970.05, 5412.56, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 14', 1784, 41, 0.000, 4974.47, 5412.82, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 15', 1785, 41, 0.000, 4978.37, 5412.36, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oblivion Temple] Room 16', 1786, 41, 0.000, 4981.47, 5412.39, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Orlean Ambassador] Bond', 1077, 41, 180.500, 5071.90, 5258.50, 265,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Starburner', 1079, 41, 148.307, 5010.30, 5194.24, 267,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Archaeologist] Jorgus', 1076, 41, 0.000, 5104.47, 5201.29, 264,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Referee] Jeannot', 1069, 46, 150.956, 5172.31, 4996.83, 269,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Referee] Godefrey', 1068, 46, 330.956, 5541.62, 5366.57, 270,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Interplanetary Guide] Illiya', 1188, 51, 148.307, 5107.24, 4996.57, 288,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Tavern Owner] Anzhelika', 1186, 51, 139.107, 5263.61, 5079.49, 286,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Banker] Andre', 1180, 51, 0.000, 5414.86, 5114.41, 280,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Merchant] Pabel', 1185, 51, 3.008, 5298.98, 5105.03, 285,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Prophet] Olleck Basilasi', 1173, 51, 178.499, 5359.62, 5085.72, 273,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Teleporter] Idiosel', 1119, 51, 345.707, 5363.40, 5000.41, 219,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Ambassador] Eliot', 1172, 51, 157.957, 5285.69, 4940.95, 272,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Eucar Judge] Ishtal', 1171, 51, 206.565, 5430.09, 4937.96, 271,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Smith] Pavrick', 1181, 51, 335.763, 5440.45, 5103.41, 281,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Sergei', 1184, 51, 258.129, 5450.88, 5077.06, 284,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Shamanist] Est', 1191, 54, 84.016, 5088.26, 4257.84, 291,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Livestock Farmer] Kapeka', 1194, 55, 61.813, 5271.06, 4623.53, 294,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Interplanetary Guide] Chacha', 1219, 61, 12.550, 5226.60, 4452.72, 319,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Raknu Warrior] Toanu', 1229, 61, 180.000, 5434.62, 4671.50, 329,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Raknu Warrior] Guanu', 1230, 61, 181.501, 5424.42, 4671.62, 330,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Junon Order Elder] Oscar Patrick', 1214, 61, 157.957, 5371.18, 4546.51, 314,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Righteous Crusader] Harold Evan', 1211, 61, 14.293, 5369.75, 4575.29, 311,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Smith] Nel Eldora', 1223, 61, 14.293, 5395.55, 4614.05, 323,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Akram Ambassador] Jacklyn Cooper', 1215, 61, 180.000, 5430.00, 4483.79, 315,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Patrol Dog] Stephen', 1244, 61, 180.000, 5427.52, 4482.43, 317,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Raknu Warrior] Jeffrey Lloyd', 1221, 61, 180.000, 5434.01, 4595.87, 321,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Teleporter] Idiosel', 1119, 61, 0.000, 5436.17, 4544.15, 219,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Researcher] Catherine Clara', 1212, 61, 330.956, 5473.37, 4618.79, 312,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Gilbert', 1213, 61, 217.594, 5474.35, 4513.74, 313,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Storage Keeper] Dustin Leta', 1222, 61, 197.989, 5489.63, 4553.05, 322,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Patrol Dog] Max', 1243, 61, 199.965, 5487.27, 4550.96, 316,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Raknu Resident] Netty', 1237, 61, 328.307, 5494.83, 4593.46, 337,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Chef] Peppie', 1224, 61, 190.865, 5626.88, 4435.97, 324,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Raknu Chief] Darka Khan', 1220, 61, 352.369, 5650.09, 4464.73, 320,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Raknu Resident] Jerrita', 1236, 61, 303.017, 5657.17, 4455.98, 336,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) Cooking', 1271, 61, 12.550, 5630.54, 4429.22, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Warrior] Kilie', 1257, 62, 333.435, 5647.96, 5126.88, 356,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Resident] Martie', 1258, 62, 16.102, 5638.21, 5127.42, 357,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Resident] Carl', 1259, 62, 95.984, 5714.45, 5121.83, 358,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Resident] Parah', 1260, 62, 192.550, 5721.78, 5118.28, 359,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Chief] Namiel Char', 1252, 62, 220.893, 5896.76, 5129.80, 352,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cleric] Jude', 1251, 62, 330.956, 5851.77, 5209.40, 351,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Bird] Hawker', 1253, 62, 220.893, 5901.42, 5130.73, 364,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Warrior] Seka', 1256, 62, 181.501, 5817.34, 5174.00, 355,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Resident] Shilma', 1261, 62, 330.956, 5854.29, 5225.03, 360,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Warrior] Wounded Soldier', 1262, 62, 206.565, 5864.97, 5211.14, 361,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Warrior] Wounded Soldier', 1263, 62, 350.772, 5862.55, 5218.48, 361,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Critically Wounded] Nukie', 1266, 62, 202.043, 5858.96, 5208.03, 363,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Warrior] Yak', 1255, 62, 24.237, 5789.36, 5051.35, 354,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Warrior] Ruduck', 1254, 62, 22.043, 5779.49, 5040.41, 353,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Smith] Kojo', 1247, 66, 352.369, 5545.17, 5190.61, 408,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Researcher] Redford', 1265, 66, 44.459, 5587.14, 4807.23, 407,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Cleric] Maria', 1248, 66, 135.541, 5668.65, 4861.56, 412,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mountain Guide] Bennett ', 1250, 66, 248.756, 5687.64, 4862.35, 413,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Sikuku Tracker] Akuku', 1245, 66, 317.949, 5681.93, 4879.12, 410,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) Eldeon Maze Wall', 1026, 66, 0.000, 5713.31, 4233.27, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) Eldeon Maze Wall', 1027, 66, 0.000, 5713.16, 3918.96, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ruins Curator] Hope', 1249, 66, 180.000, 5900.05, 4341.24, 409,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) Eldeon Maze Wall', 1024, 66, 0.000, 5868.43, 4225.89, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '(10) Eldeon Maze Wall', 1025, 66, 0.000, 5867.85, 3940.73, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ministry of Agriculture] Aquila', 2150, 71, 52.485, 5042.32, 5304.58, 431,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Pharaoh Queen] Alana', 2121, 71, 0.000, 5199.98, 5399.09, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Royal Vizier] Kaltet XIV', 2139, 71, 34.535, 5168.18, 5371.16, 433,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Royal Vizier] Satet XIV', 2140, 71, 325.465, 5225.40, 5371.71, 445,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Orlean Ambassador] Solara', 2141, 71, 60.166, 5170.97, 5309.67, 427,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Manager of Ferrell] Ishmat', 2126, 71, 0.000, 5231.05, 5285.76, 417,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Weapon Merchant] Huzam', 2122, 71, 0.000, 5129.25, 5289.15, 429,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Armor Merchant] Azim', 2124, 71, 0.000, 5156.39, 5289.25, 428,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mechanic] Kreinto', 2128, 71, 150.956, 5272.06, 5290.73, 424,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Mechanic''s Dog] Chopper', 2151, 71, 351.841, 5273.30, 5272.75, 425,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Tama', 2157, 71, 226.997, 5218.91, 5310.57, 484,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Nysaa', 2158, 71, 320.235, 5213.26, 5349.05, 485,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Rexanne', 2159, 71, 31.693, 5210.63, 5349.96, 486,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Nonus', 2160, 71, 29.044, 5215.06, 5347.30, 487,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Onur', 2162, 71, 166.295, 5210.94, 5346.89, 489,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Meryem', 2166, 71, 148.307, 5186.99, 5347.98, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Miho', 2168, 71, 195.491, 5191.03, 5347.32, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Goran', 2169, 71, 346.295, 5189.61, 5351.27, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Lugus', 2170, 71, 133.003, 5200.29, 5317.75, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Ohad', 2171, 71, 200.645, 5186.24, 5350.61, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Hebarn''s Vassal] Uros', 2161, 71, 0.000, 5201.08, 5302.63, 488,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arua''s Servant] Henda', 2167, 71, 17.989, 5190.57, 5327.00, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Invention] CG-3', 2120, 71, 344.509, 5279.40, 5284.65, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Junon Order Elder] Hameed', 2133, 71, 90.000, 5186.94, 5155.04, 442,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ferrell Guild Staff] Kareem', 2136, 71, 88.001, 5181.34, 5132.40, 439,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Event Guide] Jalilla', 2137, 71, 194.293, 5190.86, 5259.98, 432,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lojala Blackbear Leader] Tondro', 2138, 71, 293.031, 5270.76, 5187.31, 420,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Smith] Mahyr', 2127, 71, 275.984, 5268.82, 5142.06, 438,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Oro Bar Owner] Sahrazod', 2125, 71, 76.203, 5235.65, 5162.88, 434,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Ikaness Staff] Galiya', 2130, 71, 264.016, 5278.29, 5109.64, 416,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Righteous Crusader] Rahnan', 2135, 71, 131.684, 5181.24, 5104.91, 437,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Arumic Researcher] Fahimah', 2134, 71, 82.038, 5183.66, 5086.18, 443,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gypsy Merchant] Nadeem', 2131, 71, 1.501, 5229.51, 5078.33, 441,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Livestock Farmer] Hafis', 2132, 71, 330.956, 5150.91, 5042.62, 415,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Orlean Ambassador] Lynd', 2142, 71, 0.000, 5166.80, 5069.03, 426,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Gunsmith] Rahd', 2123, 71, 252.423, 5203.26, 5051.36, 436,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Stargazer] Nubo', 2129, 71, 351.841, 5299.85, 5434.61, 418,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Teleporter] Idiosel', 1119, 71, 324.470, 5324.24, 5420.35, 219,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Interplanetary Guide] Nova', 2101, 73, 0.000, 5241.30, 5225.49, 453,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Wandering Rifter] Nimbo', 2102, 73, 0.000, 5328.58, 5233.29, 454,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Dread Captain] Bruise', 2103, 74, 22.043, 5090.25, 5293.49, 455,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[First Mate] Bighand Jack', 2104, 74, 0.000, 5164.95, 5256.50, 456,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Astrophysicist] Dr. Ega', 2106, 74, 266.005, 5199.97, 5232.90, 458,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Deckhand] Skully', 2105, 74, 335.763, 5215.69, 5239.55, 457,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lojala Blackbear Captain] Skualo', 2111, 80, 162.011, 5000.09, 5142.27, 469,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lojala Trader] Brizo', 2112, 80, 44.459, 5059.07, 5160.72, 470,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lojala Storage Keeper] Ventego', 2113, 80, 6.067, 4985.28, 5205.54, 471,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Teleporter] Idiosel', 1119, 80, 207.374, 5025.32, 5153.08, 219,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Lojala Smith] Ekblovo', 2114, 80, 52.486, 5040.65, 5211.01, 472,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, '[Fidelulo Blackbear Leader] Fulmo', 2115, 81, 214.535, 5552.80, 5016.10, 474,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Hebarn Saboteur', 2188, 82, 29.044, 5029.99, 5282.74, 482,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Arua Interrogator', 2189, 82, 37.594, 5032.01, 5287.50, 482,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Hebarn Saboteur', 2153, 82, 0.000, 5195.37, 5392.48, 475,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Arua Interrogator', 2154, 82, 0.000, 5198.64, 5392.50, 475,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Arua Interrogator', 2193, 82, 72.423, 5298.15, 5151.66, 483,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Hebarn Saboteur', 2192, 82, 44.459, 5299.03, 5154.51, 483,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 101, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 101, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 101, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 101, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 102, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 102, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 102, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 102, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 103, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 103, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 103, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 103, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 104, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 104, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 104, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 104, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 105, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 105, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 105, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 105, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 106, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 106, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 106, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 106, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 107, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 107, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 107, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 107, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 108, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 108, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 108, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 108, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 109, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 109, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 109, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 109, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 110, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 110, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 110, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 110, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 111, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 111, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 111, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 111, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 112, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 112, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 112, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 112, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 113, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 113, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 113, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 113, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 114, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 114, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 114, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 114, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 115, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 115, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 115, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 115, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 116, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 116, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 116, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 116, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 117, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 117, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 117, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 117, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 118, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 118, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 118, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 118, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 119, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 119, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 119, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 119, 0.000, 5159.85, 5109.60, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 120, 0.000, 5072.13, 5289.34, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 120, 0.000, 5072.59, 5112.01, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 120, 0.000, 5157.48, 5288.80, 0,0,0,0);
-INSERT INTO `list_npcs` VALUES (0, 'Gate', 1023, 120, 0.000, 5159.85, 5109.60, 0,0,0,0);
+-- phpMyAdmin SQL Dump
+-- version 2.10.3
+-- http://www.phpmyadmin.net
+-- 
+-- Host: localhost
+-- Generation Time: Nov 09, 2015 at 12:53 PM
+-- Server version: 5.0.45
+-- PHP Version: 5.2.3
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+-- 
+-- Database: `osrose`
+-- 
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `list_npcs`
+-- 
+
+DROP TABLE IF EXISTS `list_npcs`;
+CREATE TABLE IF NOT EXISTS `list_npcs` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `type` int(11) NOT NULL,
+  `map` int(11) NOT NULL,
+  `dir` float NOT NULL,
+  `x` float NOT NULL,
+  `y` float NOT NULL,
+  `dialogid` int(11) NOT NULL default '0',
+  `eventid` int(11) NOT NULL default '0',
+  `tempdialogid` int(11) NOT NULL default '0',
+  `extra_param` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=320 ;
+
+-- 
+-- Dumping data for table `list_npcs`
+-- 
+
+INSERT INTO `list_npcs` (`id`, `name`, `type`, `map`, `dir`, `x`, `y`, `dialogid`, `eventid`, `tempdialogid`, `extra_param`) VALUES 
+(1, '[Livestock Farmer] Lampa', 1016, 1, 173.934, 5109.42, 5363.68, 116, 0, 0, 0),
+(2, '[Ferrell Guild Staff] Crow', 1004, 1, 6.067, 5094.38, 5259.9, 104, 0, 0, 0),
+(3, '[Ferrell Guild Staff] Ulysses', 1012, 1, 84.014, 5071.26, 5206.92, 112, 0, 0, 0),
+(4, '[Junon Order Co-Founder] Francis', 1003, 1, 157.957, 5080.3, 5066.28, 103, 0, 0, 0),
+(5, '[Righteous Crusader] Leonard', 1005, 1, 16.102, 5261.08, 5166.96, 105, 0, 0, 0),
+(6, '[Designer] Keenu', 1010, 1, 343.898, 5273.5, 5256.83, 110, 0, 0, 0),
+(7, '[Eccentric Inventor] Spero', 1011, 1, 14.293, 5212.36, 5254.66, 111, 0, 0, 0),
+(8, '[Tavern Owner] Sharlin', 1013, 1, 333.435, 5131.56, 5218.14, 113, 0, 0, 0),
+(9, '[Resident] Luth', 1015, 1, 270.003, 5130.61, 5154.58, 115, 0, 0, 0),
+(10, '[Guide] Lena', 1014, 1, 169.135, 5240.4, 5124.57, 114, 0, 0, 0),
+(11, '[Event Info] Judy', 1201, 1, 162.011, 5261.88, 5212.97, 305, 0, 0, 0),
+(12, '[Teleporter] Idiosel', 1119, 1, 167.45, 5244.93, 5220.95, 219, 0, 0, 0),
+(13, '[Akram Kingdom Minister] Warren', 1002, 1, 178.499, 5208.78, 5112.94, 102, 0, 0, 0),
+(14, '[Village Chief] Cornell', 1001, 1, 183.008, 5217.51, 5113.18, 101, 0, 0, 0),
+(15, '[Cornell''s Grandson] Cheney', 1018, 1, 22.043, 5435.3, 5492.26, 118, 0, 0, 0),
+(16, '[Arumic Merchant] Tryteh', 1006, 1, 258.128, 5313.26, 5153.74, 106, 0, 0, 0),
+(17, '[Gypsy Merchant] Mina', 1007, 1, 197.989, 5292.56, 5127.66, 107, 0, 0, 0),
+(18, '[Weapon Seller] Raffle', 1008, 1, 322.406, 5302.32, 5232.34, 108, 0, 0, 0),
+(19, '[Armor Seller] Carrion', 1009, 1, 275.986, 5313.53, 5198.14, 109, 0, 0, 0),
+(20, '[Keenu''s Daughter] Arisa', 1020, 1, 275.985, 5428.17, 5082.68, 120, 0, 0, 0),
+(21, '[Lena''s Sister] Shirley', 1019, 1, 322.406, 5504.69, 5274.08, 119, 0, 0, 0),
+(22, 'NPC1', 3040, 2, 0, 4829.88, 4645.83, 0, 0, 0, 0),
+(23, 'NPC2', 3041, 2, 0, 4833.84, 4645.52, 0, 0, 0, 0),
+(24, '[Ulverick] Room 1', 1791, 2, 0, 4838.05, 4644.56, 0, 0, 0, 0),
+(25, '[Ulverick] Room 2', 1792, 2, 0, 4841.91, 4644.57, 0, 0, 0, 0),
+(26, '[Ulverick] Room 3', 1793, 2, 0, 4845.6, 4644.59, 0, 0, 0, 0),
+(27, '[Ulverick] Room 4', 1794, 2, 0, 4849.58, 4644.48, 0, 0, 0, 0),
+(28, '[Ulverick] Room 5', 1795, 2, 0, 4853.38, 4644.49, 0, 0, 0, 0),
+(29, '[Righteous Crusader] Gawain', 1090, 2, 84.016, 5334.58, 5353.91, 190, 0, 0, 0),
+(30, '[Righteous Crusader] Huffe', 1111, 2, 90, 5334.84, 5345.81, 211, 0, 0, 0),
+(31, '[Clan Owner] Burtland', 1115, 2, 90, 5289.1, 5264.1, 215, 0, 0, 0),
+(32, '[Clan War Manager] Regina', 1751, 2, 90, 5290.17, 5244.25, 751, 0, 0, 0),
+(33, '[Clan Merchant] Aliche Patt', 1752, 2, 90, 5288.35, 5260.53, 224, 0, 0, 0),
+(34, '[Teleporter] Idiosel', 1119, 2, 283.797, 5344.59, 5176.35, 219, 0, 0, 0),
+(35, '[Founder of Junon Order] Raw', 1088, 2, 181.501, 5319.27, 5095.36, 188, 0, 0, 0),
+(36, '[Junon Order Elder] Gorthein', 1109, 2, 181.501, 5325.54, 5095.31, 209, 0, 0, 0),
+(37, '[Guide] Eva', 1082, 2, 153.435, 5505.78, 5346.09, 182, 0, 0, 0),
+(38, '[Soldier] Odelo', 1116, 2, 0, 5507.31, 5397.4, 216, 0, 0, 0),
+(39, '[Soldier] Winters', 1117, 2, 0, 5522.99, 5397.75, 217, 0, 0, 0),
+(40, '[Mayor] Darren', 1081, 2, 178.499, 5514.48, 5238.2, 181, 0, 0, 0),
+(41, '[Event Info] Felice Fete', 1202, 2, 206.565, 5562, 5164.83, 306, 0, 0, 0),
+(42, '[Akram Ambassador] Adalric', 1108, 2, 150.956, 5461.7, 5167.42, 226, 0, 0, 0),
+(43, '[Interplanetary Guide] Alphonso', 1118, 2, 178.499, 5520.56, 5063.66, 218, 0, 0, 0),
+(44, '[Historian] Jones', 1104, 2, 162.011, 5578.19, 4890.44, 204, 0, 0, 0),
+(45, '[Vicious Captain] Ruven', 1125, 2, 270, 5597.76, 4918.87, 220, 0, 0, 0),
+(46, '[Manager of Ferrell] Arothel', 1089, 2, 270, 5713.43, 5360.16, 189, 0, 0, 0),
+(47, '[Armor Merchant] Saki', 1094, 2, 258.129, 5721.8, 5290.79, 194, 0, 0, 0),
+(48, '[Ferrell Guild Staff] Charrs', 1110, 2, 270, 5713.38, 5368.71, 210, 0, 0, 0),
+(49, '[Gypsy Merchant] Bellia', 1092, 2, 217.594, 5725.11, 5199.04, 192, 0, 0, 0),
+(50, '[Weapon Merchant] Crune', 1093, 2, 335.763, 5728.67, 5224.89, 193, 0, 0, 0),
+(51, '[Designer] Lisa', 1095, 2, 220.893, 5729.06, 5136.33, 195, 0, 0, 0),
+(52, '[Ferrell Guild Merchant] Mildun', 1096, 2, 165.707, 5673.16, 5193.89, 196, 0, 0, 0),
+(53, '[Tavern Owner] Harin', 1097, 2, 90, 5681.79, 5131.11, 197, 0, 0, 0),
+(54, '[Arumic Merchant] Chelsie', 1091, 2, 211.693, 5723.96, 5087.24, 191, 0, 0, 0),
+(55, '[Ferrell Guild Staff] Kiroth', 1098, 2, 275.984, 5603.58, 5058.1, 198, 0, 0, 0),
+(56, '[Ferrell Guild Staff] Hayen', 1099, 2, 258.129, 5603.77, 5046.12, 199, 0, 0, 0),
+(57, '[Ferrell Guild Staff] Itz', 1100, 2, 270, 5603.69, 5034.52, 200, 0, 0, 0),
+(58, '[Arumic Researcher] Carasia', 1112, 2, 197.989, 5730.57, 5094.06, 212, 0, 0, 0),
+(59, '[Livestock Farmer] Sicru', 1107, 2, 187.631, 5818.02, 5487.59, 207, 0, 0, 0),
+(60, '[Ferrell Guild Staff] Rooen', 1513, 3, 0, 5104.48, 5019.71, 303, 0, 0, 0),
+(61, '[Akram Minister] Rodath', 1086, 5, 90, 5155.07, 5279.92, 186, 0, 0, 0),
+(62, '[Akram Minister] Mel', 1087, 5, 270, 5247.07, 5279.96, 187, 0, 0, 0),
+(63, '[Akram Minister] Gamp', 1084, 6, 270, 5248.14, 5279.2, 187, 0, 0, 0),
+(64, '[Referee] Leum', 1113, 9, 0, 5199.99, 5390.04, 213, 0, 0, 0),
+(65, '[Referee] Pirre', 1114, 9, 180.5, 5200.09, 4704.69, 214, 0, 0, 0),
+(66, '[Akram Minister] Nell', 1085, 11, 84.016, 4953.37, 4992.35, 184, 0, 0, 0),
+(67, '[Akram Minister] Nell', 1085, 11, 10.865, 4978.48, 5478.6, 184, 0, 0, 0),
+(68, '[Akram Minister] Nell', 1085, 11, 337.957, 5455.57, 5478.99, 184, 0, 0, 0),
+(69, '[Akram Minister] Nell', 1085, 11, 335.763, 5521.94, 5020.66, 184, 0, 0, 0),
+(70, '[Akram Minister] Nell', 1085, 12, 84.016, 4953.37, 4992.35, 184, 0, 0, 0),
+(71, '[Akram Minister] Nell', 1085, 12, 10.865, 4978.48, 5478.6, 184, 0, 0, 0),
+(72, '[Akram Minister] Nell', 1085, 12, 337.957, 5455.57, 5478.99, 184, 0, 0, 0),
+(73, '[Akram Minister] Nell', 1085, 12, 335.763, 5521.94, 5020.66, 184, 0, 0, 0),
+(74, '[Akram Minister] Nell', 1085, 13, 84.016, 4953.37, 4992.35, 184, 0, 0, 0),
+(75, '[Akram Minister] Nell', 1085, 13, 10.865, 4978.48, 5478.6, 184, 0, 0, 0),
+(76, '[Akram Minister] Nell', 1085, 13, 337.957, 5455.57, 5478.99, 184, 0, 0, 0),
+(77, '[Akram Minister] Nell', 1085, 13, 335.763, 5521.94, 5020.66, 184, 0, 0, 0),
+(78, '[Common Wares] Frederic', 2011, 15, 319.107, 5207.9, 5153.57, 85, 0, 0, 0),
+(79, '[Dealer Merchandise] Rosie', 2013, 15, 271.999, 5175.76, 5199.74, 87, 0, 0, 0),
+(80, '[Soldier Equipment] Leonid', 2014, 15, 342.011, 5208.64, 5248.82, 88, 0, 0, 0),
+(81, '[Hawker Gear] William', 2012, 15, 183.513, 5207.26, 5161.95, 86, 0, 0, 0),
+(82, '[Muse Goods] Cleo', 2015, 15, 303.017, 5235.19, 5217.05, 89, 0, 0, 0),
+(83, '[Common Wares] Rhys', 2001, 16, 12.55, 5192.77, 5153.68, 85, 0, 0, 0),
+(84, '[Hawker Gear] Hunter', 2002, 16, 342.011, 5211.92, 5248.35, 86, 0, 0, 0),
+(85, '[Dealer Merchandise] Claudia', 2003, 16, 82.039, 5226.49, 5199.78, 87, 0, 0, 0),
+(86, '[Soldier Equipment] Theodor', 2004, 16, 24.237, 5172.74, 5227.37, 88, 0, 0, 0),
+(87, '[Muse Goods] Jora', 2005, 16, 180.5, 5199.2, 5160.35, 89, 0, 0, 0),
+(88, '[Common Wares] Henry', 2021, 17, 345.707, 5206.12, 5153.88, 85, 0, 0, 0),
+(89, '[Hawker Gear] Markos', 2022, 17, 183.513, 5201.29, 5160.48, 86, 0, 0, 0),
+(90, '[Dealer Merchandise] Phoebe', 2023, 17, 349.135, 5201.83, 5270.7, 87, 0, 0, 0),
+(91, '[Soldier Equipment] Klaas', 2024, 17, 93.995, 5224.49, 5199.66, 88, 0, 0, 0),
+(92, '[Muse Goods] Petra', 2025, 17, 16.102, 5166.07, 5221.68, 89, 0, 0, 0),
+(93, '[Common Wares] Pierre', 2031, 18, 14.293, 5192.81, 5154.43, 85, 0, 0, 0),
+(94, '[Hawker Gear] Enzo', 2032, 18, 16.102, 5167.82, 5222.89, 86, 0, 0, 0),
+(95, '[Dealer Merchandise] Milla', 2033, 18, 349.135, 5200.11, 5175.43, 87, 0, 0, 0),
+(96, '[Muse Goods] Faith', 2035, 18, 358.499, 5199.99, 5268.84, 89, 0, 0, 0),
+(97, '[Soldier Equipment] Charles', 2034, 18, 266.005, 5237.24, 5200.48, 88, 0, 0, 0),
+(98, '[Arumic Researcher] Lutis', 1051, 21, 160.035, 5118.14, 5374.91, 151, 0, 0, 0),
+(99, '[Cleric] Karitte', 1053, 21, 95.984, 5112.44, 5385.08, 153, 0, 0, 0),
+(100, '[Mountain Guide] Shannon', 1052, 21, 353.933, 5357.27, 5282.19, 152, 0, 0, 0),
+(101, 'Melendino', 1473, 22, 212.618, 5107.14, 5013.41, 16, 0, 0, 0),
+(102, '[Boy in the Hut]Huey', 1021, 22, 283.797, 5650.36, 5406.86, 142, 0, 0, 0),
+(103, '[Little Street Vendor] Pony', 1035, 22, 165.707, 5859.92, 5431.59, 135, 0, 0, 0),
+(104, '[Ferrell Guild Staff] Peron', 1511, 22, 9.228, 5905.12, 5306.12, 301, 0, 0, 0),
+(105, '[Visitor Guide] Arua''s Fairy', 1030, 22, 193.124, 5059.89, 5524.64, 130, 0, 0, 0),
+(106, '[Akram Minister] Mairard', 1032, 22, 13.435, 5154.55, 5332.44, 132, 0, 0, 0),
+(107, '[Old Fisherman] Myad', 1037, 22, 132.423, 5077.77, 5372.1, 137, 0, 0, 0),
+(108, '[Smith] Ronk', 1034, 22, 240.102, 5140.66, 5303.05, 134, 0, 0, 0),
+(109, '[Ferrell Guild Staff] Seyon', 1036, 22, 342.011, 5881.78, 5420.44, 136, 0, 0, 0),
+(110, '[Visitor Guide] Ronway', 1031, 22, 63.435, 5147.25, 5356.45, 131, 0, 0, 0),
+(111, '[Novice Designer] Cassirin', 1040, 22, 152.626, 5103.23, 5378.6, 140, 0, 0, 0),
+(112, '[Village Chief] Gray', 1038, 22, 95, 5083.56, 5283.94, 138, 0, 0, 0),
+(113, '[Ferrell Guild Storage Keeper] Fabrizio', 1042, 22, 180.5, 5113.13, 5260.34, 143, 0, 0, 0),
+(114, '[Ferrell Guild Staff] Belz', 1061, 23, 270, 5358.63, 5058.99, 161, 0, 0, 0),
+(115, '[Smith] Punwell', 1062, 23, 24.237, 5340.65, 5070.26, 162, 0, 0, 0),
+(116, '[Little Street Vendor] Mile', 1063, 23, 307.514, 5356.41, 5043.28, 163, 0, 0, 0),
+(117, '[Weapon Craftsman] Mairath', 1064, 23, 180, 5349.02, 5033.95, 164, 0, 0, 0),
+(118, '[Archaeologist] Williams', 1075, 24, 0, 5473.2, 5137.21, 174, 0, 0, 0),
+(119, '[Ferrell Guild Merchant] Lina', 1071, 24, 293.031, 5567.26, 4927.03, 171, 0, 0, 0),
+(120, '[Gypsy Merchant] Methio', 1072, 24, 192.55, 5563.13, 4895.45, 172, 0, 0, 0),
+(121, '[Ikaness Staff] Orias', 1073, 24, 95.984, 5515.26, 4925.14, 173, 0, 0, 0),
+(122, '[Ikaness Staff] Shroon', 1121, 25, 9.228, 5375.78, 5188.33, 221, 0, 0, 0),
+(123, '[Mountain Guide] Pein', 1122, 25, 307.514, 5503.22, 5350.93, 222, 0, 0, 0),
+(124, '[Gypsy Merchant] Edone', 1123, 25, 187.631, 5448.14, 4976.37, 223, 0, 0, 0),
+(125, '[Mountain Guide] Kay', 1131, 26, 22.043, 5669.16, 5105.24, 231, 0, 0, 0),
+(126, '[Ferrell Guild Merchant ] Bith', 1143, 27, 197.989, 5259.72, 5147.64, 243, 0, 0, 0),
+(127, '[Ferrell Guild Staff] Robin', 1512, 27, 264.016, 5239.23, 5040.74, 302, 0, 0, 0),
+(128, '[Resident] Hotch', 1144, 27, 189.228, 5384.23, 5180.1, 244, 0, 0, 0),
+(129, '[Righteous Crusader] Gallahad', 1141, 27, 178.499, 5345.2, 5047.71, 241, 0, 0, 0),
+(130, '[Akram Minister] Luce', 1142, 27, 101.871, 5320.52, 5081.27, 242, 0, 0, 0),
+(131, '[Ferrell Guild Merchant] Med', 1151, 28, 127.514, 5587.09, 4732.29, 251, 0, 0, 0),
+(132, '[Dead Priest] Lantore', 1154, 29, 241.813, 5114.61, 5131.16, 254, 0, 0, 0),
+(133, '[Town Girl] Lithia', 1156, 29, 24.237, 5091.98, 5181.81, 256, 0, 0, 0),
+(134, '[Ghost] Harry', 1157, 29, 109.425, 5050.08, 5123.27, 257, 0, 0, 0),
+(135, '[Ranger] Paul', 1155, 29, 330.956, 5157.1, 5176.39, 255, 0, 0, 0),
+(136, '[Beach Resident] Judith', 1204, 37, 358.499, 5115.68, 5324.15, 308, 0, 0, 0),
+(137, '[Festival Manager] Lero', 1050, 37, 31.693, 5182.5, 5340.08, 97, 0, 0, 0),
+(138, '[Event Info] Lilly', 1164, 39, 30.79, 5054.89, 5347.89, 77, 0, 0, 0),
+(139, '[Cherry Berry Pie Crush] Anya', 1175, 39, 315.541, 5061.64, 5094.96, 76, 0, 0, 0),
+(140, '[Cherry Berry Pie Crush] Anya', 1177, 39, 14.293, 5133.83, 5360.16, 73, 0, 0, 0),
+(141, '[Snowmobile Races] Chilly', 1169, 39, 155.763, 5232.15, 5168.86, 82, 0, 0, 0),
+(142, '[Lunaris Bear Throw] Mighail', 1165, 39, 12.55, 5220.76, 5196.75, 78, 0, 0, 0),
+(143, '[Penguin Races] Penny', 1166, 39, 254.3, 5276.52, 5276.63, 79, 0, 0, 0),
+(144, '[Ice Fishing] Val', 1174, 39, 144.47, 5208.38, 5258.55, 75, 0, 0, 0),
+(145, '[Lunaris RPS] Evanna', 1168, 39, 340.035, 5298.56, 5206.56, 81, 0, 0, 0),
+(146, '[Snowplowing for Treasure] Magnus', 1167, 39, 243.497, 5303.99, 5171.08, 80, 0, 0, 0),
+(147, '[Cherry Berry Pie Crush] Anya', 1176, 39, 254.3, 5381.49, 5260.66, 72, 0, 0, 0),
+(148, '[Snow Valley Biathlon] Viktoria', 1170, 39, 243.497, 5393.62, 5044.77, 83, 0, 0, 0),
+(149, '[Cherry Berry Pie Crush] Anya', 1178, 39, 197.989, 5305.58, 5095.4, 74, 0, 0, 0),
+(150, '[Event Info] Lucille Fete', 1203, 40, 333.435, 5254.64, 5216.39, 307, 0, 0, 0),
+(151, '[Arua''s Servant] Serenity', 1078, 41, 19.965, 5014.03, 5298.4, 266, 0, 0, 0),
+(152, '[Oblivion Temple] Room 1', 1771, 41, 0, 4969.53, 5427.82, 0, 0, 0, 0),
+(153, '[Oblivion Temple] Room 2', 1772, 41, 0, 4973.5, 5427.39, 0, 0, 0, 0),
+(154, '[Oblivion Temple] Room 3', 1773, 41, 0, 4977.33, 5427.88, 0, 0, 0, 0),
+(155, '[Oblivion Temple] Room 4', 1774, 41, 0, 4981.46, 5427.93, 0, 0, 0, 0),
+(156, '[Oblivion Temple] Room 5', 1775, 41, 0, 4969.81, 5422.09, 0, 0, 0, 0),
+(157, '[Oblivion Temple] Room 6', 1776, 41, 0, 4974.24, 5421.48, 0, 0, 0, 0),
+(158, '[Oblivion Temple] Room 7', 1777, 41, 0, 4978.03, 5421.83, 0, 0, 0, 0),
+(159, '[Oblivion Temple] Room 8', 1778, 41, 0, 4981.5, 5421.61, 0, 0, 0, 0),
+(160, '[Oblivion Temple] Room 9', 1779, 41, 0, 4969.99, 5416.66, 0, 0, 0, 0),
+(161, '[Oblivion Temple] Room 10', 1780, 41, 0, 4974.77, 5415.91, 0, 0, 0, 0),
+(162, '[Oblivion Temple] Room 11', 1781, 41, 0, 4978.62, 5416.18, 0, 0, 0, 0),
+(163, '[Oblivion Temple] Room 12', 1782, 41, 0, 4981.52, 5416.73, 0, 0, 0, 0),
+(164, '[Oblivion Temple] Room 13', 1783, 41, 0, 4970.05, 5412.56, 0, 0, 0, 0),
+(165, '[Oblivion Temple] Room 14', 1784, 41, 0, 4974.47, 5412.82, 0, 0, 0, 0),
+(166, '[Oblivion Temple] Room 15', 1785, 41, 0, 4978.37, 5412.36, 0, 0, 0, 0),
+(167, '[Oblivion Temple] Room 16', 1786, 41, 0, 4981.47, 5412.39, 0, 0, 0, 0),
+(168, '[Orlean Ambassador] Bond', 1077, 41, 180.5, 5071.9, 5258.5, 265, 0, 0, 0),
+(169, '[Hebarn''s Vassal] Starburner', 1079, 41, 148.307, 5010.3, 5194.24, 267, 0, 0, 0),
+(170, '[Archaeologist] Jorgus', 1076, 41, 0, 5104.47, 5201.29, 264, 0, 0, 0),
+(171, '[Referee] Jeannot', 1069, 46, 150.956, 5172.31, 4996.83, 269, 0, 0, 0),
+(172, '[Referee] Godefrey', 1068, 46, 330.956, 5541.62, 5366.57, 270, 0, 0, 0),
+(173, '[Interplanetary Guide] Illiya', 1188, 51, 148.307, 5107.24, 4996.57, 288, 0, 0, 0),
+(174, '[Tavern Owner] Anzhelika', 1186, 51, 139.107, 5263.61, 5079.49, 286, 0, 0, 0),
+(175, '[Ferrell Guild Banker] Andre', 1180, 51, 0, 5414.86, 5114.41, 280, 0, 0, 0),
+(176, '[Arumic Merchant] Pabel', 1185, 51, 3.008, 5298.98, 5105.03, 285, 0, 0, 0),
+(177, '[Arumic Prophet] Olleck Basilasi', 1173, 51, 178.499, 5359.62, 5085.72, 273, 0, 0, 0),
+(178, '[Teleporter] Idiosel', 1119, 51, 345.707, 5363.4, 5000.41, 219, 0, 0, 0),
+(179, '[Akram Ambassador] Eliot', 1172, 51, 157.957, 5285.69, 4940.95, 272, 0, 0, 0),
+(180, '[Eucar Judge] Ishtal', 1171, 51, 206.565, 5430.09, 4937.96, 271, 0, 0, 0),
+(181, '[Smith] Pavrick', 1181, 51, 335.763, 5440.45, 5103.41, 281, 0, 0, 0),
+(182, '[Ferrell Guild Staff] Sergei', 1184, 51, 258.129, 5450.88, 5077.06, 284, 0, 0, 0),
+(183, '[Shamanist] Est', 1191, 54, 84.016, 5088.26, 4257.84, 291, 0, 0, 0),
+(184, '[Livestock Farmer] Kapeka', 1194, 55, 61.813, 5271.06, 4623.53, 294, 0, 0, 0),
+(185, '[Interplanetary Guide] Chacha', 1219, 61, 12.55, 5226.6, 4452.72, 319, 0, 0, 0),
+(186, '[Raknu Warrior] Toanu', 1229, 61, 180, 5434.62, 4671.5, 329, 0, 0, 0),
+(187, '[Raknu Warrior] Guanu', 1230, 61, 181.501, 5424.42, 4671.62, 330, 0, 0, 0),
+(188, '[Junon Order Elder] Oscar Patrick', 1214, 61, 157.957, 5371.18, 4546.51, 314, 0, 0, 0),
+(189, '[Righteous Crusader] Harold Evan', 1211, 61, 14.293, 5369.75, 4575.29, 311, 0, 0, 0),
+(190, '[Smith] Nel Eldora', 1223, 61, 14.293, 5395.55, 4614.05, 323, 0, 0, 0),
+(191, '[Akram Ambassador] Jacklyn Cooper', 1215, 61, 180, 5430, 4483.79, 315, 0, 0, 0),
+(192, '[Patrol Dog] Stephen', 1244, 61, 180, 5427.52, 4482.43, 317, 0, 0, 0),
+(193, '[Raknu Warrior] Jeffrey Lloyd', 1221, 61, 180, 5434.01, 4595.87, 321, 0, 0, 0),
+(194, '[Teleporter] Idiosel', 1119, 61, 0, 5436.17, 4544.15, 219, 0, 0, 0),
+(195, '[Arumic Researcher] Catherine Clara', 1212, 61, 330.956, 5473.37, 4618.79, 312, 0, 0, 0),
+(196, '[Ferrell Guild Staff] Gilbert', 1213, 61, 217.594, 5474.35, 4513.74, 313, 0, 0, 0),
+(197, '[Storage Keeper] Dustin Leta', 1222, 61, 197.989, 5489.63, 4553.05, 322, 0, 0, 0),
+(198, '[Patrol Dog] Max', 1243, 61, 199.965, 5487.27, 4550.96, 316, 0, 0, 0),
+(199, '[Raknu Resident] Netty', 1237, 61, 328.307, 5494.83, 4593.46, 337, 0, 0, 0),
+(200, '[Chef] Peppie', 1224, 61, 190.865, 5626.88, 4435.97, 324, 0, 0, 0),
+(201, '[Raknu Chief] Darka Khan', 1220, 61, 352.369, 5650.09, 4464.73, 320, 0, 0, 0),
+(202, '[Raknu Resident] Jerrita', 1236, 61, 303.017, 5657.17, 4455.98, 336, 0, 0, 0),
+(203, 'Cooking', 1271, 61, 12.55, 5630.54, 4429.22, 0, 0, 0, 0),
+(204, '[Sikuku Warrior] Kilie', 1257, 62, 333.435, 5647.96, 5126.88, 356, 0, 0, 0),
+(205, '[Sikuku Resident] Martie', 1258, 62, 16.102, 5638.21, 5127.42, 357, 0, 0, 0),
+(206, '[Sikuku Resident] Carl', 1259, 62, 95.984, 5714.45, 5121.83, 358, 0, 0, 0),
+(207, '[Sikuku Resident] Parah', 1260, 62, 192.55, 5721.78, 5118.28, 359, 0, 0, 0),
+(208, '[Sikuku Chief] Namiel Char', 1252, 62, 220.893, 5896.76, 5129.8, 352, 0, 0, 0),
+(209, '[Cleric] Jude', 1251, 62, 330.956, 5851.77, 5209.4, 351, 0, 0, 0),
+(210, '[Bird] Hawker', 1253, 62, 220.893, 5901.42, 5130.73, 364, 0, 0, 0),
+(211, '[Sikuku Warrior] Seka', 1256, 62, 181.501, 5817.34, 5174, 355, 0, 0, 0),
+(212, '[Sikuku Resident] Shilma', 1261, 62, 330.956, 5854.29, 5225.03, 360, 0, 0, 0),
+(213, '[Sikuku Warrior] Wounded Soldier', 1262, 62, 206.565, 5864.97, 5211.14, 361, 0, 0, 0),
+(214, '[Sikuku Warrior] Wounded Soldier', 1263, 62, 350.772, 5862.55, 5218.48, 361, 0, 0, 0),
+(215, '[Critically Wounded] Nukie', 1266, 62, 202.043, 5858.96, 5208.03, 363, 0, 0, 0),
+(216, '[Sikuku Warrior] Yak', 1255, 62, 24.237, 5789.36, 5051.35, 354, 0, 0, 0),
+(217, '[Sikuku Warrior] Ruduck', 1254, 62, 22.043, 5779.49, 5040.41, 353, 0, 0, 0),
+(218, '[Smith] Kojo', 1247, 66, 352.369, 5545.17, 5190.61, 408, 0, 0, 0),
+(219, '[Arumic Researcher] Redford', 1265, 66, 44.459, 5587.14, 4807.23, 407, 0, 0, 0),
+(220, '[Cleric] Maria', 1248, 66, 135.541, 5668.65, 4861.56, 412, 0, 0, 0),
+(221, '[Mountain Guide] Bennett ', 1250, 66, 248.756, 5687.64, 4862.35, 413, 0, 0, 0),
+(222, '[Sikuku Tracker] Akuku', 1245, 66, 317.949, 5681.93, 4879.12, 410, 0, 0, 0),
+(223, 'Eldeon Maze Wall 2-1', 1026, 66, 0, 5713.31, 4233.27, 0, 0, 0, 0),
+(224, 'Eldeon Maze Wall 2-2', 1027, 66, 0, 5713.16, 3918.96, 0, 0, 0, 0),
+(225, '[Ruins Curator] Hope', 1249, 66, 180, 5900.05, 4341.24, 409, 0, 0, 0),
+(226, 'Eldeon Maze Wall 1-1', 1024, 66, 0, 5868.43, 4225.89, 0, 0, 0, 0),
+(227, 'Eldeon Maze Wall 1-2', 1025, 66, 0, 5867.85, 3940.73, 0, 0, 0, 0),
+(228, '[Interplanetary Guide] Nova', 2101, 73, 0, 5241.3, 5225.49, 453, 0, 0, 0),
+(229, '[Wandering Rifter] Nimbo', 2102, 73, 0, 5328.58, 5233.29, 454, 0, 0, 0),
+(230, '[Dread Captain] Bruise', 2103, 74, 22.043, 5090.25, 5293.49, 455, 0, 0, 0),
+(231, '[First Mate] Bighand Jack', 2104, 74, 0, 5164.95, 5256.5, 456, 0, 0, 0),
+(232, '[Astrophysicist] Dr. Ega', 2106, 74, 266.005, 5199.97, 5232.9, 458, 0, 0, 0),
+(233, '[Deckhand] Skully', 2105, 74, 335.763, 5215.69, 5239.55, 457, 0, 0, 0),
+(234, '[Lojala Blackbear Captain] Skualo', 2111, 80, 162.011, 5000.09, 5142.27, 469, 0, 0, 0),
+(235, '[Lojala Trader] Brizo', 2112, 80, 44.459, 5059.07, 5160.72, 470, 0, 0, 0),
+(236, '[Lojala Storage Keeper] Ventego', 2113, 80, 6.067, 4985.28, 5205.54, 471, 0, 0, 0),
+(237, '[Teleporter] Idiosel', 1119, 80, 207.374, 5025.32, 5153.08, 219, 0, 0, 0),
+(238, '[Lojala Smith] Ekblovo', 2114, 80, 52.486, 5040.65, 5211.01, 472, 0, 0, 0),
+(239, '[Fidelulo Blackbear Leader] Fulmo', 2115, 81, 214.535, 5552.8, 5016.1, 474, 0, 0, 0),
+(240, 'Gate', 1023, 101, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(241, 'Gate', 1023, 101, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(242, 'Gate', 1023, 101, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(243, 'Gate', 1023, 101, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(244, 'Gate', 1023, 102, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(245, 'Gate', 1023, 102, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(246, 'Gate', 1023, 102, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(247, 'Gate', 1023, 102, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(248, 'Gate', 1023, 103, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(249, 'Gate', 1023, 103, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(250, 'Gate', 1023, 103, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(251, 'Gate', 1023, 103, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(252, 'Gate', 1023, 104, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(253, 'Gate', 1023, 104, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(254, 'Gate', 1023, 104, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(255, 'Gate', 1023, 104, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(256, 'Gate', 1023, 105, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(257, 'Gate', 1023, 105, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(258, 'Gate', 1023, 105, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(259, 'Gate', 1023, 105, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(260, 'Gate', 1023, 106, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(261, 'Gate', 1023, 106, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(262, 'Gate', 1023, 106, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(263, 'Gate', 1023, 106, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(264, 'Gate', 1023, 107, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(265, 'Gate', 1023, 107, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(266, 'Gate', 1023, 107, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(267, 'Gate', 1023, 107, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(268, 'Gate', 1023, 108, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(269, 'Gate', 1023, 108, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(270, 'Gate', 1023, 108, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(271, 'Gate', 1023, 108, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(272, 'Gate', 1023, 109, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(273, 'Gate', 1023, 109, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(274, 'Gate', 1023, 109, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(275, 'Gate', 1023, 109, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(276, 'Gate', 1023, 110, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(277, 'Gate', 1023, 110, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(278, 'Gate', 1023, 110, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(279, 'Gate', 1023, 110, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(280, 'Gate', 1023, 111, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(281, 'Gate', 1023, 111, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(282, 'Gate', 1023, 111, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(283, 'Gate', 1023, 111, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(284, 'Gate', 1023, 112, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(285, 'Gate', 1023, 112, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(286, 'Gate', 1023, 112, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(287, 'Gate', 1023, 112, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(288, 'Gate', 1023, 113, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(289, 'Gate', 1023, 113, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(290, 'Gate', 1023, 113, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(291, 'Gate', 1023, 113, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(292, 'Gate', 1023, 114, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(293, 'Gate', 1023, 114, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(294, 'Gate', 1023, 114, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(295, 'Gate', 1023, 114, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(296, 'Gate', 1023, 115, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(297, 'Gate', 1023, 115, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(298, 'Gate', 1023, 115, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(299, 'Gate', 1023, 115, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(300, 'Gate', 1023, 116, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(301, 'Gate', 1023, 116, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(302, 'Gate', 1023, 116, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(303, 'Gate', 1023, 116, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(304, 'Gate', 1023, 117, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(305, 'Gate', 1023, 117, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(306, 'Gate', 1023, 117, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(307, 'Gate', 1023, 117, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(308, 'Gate', 1023, 118, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(309, 'Gate', 1023, 118, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(310, 'Gate', 1023, 118, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(311, 'Gate', 1023, 118, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(312, 'Gate', 1023, 119, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(313, 'Gate', 1023, 119, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(314, 'Gate', 1023, 119, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(315, 'Gate', 1023, 119, 0, 5159.85, 5109.6, 0, 0, 0, 0),
+(316, 'Gate', 1023, 120, 0, 5072.13, 5289.34, 0, 0, 0, 0),
+(317, 'Gate', 1023, 120, 0, 5072.59, 5112.01, 0, 0, 0, 0),
+(318, 'Gate', 1023, 120, 0, 5157.48, 5288.8, 0, 0, 0, 0),
+(319, 'Gate', 1023, 120, 0, 5159.85, 5109.6, 0, 0, 0, 0);

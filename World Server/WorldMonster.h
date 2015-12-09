@@ -94,7 +94,7 @@ class CMonster : public CCharacter
       	bool PlayerInGrid( );      //LMA: maps
       	CPlayer* GetNearPlayer( UINT mdist = 20 );
         //void AddDamage( CCharacter* enemy, long int hitpower);
-        void AddDamage( CCharacter* enemy, long long hitpower);
+        void AddDamage( CCharacter* enemy, int hitpower);
         CDrop* GetDrop( );
 
         //
@@ -115,9 +115,8 @@ class CMonster : public CCharacter
         unsigned int GetCritical();
         unsigned int GetAttackSpeed();
         unsigned int GetMoveSpeed();
-
-        //unsigned int GetMaxHP( );
-        unsigned long long GetMaxHP( );
+       
+        unsigned int GetMaxHP( );
         bool ForceMaxHP( );   //LMA: Forcing maxHP
 
         float GetAttackDistance();

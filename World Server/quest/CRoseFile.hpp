@@ -27,6 +27,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//PY: added this code to trick the compiler into recognizing atoll in c98 compilers
+#if defined(_MSC_VER)
+	#define atoll _atoi64
+#endif
+
 #ifndef __CARRAY_HPP__
 #include "CRoseArray.hpp"
 #endif

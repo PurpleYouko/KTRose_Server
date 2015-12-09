@@ -111,6 +111,7 @@ class CPlayer: public CCharacter
     SHOP* Shop;
     SESSION* Session;
     CLAN* Clan;
+	UNION_s* Union_s;
     ATTRIBUTES* Attr;
     CRespawnPoints GMRespawnPoints;
 
@@ -237,14 +238,14 @@ class CPlayer: public CCharacter
     bool IsMonster( );
     bool CleanPlayerVector( );
     bool loaddata( );
-    void saveskills();  //LMA: Only saving skills there.
-    void savedata( );
-    int GoodSkill(int skill_id);    //LMA: which skill family?
-    int FindSkillOffset(int family);    //LMA: Find a skill offset...
-    bool FindSkill(int family,UINT skill); //LMA: Does a skill already exist?
-    void ResetSkillOffset(); //LMA: reset skill offsets.
-    void AttrAllSkills();   //LMA: searchs all the skills for a player (to be used after allskill gm command for example).
-    void AttrGMSkills();   //DK: ???
+    void saveskills();						//LMA: Only saving skills there.
+    void savedata( );						//PY: imported savedata from KTRose
+    int GoodSkill(int skill_id);			//LMA: which skill family?
+    int FindSkillOffset(int family);		//LMA: Find a skill offset...
+    bool FindSkill(int family,UINT skill);	//LMA: Does a skill already exist?
+    void ResetSkillOffset();				//LMA: reset skill offsets.
+    void AttrAllSkills();					//LMA: searchs all the skills for a player (to be used after allskill gm command for example).
+    void AttrGMSkills();					//DK: ???
     void SaveSkillInfo(int family,int offset,int id,int level);    //LMA: Save some skills informations for later...
     //void UpgradeSkillInfo(int offset,int skillid,int nb_upgrade);  //LMA: Upgrade a skill level...
     void CalculateSignature( int slot );    //LMA: get item signature
@@ -279,6 +280,14 @@ class CPlayer: public CCharacter
     bool CheckItem(int itemnb,int familyid,int nb);   //Check if a peculiar item is in inventory
     bool CheckStats(int slot, int dest_slot); //LMA: Checking if a stat is ok to equip an item.
     bool CheckJobs(int item_job);  //LMA: checking job requirements.
+	
+	//PY: New save and load functions
+	void quicksave( );
+    void saveinventory( );
+    bool loadinventory( );
+    void savestorage( );
+    void SaveBackupStorage( int logstate );
+    bool loadstorage( );
 
     // ExJam Quest Code
     void savequests( CPlayer* thisclient );
@@ -305,7 +314,9 @@ class CPlayer: public CCharacter
     unsigned int GetCartSpeed( );
 
     //unsigned int GetMaxHP( );
-    unsigned long long GetMaxHP( );
+    unsigned int GetMaxHP( );
+	void SetMaxHP(unsigned int MaxHP );								// test code to overwrite stats at the client
+	void SetCurrentHP(unsigned int HP );		// test code to overwrite stats at the client
 
     unsigned int GetMaxMP( );
     float GetAttackDistance( );

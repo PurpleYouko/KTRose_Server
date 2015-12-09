@@ -126,6 +126,7 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     //if(AI == 999) Log( MSG_WARNING, "AddMonster Cast CMonster " );
     monster->thisnpc = thisnpc;
     monster->Stats->MaxHP = monster->GetMaxHP( );
+	//monster->Stats->MaxHP = thisnpc->MaxHP;
     monster->Stats->HP = monster->Stats->MaxHP;
     monster->Stats->MaxMP = monster->GetMaxMP( );
     monster->Stats->MP = monster->Stats->MaxMP;
@@ -314,11 +315,11 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
     }
     if(i != 0)
     {
-         Log( MSG_INFO, "Deleting monster %i from monster list. montype: %i",i,monster->montype);
+         //Log( MSG_INFO, "Deleting monster %i from monster list. montype: %i",i,monster->montype);
          MonsterList.erase( MonsterList.begin()+i );
-         Log( MSG_INFO, "Monster %i erased from list", monster->montype);
+         //Log( MSG_INFO, "Monster %i erased from list", monster->montype);
          delete monster;
-         Log( MSG_INFO, "deleted monster %i", monster->montype);
+         //Log( MSG_INFO, "deleted monster %i", monster->montype);
          return true;
     }
     for(UINT j=0;j<MonsterList.size();j++)
@@ -329,15 +330,15 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
         {
             //Log( MSG_INFO, "Deleting monster %i from monster list. No specified position",monster->montype);
             MonsterList.erase( MonsterList.begin() + j );
-			Log( MSG_INFO, "deleted monster %i in the othermon loop", monster->montype);
+			//Log( MSG_INFO, "deleted monster %i in the othermon loop", monster->montype);
             delete monster;
-			Log( MSG_INFO, "deleted monster %i", monster->montype);
+			//Log( MSG_INFO, "deleted monster %i", monster->montype);
             return true;
         }
     }
-    Log( MSG_INFO, "Wasn't caught in any conditionals. Deleting monster %i from monster list anyway",monster->montype);
+    //Log( MSG_INFO, "Wasn't caught in any conditionals. Deleting monster %i from monster list anyway",monster->montype);
     delete monster;
-	Log( MSG_INFO, "deleted monster %i", monster->montype);
+	//Log( MSG_INFO, "deleted monster %i", monster->montype);
     return false;
 }
 

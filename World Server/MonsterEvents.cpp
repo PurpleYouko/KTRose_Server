@@ -62,7 +62,8 @@ bool CMonster::OnDie( )
     //Deleted the 20091114
     UINT special_exp=0;
     UINT special_lvl=0;
-    GServer->GiveExp( this , special_lvl, special_exp );
+    //GServer->GiveExp( this , special_lvl, special_exp );
+	GServer->GiveExp( this );		//PY: function from KTRose
     //LMA End
 
 
@@ -280,11 +281,16 @@ bool CMonster::SummonUpdate(CMonster* monster, CMap* map, UINT j)
 }
 
 //LMA: AIP
-//ainumber is monster->AI type is add=0 idle=1 attacking=2 attacked=3 after killing target=4 hp<1=5
-void CMonster::DoAi(int ainumberorg,char type)
+//ainumber is monster->AI type 
+//0 - on spawn
+//1 - on idle
+//2 - in battle
+//3 - on be attacked
+//4 - on kill enemy
+//5 on death
+void CMonster::DoAi(int ainumber, char type)
 {
     //PY: Whole lot imported from KT cuz this isn't working properly
-	int ainumber = ainumberorg;
 	CAip* script = NULL;
     int AIWatch = GServer->Config.AIWatch;
     int aiindex = (ainumber*0x10000)+(type*0x100);
@@ -307,7 +313,7 @@ void CMonster::DoAi(int ainumberorg,char type)
                 int command = script->Conditions[i]->opcode;
                 if (command > 30 || command < 0) continue;
                 //success = (*GServer->aiCondFunc[command])(GServer, this, script->Conditions[i]->data);
-				success = (*GServer->aiCondFunc[command])(GServer, this, script->Conditions[i]->data,ainumber);
+				success = (*GServer->aiCondFunc[command])(GServer, this, script->Conditions[i]->data, ainumber);
                 if(ainumber == AIWatch)Log(MSG_DEBUG, "aiCondition %03u returned %d", command, success);
                 if (success == AI_FAILURE)
                     break;
@@ -319,11 +325,11 @@ void CMonster::DoAi(int ainumberorg,char type)
                     int command = script->Actions[i]->opcode;
                     if (command > 38 || command < 0) continue;
                     //success = (*GServer->aiActFunc[command])(GServer, this, script->Actions[i]->data);
-					success = (*GServer->aiActFunc[command])(GServer, this, script->Actions[i]->data,ainumber);
+					success = (*GServer->aiActFunc[command])(GServer, this, script->Actions[i]->data, ainumber);
                     if(ainumber == AIWatch)Log(MSG_DEBUG, "aiAction: %03u returned %d", command, success);
                 }
                 if(success == AI_SUCCESS)
-                    return; //automatically return after performing the first successful action
+                    return; //automatically returns after performing the first successful action block. It DOES NOT move on to the next condition block
             }
             aiindex++;
         }

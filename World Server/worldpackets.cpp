@@ -90,11 +90,34 @@ void CWorldServer::pakPlayer( CPlayer *thisclient )
 	}
 
     BEGINPACKET( pak, 0x715 );
-    ADDBYTE    ( pak, thisclient->CharInfo->Sex );               // Sex
+	//PY:	Client loads in blocks of memory equal in size to the defined structures in the client end
+	//first few data pieces are independent of structures though
+	/*
+	BYTE				m_btCharRACE;
+	short				m_nZoneNO;
+	tPOINTF				m_PosSTART;
+	short				m_nReviveZoneNO;
+	*/
+	//So this block doesn't match entirely
+	
+    ADDBYTE    ( pak, thisclient->CharInfo->Sex );               // Sex		PY: Should be race
     ADDWORD    ( pak, thisclient->Position->Map );		         // Map
     ADDFLOAT   ( pak, thisclient->Position->current.x*100 );	 // Pos X
     ADDFLOAT   ( pak, thisclient->Position->current.y*100 );	 // Pos Y
-    ADDWORD    ( pak, 0x0000 );
+    //ADDWORD    ( pak, 0x0000 );
+    ADDWORD    ( pak, thisclient->Position->respawn );			// IS respawn the correct position to use?
+
+	//END independent variables
+	// Now it needs 
+	//tagPartITEM			m_PartITEM[ MAX_BODY_PART   ];		MAX_BODY_PART = 10
+	/*
+	struct tagPartITEM {
+	unsigned int	m_nItemNo		: 18;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
+	unsigned int	m_nGEM_OP		: 9;	// 0~512	Jewelry number(m_bHasSocket==1) Or a number of options(m_bHasSocket==0)
+	unsigned int	m_bHasSocket	: 1;	// 0~1		Jewelry, whether or not a socket
+	unsigned int	m_cGrade	    : 4;	// 0~15		Rating						(0~9)
+	} ;
+	*/
     ADDDWORD   ( pak, thisclient->CharInfo->Face );			     // Face
     ADDDWORD   ( pak, thisclient->CharInfo->Hair );	             // Hair
     ADDWORD    ( pak, thisclient->items[2].itemnum );	         // Cap
@@ -127,29 +150,55 @@ void CWorldServer::pakPlayer( CPlayer *thisclient )
     ADDWORD    ( pak, thisclient->Attr->Con );				     // Con
     ADDWORD    ( pak, thisclient->Attr->Cha );				     // Cha
     ADDWORD    ( pak, thisclient->Attr->Sen );				     // Sen
+	//PY:														Start tagGrowAbility (client)	
 	ADDWORD    ( pak, thisclient->Stats->HP );                   // Current HP
 	ADDWORD    ( pak, thisclient->Stats->MP );                   // Current MP
-	ADDWORD    ( pak, thisclient->CharInfo->Exp );               // Exp
-    ADDWORD    ( pak, 0 );
+	ADDWORD	   ( pak, thisclient->Stats->MaxHP );				 // MaxHP. Needed since adding m_MaxHP to tagGrowAbility structure in client
+	ADDWORD	   ( pak, thisclient->Stats->MaxMP );				 // MaxMP. Needed since adding m_MaxMP to tagGrowAbility structure in client
+	ADDDWORD   ( pak, thisclient->CharInfo->Exp );               // Exp
+    //ADDWORD    ( pak, 0 );									//PY: don't think this should be here
 	ADDWORD    ( pak, thisclient->Stats->Level );			      // Level
 	ADDWORD    ( pak, thisclient->CharInfo->StatPoints );		  // Stat Points
 	ADDWORD    ( pak, thisclient->CharInfo->SkillPoints );        // Skill Points
-	ADDWORD    ( pak, 0x6464 );
-    for(int i=0; i<4; i++)
+	ADDWORD    ( pak, 0x6464 );									//PY: This should be two bytes. Body_Size, Head_Size. might be useful one day
+    //PY: Client structures starting here
+	/*
+	long	m_lPenalEXP;		// Add experience ...
+	short	m_nFameG;			// Leading Indicators: Increased by Quest: 05/27/2004 added
+	short	m_nFameB;			// Leading Indicators: Increased by Quest: 05/27/2004 added
+	
+	*/
+	for(int i=0; i<4; i++)										//PY: this loop takes care of the previous 4 bytes. everything up to union points
        ADDWORD( pak,0);       //null
-
+	/*
+	short	m_nUnionPOINT[ MAX_UNION_COUNT ];					//PY: (from client) Point combinations: Add 05/27/2004 (MAX_UNION_COUNT = 10)
+	*/
     //LMA: Union points
     ADDWORD( pak, thisclient->CharInfo->union01 );
     ADDWORD( pak, thisclient->CharInfo->union02 );
     ADDWORD( pak, thisclient->CharInfo->union03 );
     ADDWORD( pak, thisclient->CharInfo->union04 );
-    ADDWORD( pak, thisclient->CharInfo->union05 );
+    ADDWORD( pak, thisclient->CharInfo->union05 );				//PY: well this is 5 of the 10 shorts(WORDS). Where are the other 5?
+
 
     //rest is 0?
-	for(int i=0; i<19; i++)
+	for(int i=0; i<19; i++)										//PY: Now 19 null bytes?? WTF 10 of them takes care of the missing 5 union points. that leaves 9
         ADDBYTE( pak, 0 );    //null
 
+	//PY: Here is this section from the client
+	/*
+	int		m_iGuildNO;			// Guild Code: Add 27/05/2004				4 bytes
+	short	m_nGuildCNTRB;		// Guild Contribution: 05/27/2004 added		2 bytes
+	BYTE	m_btGuildPOS;		// Guild Position: 05.27.2004 Add			1 byte
+
+	short	m_nPKFlag;			// 2004. 6. 17 added..						2 bytes		9 used up to this point so we should line up just fine with stamina
+	short	m_nSTAMINA;			// 2004. 8. 23 added..						2 bytes
+	*/
+
     ADDWORD( pak, thisclient->CharInfo->stamina );					// Stamina
+	//PY:																	END tagGrowAbility
+
+
     for(int i=0; i<320; i++) ADDBYTE( pak, 0 );
 
     //LMA: Value for driving skill so it doesn't say missing conditions ?
@@ -215,8 +264,12 @@ void CWorldServer::pakPlayer( CPlayer *thisclient )
 
 	for(int i=0; i<48; i++)       // QuickBar
         ADDWORD( pak, thisclient->quickbar[i] );
+
 	ADDDWORD   ( pak, thisclient->CharInfo->charid );	            // CharID
-	for(int i=0; i<80;i++) ADDBYTE( pak, 0 );
+	for(int i=0; i<80;i++) ADDBYTE( pak, 0 );						// leaves an 80 byte space equal to client structure		DWORD m_dwCoolTime[MAX_SKILL_RELOAD_TYPE];
+	
+	//Log( MSG_DEBUG, "0x0715 packet MaxHP = %i Stamina = %i",thisclient->Stats->MaxHP,thisclient->CharInfo->stamina );
+	//Log( MSG_DEBUG, "0x0715 packet CharID = %i",thisclient->CharInfo->charid );
     ADDSTRING  ( pak, thisclient->CharInfo->charname );             // Char Name
 	ADDBYTE    ( pak, 0 );
     thisclient->client->SendPacket( &pak );
@@ -256,7 +309,7 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
         return true;
     }
 
-	MYSQL_RES *result = DB->QStore("SELECT username,lastchar,accesslevel,zulystorage FROM accounts WHERE id=%i AND password='%s'", thisclient->Session->userid, thisclient->Session->password);
+	MYSQL_RES *result = DB->QStore("SELECT username,lastchar,accesslevel,zulystorage,ktpoints,newpoints,logtime,totlogtime FROM accounts WHERE id=%i AND password='%s'", thisclient->Session->userid, thisclient->Session->password);
     if(result==NULL) return false;
 	if (mysql_num_rows( result ) != 1)
     {
@@ -268,9 +321,41 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
 	strncpy( thisclient->Session->username, row[0],16 );
 	strncpy( thisclient->CharInfo->charname, row[1],16 );
 	thisclient->Session->accesslevel = atoi(row[2]);
-	thisclient->CharInfo->Storage_Zulies = atoi( row[3] );	//PY needs to be atoll really. fix later
-	//thisclient->CharInfo->Storage_Zulies = atoll( row[3] );
+	thisclient->CharInfo->Storage_Zulies = atoll( row[3] );	
+	thisclient->Session->KTPoints = atoi(row[4]);       //load KTPoints
+	thisclient->Session->NewPoints = atoi(row[5]);      //load newPoints. This is where additional KTPoints are added when they are purchased
+	thisclient->Session->logtime = atoi(row[6]);        //current log time in hours.
+	thisclient->Session->TotalLogTime = atoi(row[7]);   //total log time for this account
+	thisclient->Session->award = 0;
+	thisclient->Session->RespawnChoice = 0;
+	thisclient->Session->Respawned = 0;
+	thisclient->Session->inGame = true;
 	DB->QFree( );
+	Log( MSG_INFO, "Loaded %i KTpoints", thisclient->Session->KTPoints);
+	if(thisclient->Session->NewPoints != 0)
+	{
+        // Add NewPoints to KTPoints
+        //Log( MSG_DEBUG, "Loaded up some new KTPoints and stuff" );
+        thisclient->Session->KTPoints += thisclient->Session->NewPoints;
+        // Set newpoints to zero both here and in the database
+        thisclient->Session->NewPoints = 0;
+        GServer->DB->QExecute("UPDATE accounts SET newpoints=%i, ktpoints=%i WHERE id=%i AND password='%s'",
+                    thisclient->Session->NewPoints,thisclient->Session->KTPoints,thisclient->Session->userid, thisclient->Session->password);
+        //GServer->DB->QExecute("UPDATE accounts SET ktpoints=%i WHERE id=%i AND password='%s'",
+        //            thisclient->Session->KTPoints,thisclient->Session->userid, thisclient->Session->password);
+    }
+    if (thisclient->Session->logtime >= Config.KTPointRate) //make the KTPoint reward system variable
+    {
+        while(thisclient->Session->logtime > Config.KTPointRate)
+        {
+            thisclient->Session->logtime -= Config.KTPointRate;
+            thisclient->Session->award ++;
+        }
+        thisclient->Session->KTPoints += thisclient->Session->award;
+        //thisclient->Union_s->unionvar[9] = thisclient->Session->KTPoints;
+        GServer->DB->QExecute("UPDATE accounts SET ktpoints=%i,logtime=%i WHERE id=%i AND password='%s'",
+            thisclient->Session->KTPoints, thisclient->Session->logtime, thisclient->Session->userid, thisclient->Session->password);
+    }
 
 	//LMA: Anti hack (multi client on the same userid)
 	if(thisclient->Session->first_id)
@@ -744,18 +829,14 @@ bool CWorldServer::pakChangeStance( CPlayer* thisclient, CPacket* P )
 	   thisclient->Status->Stance = RUNNING;
 	thisclient->Stats->Move_Speed = thisclient->GetMoveSpeed( );
 
-	BEGINPACKET( pak, 0x782 );
+	BEGINPACKET( pak, 0x782 );				//Send packet to server containing clientid, stance and move speed
 	ADDWORD( pak, thisclient->clientid );
 	ADDBYTE( pak, thisclient->Status->Stance );
-
-    //LMA: putting the speed again...
-    //ADDWORD( pak, thisclient->Stats->Move_Speed );
-    ADDWORD( pak, thisclient->Stats->Base_Speed );
-
+    ADDWORD( pak, thisclient->Stats->Move_Speed );
     SendToVisible( &pak, thisclient );
 
     //Fuel.
-	if (thisclient->Status->Stance==DRIVING)
+	if (thisclient->Status->Stance == DRIVING)
 	{
        thisclient->last_fuel=clock();
        //forcing refresh for good value :)
@@ -2568,14 +2649,14 @@ bool CWorldServer::pakNPCBuy ( CPlayer* thisclient, CPacket* P )
                     }
                     else
                     {
-                        if (thisclient->CharInfo->Zulies<(long int)price)
+                        if (thisclient->CharInfo->Zulies<(__int64)price)
                         {
                           Log(MSG_HACK, "Not enough Zuly player %s, have %li, need %li",thisclient->CharInfo->charname,thisclient->CharInfo->Zulies,(long int) price);
                           return true;
                         }
 
                         temp_price_ll=thisclient->CharInfo->Zulies;
-                        temp_price_ll -= (long int) price;
+                        temp_price_ll -= (__int64) price;
 
                         if(temp_price_ll>thisclient->CharInfo->Zulies)
                         {
@@ -2714,7 +2795,7 @@ bool CWorldServer::pakNPCBuy ( CPlayer* thisclient, CPacket* P )
                         }
                         else
                         {
-                            if (thisclient->CharInfo->Zulies<(long int)price*count)
+                            if (thisclient->CharInfo->Zulies<(__int64)price*count)
                             {
                               Log(MSG_HACK, "Not enough Zuly player %s, have %li, need %li",thisclient->CharInfo->charname,thisclient->CharInfo->Zulies,(long int)price*count);
                               return true;
@@ -3444,8 +3525,8 @@ bool CWorldServer::pakTradeAction ( CPlayer* thisclient, CPacket* P )
 				//LMA: anti hack...
 				long long zulythis=0;
 				long long zulyother=0;
-				zulythis=thisclient->CharInfo->Zulies;
-				zulyother=otherclient->CharInfo->Zulies;
+				zulythis = thisclient->CharInfo->Zulies;
+				zulyother = otherclient->CharInfo->Zulies;
 
 				thisclient->CharInfo->Zulies -= thisclient->Trade->trade_count[0x0a];
 				otherclient->CharInfo->Zulies -= otherclient->Trade->trade_count[0x0a];

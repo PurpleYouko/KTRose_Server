@@ -98,7 +98,12 @@ bool CMap::TeleportPlayer( CPlayer* player, fPoint coordold, bool TelePassenger 
 	ADDWORD    ( pak, player->Position->Map );
 	ADDFLOAT   ( pak, player->Position->current.x*100 );
 	ADDFLOAT   ( pak, player->Position->current.y*100 );
-    ADDWORD    ( pak, (player->Status->Stance==0x04?0x0201:0x0001) );
+    ADDWORD    ( pak, (player->Status->Stance == 0x04? 0x0201: 0x0001) );
+	//PY: structure of WORD above should be
+	//BYTE btRunMode
+	//Byte btRideMode
+	//+ 2 byte of a large byte array
+	// See struct gsv_TELEPORT_REPLY in netPrototypes.h in client source
 
     //LMA: it seems they added some stuff...
     ADDDWORD(pak, 0x00);
@@ -106,7 +111,7 @@ bool CMap::TeleportPlayer( CPlayer* player, fPoint coordold, bool TelePassenger 
     ADDDWORD(pak, 0x00);
 
     //move speed.
-    ADDWORD(pak,player->Stats->Base_Speed);
+    ADDWORD(pak,player->Stats->Move_Speed);		//this would appear to be in the right place though
 
     //0x00
     ADDDWORD(pak, 0x00);

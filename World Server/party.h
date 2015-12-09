@@ -37,17 +37,18 @@ class CParty
         void SendToVisible( CPacket* pak, CPlayer* thisclient );
         bool AddPlayer( CPlayer* player );
         bool RemovePlayer( CPlayer* player );
+		bool counted; //flag to help assign party exp
 
-        UINT PartyLevel;
-        //UINT Exp;
-        unsigned long long Exp;
+        UINT Pending_Exp;  //temporary value to hold exp during calculations
+		UINT PartyLevel;
+        long Exp;
         UINT Option;
         UINT LastItem;
         UINT LastETC;
         UINT LastZulies;
         UINT Capacity;
         vector<CPlayer*> Members;
-        //CPartyExp* PartyExp;
+        CPartyExp* PartyExp;
 };
 
 #endif

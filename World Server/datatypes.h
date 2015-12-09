@@ -579,7 +579,8 @@ struct CNPCData {
     UINT subweapon;
     UINT level;
     //UINT hp;
-    unsigned long long hp;
+    unsigned long hp;
+	unsigned long MaxHP;
     UINT atkpower;
     UINT hitrate;
     UINT defense;
@@ -590,7 +591,7 @@ struct CNPCData {
     UINT AI;
     UINT AiTimer;
     //UINT exp;
-    unsigned long long exp;
+    unsigned long exp;
   	UINT dropid;
   	UINT money;
   	UINT item;
@@ -628,7 +629,7 @@ struct MonsterDamage
     //UINT charid;
     DWORD charid;
     //long int damage;
-    long long damage;
+    long damage;
 };
 
 struct CDropInfo
@@ -1296,6 +1297,7 @@ struct CEquipList
     int max;
     //vector<CEquip*> Data;
     CEquip* nullequip;
+	UINT STBMax;
 };
 
 struct CJemList

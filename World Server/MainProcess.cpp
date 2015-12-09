@@ -84,126 +84,16 @@ PVOID MapProcess( PVOID TS )
                           player->lastShowTime=0;
                           continue;
                      }
-
-                     //Log(MSG_INFO,"Player %s in map %i, position->map %i",player->CharInfo->charname,map->id,player->Position->Map);
-
-                     #ifdef LMA_SPAWNM
-                     //LMA: For use with /spawnmonsters gm command (for drop me).
-                     if(player->mdeb!=0&&player->mend!=0&&player->playertime!=0)
-                     {
-                         if(player->playertime < (UINT)GServer->round((clock( ) - player->lastSpawnUpdate)))
-                         {
-                             CMap* map = GServer->MapList.Index[player->Position->Map];
-
-                             //let's delete the old one :)
-                             if(player->last_monstercid!=0)
-                             {
-                                CMonster* thismon = GServer->GetMonsterByID(player->last_monstercid, player->Position->Map);
-                                if (thismon!=NULL)
-                                {
-                                    thismon->Stats->HP = -1;
-                                    map->DeleteMonster( thismon );
-                                }
-
-                                GServer->SendPM(player,"Killing monster %u.",player->last_monstercid);
-                                player->ClearObject(player->last_monstercid);
-
-                                /*
-                                thismon->Stats->HP = -1;
-                                BEGINPACKET( pak, 0x799 );
-                                ADDWORD    ( pak, thismon->clientid );
-                                ADDWORD    ( pak, thismon->clientid );
-                                ADDDWORD   ( pak, thismon->thisnpc->hp*thismon->thisnpc->level );
-                                ADDDWORD   ( pak, 16 );
-                                GServer->SendToVisible( &pak, thismon );
-                                map->DeleteMonster( thismon );
-                                */
-                                player->playertime=1000;
-                                player->last_monstercid=0;
-                             }
-                             else
-                             {
-                                 if(player->last_monster==0)
-                                 {
-                                     player->last_monster=player->mdeb;
-                                 }
-                                 else
-                                 {
-                                     player->last_monster++;
-                                 }
-
-                                 if (player->last_monster<=player->mend)
-                                 {
-                                     player->lastSpawnUpdate=clock();
-                                    fPoint position;
-                                    position.x=player->xx;
-                                    position.y=player->yy;
-                                    position.z=0;
-
-                                    bool is_ok=false;
-                                    CMonster* thismonster=NULL;
-                                    if(player->last_monster<GServer->maxNPC)
-                                    {
-                                        if(GServer->NPCData[player->last_monster]->STLId!=0)
-                                        {
-                                            is_ok=true;
-                                            thismonster=map->AddMonster( player->last_monster, position );
-                                            if (thismonster==NULL)
-                                            {
-                                                is_ok=false;
-                                            }
-
-                                        }
-
-                                    }
-
-                                    if (is_ok)
-                                    {
-                                        GServer->SendPM(player,"Spawning monster %u (%u).",player->last_monster,thismonster->clientid);
-                                        player->last_monstercid=thismonster->clientid;
-                                        player->playertime=2000;
-                                    }
-                                    else
-                                    {
-                                        GServer->SendPM(player,"Monster %u does not exist.",player->last_monster);
-                                        player->last_monstercid=0;
-                                        player->playertime=1000;
-                                    }
-
-                                 }
-                                 else
-                                 {
-                                     GServer->SendPM(player,"End spawning from %u to %u.",player->mdeb,player->mend);
-                                     player->mdeb=0;
-                                     player->mend=0;
-                                 }
-
-                             }
-
-                         }
-
-                     }
-                     #endif
-
-                     player->RefreshHPMP();         //LMA HP / MP Jumping
+                    player->RefreshHPMP();         //LMA HP / MP Jumping
                     if(player->UpdateValues( )) //Does nothing except for rides... equals to true if player isn't on the back seat
                         player->UpdatePosition(false);
                     if(player->IsOnBattle( ))
                         player->DoAttack( );
 
-                    //LMA: not used anymore.
-                    //player->CheckItems( );
-
                     player->RefreshBuff( );
                     player->PlayerHeal( );
                     player->Regeneration( );
                     player->CheckPlayerLevelUP( );
-
-                    #ifdef PYCUSTOM
-                    //LMA: define PYCUSTOM in the .h to enable custom events. Rebuild your server then.
-                    player->CheckPortal( );  //Custom Events
-                    player->CheckEvents( );  //Custom Events
-                    #endif
 
                     player->CheckDoubleEquip(); //LMA: Core fix for double weapon and shield
                     player->CheckZulies( );
@@ -327,6 +217,14 @@ PVOID MapProcess( PVOID TS )
                     else if(only_summon)
                     {
                         nb_summons_map++;
+                    }
+
+					if(monster->hitcount == 0xFF)//this is a delay for new monster spawns this might olso fix invisible monsters(if they attack directly on spawning the client dosn't get the attack packet(its not in it's visible list yet))
+                    {
+                        monster->hitcount = 0;
+                        //monster->DoAi(monster->thisnpc->AI, 0);
+                        monster->DoAi(monster->MonAI, 0);		//AI on spawn
+                        monster->lastAiUpdate=clock();
                     }
 
                     //PY handling day only or night only monsters. 
@@ -709,7 +607,7 @@ PVOID VisibilityProcess(PVOID TS)
                     clock_t etime = clock() - player->lastSaveTime;
                     if( etime >= GServer->Config.SAVETIME*1000 )
                     {
-                        player->savedata( );
+                        player->savedata();
                         player->lastSaveTime = clock();
                     }
                 }

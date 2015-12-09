@@ -133,6 +133,7 @@ void CWorldServer::OnClientDisconnect( CClientSocket* thisclient )
     if(!player->Saved)
     {
     	player->savedata();
+		player->SaveBackupStorage( 2 ); // make a backup of the character's storage on exit
         player->Session->isLoggedIn = false;
         //send packet to change messenger status (offline)
     	BEGINPACKET( pak, 0x7e1 );
@@ -513,7 +514,7 @@ void CWorldServer::DisconnectAll()
         CPlayer* otherclient = (CPlayer*) ClientList.at(i)->player;
 		if(otherclient->Session->isLoggedIn)
 		{
-            otherclient->savedata( );
+            otherclient->savedata();
             otherclient->Saved = true;
             otherclient->client->isActive = false;
         }

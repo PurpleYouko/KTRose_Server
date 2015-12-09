@@ -126,6 +126,7 @@ class CWorldServer : public CServerSocket
       	//20070621-211100
       	//FOR CF
       	bool GiveExp( CMonster* thismon, UINT special_lvl, UINT special_exp);
+		bool GiveExp( CMonster* thismon);
       	//LMA END
 
         //LMA BEGIN
@@ -518,8 +519,10 @@ class CWorldServer : public CServerSocket
         fpAiCond aiCondFunc[32];
         fpAiAct aiActFunc[38];
 
-        //int ObjVar[4000][20];  //NPC variables used in AI
-        int ObjVar[MAX_NPC][20];  //NPC variables used in AI
+        //int ObjVar[4000][20];		//NPC variables used in AI
+        int ObjVar[MAX_NPC][20];	//NPC variables used in AI
+		int WorldVar[200][20];		//World Variables used in AIP (but not very often)
+		int EconomyVar[200][20];	//Economy Variables used in AIP (but not very often)
 
         // AIP Functions
         void ReadAIP(strings path, dword index);

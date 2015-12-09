@@ -34,21 +34,23 @@ bool CMonster::UpdateValues( )
 void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
 {
     BEGINPACKET( pak, 0x792 );
-	ADDWORD    ( pak, clientid );
+	//struct gsv_MOB_CHAR
+	ADDWORD    ( pak, clientid );										//PY this is wrong. Shopuld be short clientid + short Quest id. i guess questid always goes through empty
+	//struct tag_ADD_CHAR
 	ADDFLOAT   ( pak, Position->current.x*100 );
-	ADDFLOAT   ( pak, Position->current.y*100 );
+	ADDFLOAT   ( pak, Position->current.y*100 );						//current X and Y position
 
-	if((thismon->bonushp>0||thismon->bonusmp>0)&&(thismon->skillid>0))
+	if((thismon->bonushp>0||thismon->bonusmp>0)&&(thismon->skillid>0))	//What is this? It seems to be sending this in place of destination if the monster is not able to move. Bonfires and so on
 	{
     	ADDFLOAT   ( pak, 0xcdcdcdcd );
     	ADDFLOAT   ( pak, 0xcdcdcdcd );
     }
     else
     {
-     	ADDFLOAT   ( pak, Position->destiny.x*100 );
+     	ADDFLOAT   ( pak, Position->destiny.x*100 );					//Destination position. This should always follow current position
     	ADDFLOAT   ( pak, Position->destiny.y*100 );
     }
-
+	// next 2 WORDS are m_wCommand and m_wTargetOBJ
 	if(IsDead( ))
 	{
 	   ADDWORD    ( pak, 0x0003 );
@@ -57,7 +59,7 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
 	else if(IsOnBattle( ))
 	{
        //LMA: for supportive summons (lucky ghost...)
-       if(Battle->bufftarget==Battle->target)
+       if(Battle->bufftarget == Battle->target)
        {
     	   ADDWORD    ( pak, 0x0002 );
     	   ADDWORD    ( pak, 0x0000 );
@@ -79,28 +81,35 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
     	ADDWORD    ( pak, 0x0000 );
     	ADDWORD    ( pak, 0x0000 );
     }
-
-    if(IsSummon( ) )
+	//end command and battle_target
+	//PY. According to the receiving structure in the client this shold be stance
+    
+	/*if(IsSummon( ) )											
     {
         ADDBYTE    ( pak, 0x01 );
     }
     else
     {
         ADDBYTE    ( pak, 0x00 );
-    }
+    }*/
+	
+	ADDBYTE		( pak, thisnpc->stance );
+	//next it's HP which is received as a 32 bit int
 
-    //LMA: Little check, for now we "only" have a DWORD for monster's HP so there is a limit
+    //LMA: Little check, for now we "only" have a WORD for monster's HP so there is a limit
     //broken by some monsters (Turak boss)
-    if(Stats->HP>MAXHPMOB)
+	//PY: Another special case.... Goodbye
+    /*
+	if(Stats->HP>MAXHPMOB)
     {
         LogDebugPriority(3);
-        LogDebug("Too much HP for monster %i (%I64i->%I64i)",thismon->montype,Stats->HP,MAXHPMOB);
+        LogDebug("Too much HP for monster %i (%i->%i)",thismon->montype,Stats->HP,MAXHPMOB);
         LogDebugPriority(4);
         Stats->HP=(long long) MAXHPMOB;
-    }
+    }*/
 
     ADDDWORD   ( pak, Stats->HP );
-
+	// now Team Number
 	if(thismon->owner != player->clientid)
     {
         CMap* map = GServer->MapList.Index[Position->Map];
@@ -145,8 +154,9 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
         //Friendly
         ADDDWORD( pak, 0x00000000 );
     }
-
+	//and finally DWORD StausFlag
     ADDDWORD( pak, GServer->BuildBuffs( this ) );
+	//End of client side structure the rest of this stuff will be ignored in the client
 	ADDWORD   ( pak, montype );
 	ADDWORD   ( pak, 0x0000 );
 	if(IsSummon( ))
@@ -166,7 +176,8 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
 	player->client->SendPacket( &pak );
 
     //LMA: supportive summons (lucky ghost)
-    if(IsSummon()&&buffid>0&&(player==GetOwner()))
+	//PY: Another special case. Will probably need to remove this later
+    if(IsSummon() && buffid > 0 && (player == GetOwner()))
     {
         Log(MSG_INFO,"The summon is spawned");
         /*CPlayer* player = GetOwner( );

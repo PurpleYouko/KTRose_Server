@@ -172,14 +172,17 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
             //LMA: Xp nullifier.
             if(!thisclient->no_exp)
             {
-                thisclient->CharInfo->Exp +=  thisclient->bonusxp*GetColorExp( thisclient->Stats->Level, thismon->thisnpc->level + special_lvl, exp );
+                int tempexp = thisclient->bonusxp*GetColorExp( thisclient->Stats->Level, thismon->thisnpc->level + special_lvl, exp );
+				if (tempexp <= 0) 
+					tempexp = thismon->thisnpc->exp;
+				thisclient->CharInfo->Exp +=  tempexp;
             }
 
             //Log(MSG_INFO,"Bonus XP %i, previous XP, %i, new: %i",thisclient->bonusxp,prev_xp,thisclient->CharInfo->Exp);
             //LMA END
 
             //LMA: We don't send exp packet if there is a level up coming up next.
-            if(thisclient->CharInfo->Exp<thisclient->GetLevelEXP())
+            if(thisclient->CharInfo->Exp < thisclient->GetLevelEXP())
             {
                 //LMA: TEST
                 //Log(MSG_INFO,"new exp in giveexp %I64i",thisclient->CharInfo->Exp);
@@ -338,3 +341,175 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
 
     return true;
 }
+
+// Give Exp
+bool CWorldServer::GiveExp( CMonster* thismon )
+{
+    //Log(MSG_DEBUG,"Awarding EXP");
+    int tmpMult = 1;
+    if( thismon->owner != 0) // Summon
+	{
+        MapList.Index[thismon->Position->Map]->DeleteMonster( thismon );
+	    return true;
+    }
+    // Give Experience Drops and Quest Items
+    vector<CPartyExp*> PartyExp;
+    vector<CParty*> PartyList;
+	CMap* map = GServer->MapList.Index[thismon->Position->Map];
+    for(UINT i=0;i<thismon->PlayersDamage.size();i++)
+    {
+        MonsterDamage* thisplayer = thismon->PlayersDamage.at(i);
+		CPlayer* thisclient = GetClientByCID( thisplayer->charid, thismon->Position->Map );
+		if( thisplayer->damage > 0 && thisclient != NULL ) //player did some damage
+        {
+    		Log(MSG_DEBUG,"Player did %i damage. max = %i",thisplayer->damage,thismon->Stats->MaxHP);
+    		float MyPercent = (float)thisplayer->damage / thismon->Stats->MaxHP;
+			if(MyPercent > thisclient->CharInfo->HighestOverkill)
+			{
+				thisclient->CharInfo->HighestOverkill = MyPercent;
+				SendPM(thisclient, "Congratulations!! You have exceeded your highest ever Overkill rate. New Best: %f",thisclient->CharInfo->HighestOverkill);
+			}
+    		if(MyPercent > GServer->Config.MaxOverkill)MyPercent = GServer->Config.MaxOverkill;   //set overkill ceiling
+			Log(MSG_DEBUG,"Percentage multiplier %f",MyPercent);
+            if( thisclient->Battle->target == thismon->clientid )
+            {
+                ClearBattle( thisclient->Battle )
+                thisclient->Position->destiny = thisclient->Position->current;
+                //Log(MSG_DEBUG,"(GiveExp) Destiny set to current position X: %f Y: %f.",thisclient->Position->current.x,thisclient->Position->current.y);
+            }
+            if( thismon->MonsterDrop->firsthit == thisclient->CharInfo->charid )
+            {
+                for( int q=0;q<10;q++)
+                {
+                    // Give Quest Item
+                    if( thisclient->quest.quests[q].QuestID!=0 )
+                    {
+                        Log(MSG_DEBUG,"Giving quest reward item for quest %i",thisclient->quest.quests[q].QuestID);
+                        BEGINPACKET( pak, 0x731 )
+                        ADDWORD    ( pak, thismon->montype );
+                        thisclient->client->SendPacket( &pak );
+                        break;
+                    }
+                }
+            }
+            //assign my own exp for monsters that I personally damaged
+            unsigned int exp = (unsigned int)floor(thismon->thisnpc->exp * MyPercent);
+            //unsigned int exp = (unsigned int)ceil((double)((thismon->thisnpc->exp * thisplayer->damage) / (thismon->thisnpc->hp*thismon->thisnpc->level)));
+            exp = exp * Config.EXP_RATE * map->mapXPRate *   MyPercent;      //calculate base exp for this client. No medals or stuff accounted for yet
+			
+            Log(MSG_DEBUG,"MonXP: %i config rate: %i Map rate : %i My percent: %f Total XP: %i", thismon->thisnpc->exp, Config.EXP_RATE, map->mapXPRate, MyPercent, exp);
+            thisclient->CharInfo->Pending_Exp += (exp * thisclient->Stats->xprate);    //store exp into thisclient's pending_exp using personal xprate adjustments
+			Log(MSG_DEBUG,"My personal XPrate: %i ", thisclient->Stats->xprate);
+            if( thisclient->Party->party!=NULL )
+            {
+                //Log(MSG_DEBUG,"Player is in a party");
+                //player is in a party so scan the party members
+                CParty* party = thisclient->Party->party; //assign a party
+                if(party == NULL)
+                    return true;
+                //Log(MSG_DEBUG,"party found. Counted = %i", party->counted);
+                for(UINT p=0;p<party->Members.size();p++) //loop through all the members in the party
+                {
+                    //Log(MSG_DEBUG,"member %i being parsed", p);
+                    if(!party->counted)
+                    {
+                        //Log(MSG_DEBUG,"party added to list. level = %i", party->PartyLevel);
+                        party->counted = true; //tag the party so we don't add it to the list twice
+                        PartyList.push_back( party ); //we will need this list later to convert pending exp to real exp
+                    }
+                    CPlayer* thismember = party->Members.at(p); //find a party member
+                    if(thismember == NULL)
+                        return true;
+					float RawTmpExp = (exp * (party->PartyLevel + 25) / 50);
+                    unsigned int tempxp =(unsigned int)(floor)(RawTmpExp);
+                    if (tempxp < 1)tempxp = 1;
+                    //Log(MSG_DEBUG,"member %i pending exp = %i tempxp: %i", p, thismember->CharInfo->Pending_Exp, tempxp);
+                    thismember->CharInfo->Pending_Exp += tempxp; // add a percentage of thisclient's non-adjusted exp to all party members including himself
+
+                    //Log(MSG_DEBUG,"member %i pending exp (after tempxp) = %i", p, thismember->CharInfo->Pending_Exp);
+                }
+                if(party->PartyLevel < 50) //only give party exp if party level is under 50
+                {
+
+                    party->Pending_Exp += exp; //add thisclient's non-adjusted xp to the pending exp of the party
+                }
+
+               
+            }
+            else //not in a party so deal with all the exp now
+            {
+                //SendPM(thisclient, "You receive %i EXP",thisclient->CharInfo->Pending_Exp);
+                //Log(MSG_DEBUG,"Player awarded %i experience points",thisclient->CharInfo->Pending_Exp);
+				thisclient->CharInfo->Exp += thisclient->CharInfo->Pending_Exp;
+                thisclient->CharInfo->Pending_Exp = 0;
+                //if(!thisclient->CheckPlayerLevelUP())
+				if(thisclient->CharInfo->Exp < thisclient->GetLevelEXP())
+                {
+					BEGINPACKET( pak, 0x79b );
+                    ADDDWORD   ( pak, thisclient->CharInfo->Exp );
+                    ADDWORD    ( pak, thisclient->CharInfo->stamina );
+					ADDWORD    ( pak, thismon->clientid );
+                    thisclient->client->SendPacket( &pak );
+                }
+            }
+        }
+    }
+    for(int p=0;p<PartyList.size();p++) //loop through our party list to assign final exp to all party members. We already did non-party members up there^
+    {
+
+        CParty* thisparty = PartyList.at( p );
+
+        if(thisparty == NULL)
+        {
+            //Log(MSG_DEBUG,"Party not valid");
+            continue;
+        }
+        //Log(MSG_DEBUG,"Party %i exp: %i pending exp: %i", p, thisparty->Exp, thisparty->Pending_Exp );
+        thisparty->counted = false;         //reset the boolean for next time
+        for(UINT i=0;i<thisparty->Members.size();i++) //loop through all the members in the party
+        {
+            CPlayer* thismember = thisparty->Members.at(i); //find a party member
+            if(thismember == NULL)
+                return true;
+            thismember->CharInfo->Exp += thismember->CharInfo->Pending_Exp;
+            //Log(MSG_DEBUG,"Added pending exp %i to regular exp %i for member %i", thismember->CharInfo->Pending_Exp, thismember->CharInfo->Exp, i);
+            thismember->CharInfo->Pending_Exp = 0;
+            if(!thismember->CheckPlayerLevelUP( ))
+            {
+                BEGINPACKET( pak, 0x79b );
+                ADDDWORD   ( pak, thismember->CharInfo->Exp );
+                ADDWORD    ( pak, thismember->CharInfo->stamina );
+                //ADDWORD    ( pak, 0 );		//PY: not needed
+				ADDWORD    ( pak, thismon->clientid );
+                thismember->client->SendPacket( &pak );
+            }
+
+        }
+        thisparty->Exp += thisparty->Pending_Exp;
+        thisparty->Pending_Exp = 0;
+		unsigned int m_bitlevelup = 0;
+        if( thisparty->Exp > GetMaxPartyExp(thisparty->PartyLevel)) //level up the party
+        {
+            thisparty->PartyLevel++;
+            thisparty->Exp -= GetMaxPartyExp(thisparty->PartyLevel-1);
+			m_bitlevelup = 1;	//set levelup bit. See client structure below
+        }
+		//PY: structure of 0x7d4
+		/*BYTE				m_btLEVEL;
+		struct 
+		{
+			unsigned int	m_iEXP		 : 31;
+			unsigned int	m_bitLevelUP : 1;
+		} ;
+		*/
+        BEGINPACKET	( pak, 0x7d4 );
+        ADDBYTE		( pak, thisparty->PartyLevel );
+        ADDWORD		( pak, thisparty->Exp );
+		ADDWORD		( pak, m_bitlevelup );
+        thisparty->SendToMembers( &pak );
+    }
+    return true;
+}
+
+
+

@@ -60,7 +60,7 @@ bool CWorldServer::pakPartyActions( CPlayer* thisclient, CPacket* P )
                 thisclient->client->SendPacket( &pak );
                 return true;
             }
-            if(abs(otherclient->Stats->Level-thisclient->Stats->Level)>(Config.Partygap+1))
+            if(abs((double)otherclient->Stats->Level-thisclient->Stats->Level)>(Config.Partygap+1))
             {
                 BEGINPACKET( pak, 0x7d1 );
                 ADDBYTE    ( pak, 0x07 );//Level inapropiado
@@ -241,7 +241,7 @@ bool CWorldServer::pakPartyManager( CPlayer* thisclient, CPacket* P )
                     return true;
                 }
             }
-            if(abs(otherclient->Stats->Level-thisclient->Stats->Level)>(Config.Partygap+1))
+            if(abs((double)otherclient->Stats->Level-thisclient->Stats->Level)>(Config.Partygap+1))
             {
                 BEGINPACKET( pak, 0x7d1 );
                 ADDBYTE    ( pak, 0x07 );//Level inapropiado
@@ -264,9 +264,17 @@ bool CWorldServer::pakPartyManager( CPlayer* thisclient, CPacket* P )
                 party = thisparty;
             }
             //Send Party Level and Party Exp
-            RESETPACKET( pak, 0x7d4 ); //
-            ADDBYTE    ( pak, party->PartyLevel );
-            ADDDWORD   ( pak, party->Exp );
+			unsigned int m_bitlevelup = 0;
+			if( party->Exp > GetMaxPartyExp(party->PartyLevel)) //level up the party
+			{
+				party->PartyLevel++;
+				party->Exp -= GetMaxPartyExp(party->PartyLevel-1);
+				m_bitlevelup = 1;	//set levelup bit. 
+			}
+            RESETPACKET	( pak, 0x7d4 ); //
+            ADDBYTE		( pak, party->PartyLevel );
+            ADDWORD		( pak, party->Exp );
+			ADDWORD		( pak, m_bitlevelup );
             thisclient->client->SendPacket( &pak );
             thisclient->Party->IsMaster = false;
             // Send New Party Member info to other players

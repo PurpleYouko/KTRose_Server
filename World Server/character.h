@@ -33,6 +33,7 @@ class CCharacter
         ~CCharacter( );
 
         clock_t lastAiUpdate;   //LMA: AIP
+		clock_t SpawnTime;		//PY: Needed for monitoring how old a summon is
 
         #ifdef LMA_SPAWNM
             clock_t lastSpawnUpdate;   //LMA: AIP
@@ -52,7 +53,9 @@ class CCharacter
         CCharacter* nearChar;
         CCharacter* findChar;
         //int damagecounter;
-        long long damagecounter;
+        long long damagerecieved;	//received damage
+		long long damagecounter;	//not used any more
+		long long damagedealt;		//damage done
         bool drop_dead; //LMA: he dropped when he died.
 
         //LMA: test for quest hack (stackable).
@@ -114,6 +117,7 @@ class CCharacter
         bool IsMoving( );
         bool stopMoving( );
         CCharacter* GetCharTarget( );
+		CCharacter* GetCharAttacker( );
         CCharacter* GetCharBuffTarget( );           //LMA: Used for some summons.
         bool IsAttacking( );
         //bool first_attack;//Tomiz: Used for CCharacter::DoAttack( ), monster->DoAi(monster->MonAI, 3);
@@ -132,7 +136,7 @@ class CCharacter
         // Functions
         virtual CDrop* GetDrop( );
         //virtual void AddDamage( CCharacter* enemy, long int hitpower);
-        virtual void AddDamage( CCharacter* enemy, long long hitpower);
+        virtual void AddDamage( CCharacter* enemy, int hitpower);
         virtual void UpdatePosition( bool monster_stay_still);       //LMA: changed for some monsters.
         virtual bool UpdateValues( );
         virtual void ReduceABC( int amount=1,bool do_packet=true );
@@ -157,7 +161,7 @@ class CCharacter
         virtual unsigned int GetAttackSpeed( );
         virtual unsigned int GetMoveSpeed( );
         //virtual unsigned int GetMaxHP( );
-        virtual unsigned long long GetMaxHP( );
+        virtual unsigned int GetMaxHP( );
         virtual unsigned int GetMaxMP( );
         virtual float GetAttackDistance( );
         virtual unsigned int GetInt( );

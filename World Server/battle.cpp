@@ -67,52 +67,11 @@ void CCharacter::DoAttack( )
                 return;
             }
 
-            //osptest
             if(Enemy == this)
             {
                 //Log(MSG_INFO,"WTF?? I AM trying to attack myself");
                 ClearBattle( Battle );
             }
-            //osptest end
-
-            //LMA: Some logs.
-            /*
-            if(map->id==8)
-            {
-                bool is_ok=false;
-                bool is_reached=false;
-                bool can_attack=false;
-
-                float distance = GServer->distance( Position->current, Enemy->Position->current );
-                is_reached=IsTargetReached( Enemy );
-                can_attack=CanAttack( );
-
-                if(is_reached&&can_attack)
-                    is_ok=true;
-
-                if(IsMonster())
-                {
-                    Log(MSG_INFO,"monster has reached? %i (%.2f/%.2f), canattack? %i, will attack? %i",is_reached,distance,Stats->Attack_Distance,can_attack,is_ok);
-
-                    if (is_ok)
-                        Log(MSG_INFO,"NORMAL_ATTACK, monster %i has reached %i (%.2f<=%.2f)",clientid,Enemy->clientid,distance,Stats->Attack_Distance);
-                    else
-                        Log(MSG_INFO,"NORMAL_ATTACK, monster %i hasn't reached? %i (%.2f>%.2f)",clientid,Enemy->clientid,distance,Stats->Attack_Distance);
-                }
-                else
-                {
-                    Log(MSG_INFO,"player has reached? %i (%.2f/%.2f), canattack? %i, will attack? %i",is_reached,distance,Stats->Attack_Distance,can_attack,is_ok);
-
-                    if (is_ok)
-                        Log(MSG_INFO,"NORMAL_ATTACK, player %i has reached %i (%.2f<=%.2f)",clientid,Enemy->clientid,distance,Stats->Attack_Distance);
-                    else
-                        Log(MSG_INFO,"NORMAL_ATTACK, player %i hasn't reached? %i (%.2f>%.2f)",clientid,Enemy->clientid,distance,Stats->Attack_Distance);
-                }
-
-            }
-            */
-            //End of logs.
-
 
             if(IsTargetReached( Enemy ) && CanAttack( ))
             {
@@ -334,7 +293,7 @@ void CCharacter::DoAttack( )
                 float distance=GServer->distance( Position->current, Position->aoedestiny );
                 //Log(MSG_INFO,"distance %f / range: %i, current: %.2f,%.2f, aoe: %.2f,%.2f",distance,skill->range,Position->current.x,Position->current.y,Position->aoedestiny.x,Position->aoedestiny.y);
                 //osprose: canattacl
-                if(distance<=skill->range&&CanAttack( ))
+                if(distance<=skill->range && CanAttack( ))
                 {
                     Log(MSG_INFO,"[DoAttack] In AOE_TARGET time for AoeSkill");
                     AoeSkill( skill, NULL );    //LMA: no specific Enemy in Zone.
@@ -427,8 +386,8 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
     Position->destiny = Position->current;
 
     //LMA: Log
-    if(IsPlayer())
-        Log(MSG_INFO,"Forcing destiny to current (%.2f,%.2f), (%.2f,%.2f)",Position->current.x,Position->current.y,Position->destiny .x,Position->destiny .y);
+    //if(IsPlayer())
+    //    Log(MSG_INFO,"Forcing destiny to current (%.2f,%.2f), (%.2f,%.2f)",Position->current.x,Position->current.y,Position->destiny .x,Position->destiny .y);
 
 
     reduceItemsLifeSpan( false );
@@ -441,26 +400,26 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
     attack += (float)GServer->RandNumber( 0, 7 ) - 2;
     attack += ((Stats->Level - Enemy->Stats->Level) * d_attack);
     if(attack<7) attack = 5;
-    long int hitpower = (long int)floor(attack + GServer->RandNumber(0, 4));
+    unsigned int hitpower = (int)floor(attack + GServer->RandNumber(0, 4));
     /*if(IsPlayer( ))
         hitpower = (long int)floor(attack * 1.2 );*/
     if(IsPlayer( )) //temp fix to find balance btw monster and player
-        hitpower = (long int)floor(attack * (GServer->Config.PlayerDmg/100.00));
+        hitpower = (int)floor(attack * (GServer->Config.PlayerDmg/100.00));
     if(IsMonster( )) //temp fix to find balance btw monster and player
-        hitpower = (long int)floor(attack * (GServer->Config.MonsterDmg/100.00));
+        hitpower = (int)floor(attack * (GServer->Config.MonsterDmg/100.00));
 
     if(IsPlayer())//Add Dmg
     {
         if( Stats->ExtraDamage_add !=0 )
         {
-            long int hitsave=hitpower;
+            int hitsave = hitpower;
             hitpower += ((hitpower * Stats->ExtraDamage_add) / 100);
             Log(MSG_INFO,"ExtraDmg Normal atk: before %i, after %i (ED: %i)",hitsave,hitpower,Stats->ExtraDamage_add);
         }
     }
 
     bool critical = false;
-    if(hitpower<=0)
+    if(hitpower <= 0)
     {
         hitpower = 0;
     }
@@ -468,35 +427,37 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
     {
         if(GServer->RandNumber(0,300)<Stats->Critical)
         {
-            hitpower = (long int)floor(hitpower*1.5);
+            hitpower = (int)floor(hitpower*1.5);
             critical = true;
         }
     }
     // dodge
-    unsigned int hitvalue = (unsigned int)floor((double)Stats->Accury * 50 / Enemy->Stats->Dodge);
+    int hitvalue = (int)floor((double)Stats->Accury * 50 / Enemy->Stats->Dodge);
     if(hitvalue>100) hitvalue = 100;
     if(GServer->RandNumber( 0, 100 )>hitvalue)
         hitpower = 0; // dodged
     if(!Enemy->IsSummon( ) && Enemy->IsMonster( ))
     {
-        Enemy->AddDamage( this, (long long) hitpower );
-        Enemy->damagecounter += (long long) hitpower;// is for AI
+        Enemy->AddDamage( this, (int) hitpower );
+        Enemy->damagerecieved += (int) hitpower;// is for AI
+		this->damagedealt += (int) hitpower;// is for AI
     }
 
-    Enemy->Stats->HP -=  (long long) hitpower;
+    Enemy->Stats->HP -=  (int) hitpower;
 
     if (Enemy->IsMonster())
     {
-        Log(MSG_INFO,"Normal Attack, monster HP %I64i, hitpower %li",Enemy->Stats->HP,hitpower);
+        Log(MSG_INFO,"Normal Attack, monster HP %i, hitpower %i",Enemy->Stats->HP,hitpower);
     }
     else
     {
-        Log(MSG_INFO,"Normal Attack, Player HP %I64i, hitpower %li",Enemy->Stats->HP,hitpower);
+        Log(MSG_INFO,"Normal Attack, Player HP %i, hitpower %i",Enemy->Stats->HP,hitpower);
     }
 
     // actually the target was hit, if it was sleeping, set duration of
     // sleep to 0. map process will remove sleep then at next player-update
-    if (Enemy->Status->Sleep != 0xff) {
+    if (Enemy->Status->Sleep != 0xff) 
+	{
         Enemy->MagicStatus[Enemy->Status->Sleep].Duration = 0;
     }
 
@@ -528,15 +489,21 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
     {
         //LMA: UW handling, we add the handling for other quests as well...
         //if (!is_already_dead&&(GServer->MapList.Index[Position->Map]->QSDkilling>0||GServer->MapList.Index[Position->Map]->QSDDeath>0)&&IsPlayer()&&Enemy->IsPlayer())
-        if (!is_already_dead&&((GServer->MapList.Index[Position->Map]->QSDkilling>0&&IsPlayer()&&Enemy->IsPlayer())||(GServer->MapList.Index[Position->Map]->QSDDeath&&Enemy->IsPlayer())))
+        if (!is_already_dead && ((GServer->MapList.Index[Position->Map]->QSDkilling>0 && IsPlayer()&&Enemy->IsPlayer())||(GServer->MapList.Index[Position->Map]->QSDDeath && Enemy->IsPlayer())))
         {
             //Log(MSG_INFO,"UWKILL begin normal atk");
             UWKill(Enemy);
         }
+		if(IsMonster())	//PY: Monster just killed something so we need to enact AIP type 4
+		{
+			CMonster* thisMonster = reinterpret_cast<CMonster*>(this);
+			if(thisMonster != NULL)
+				thisMonster->DoAi(thisMonster->MonAI, 4);
+		}
 
         //LMA: test for quest hack (stackable).
         #ifdef QHACK
-        if(!is_already_dead&&Enemy->die_quest!=0&&Enemy->IsMonster()&&IsPlayer())
+        if(!is_already_dead && Enemy->die_quest!=0 && Enemy->IsMonster() && IsPlayer())
         {
             QuestKill(Enemy->die_quest);
         }
@@ -659,7 +626,7 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
             Log(MSG_WARNING,"NA, Not dead, hitpower %i, critical %i (%i hitting %i)",hitpower,critical,clientid,Enemy->clientid);
         }*/
 
-        ADDDWORD   ( pak, (hitpower>0?(critical?12:0):0) );
+        ADDDWORD   ( pak, (hitpower >0 ?(critical?12:0):0) );
         GServer->SendToVisible( &pak, Enemy );
     }
 
@@ -1491,7 +1458,8 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
     if(!Enemy->IsSummon( ) && Enemy->IsMonster( ))
     {
         Enemy->AddDamage( this, (long long) skillpower );
-        Enemy->damagecounter+= (long long) skillpower;// is for AI
+        Enemy->damagerecieved += (long long) skillpower;	// is for AI
+		this->damagedealt += (long long) skillpower;		// is for AI
     }
     Enemy->Stats->HP -=  (long long) skillpower;
     Log(MSG_INFO,"Atk Skill damage %li, Enemy HP after %li",skillpower,Enemy->Stats->HP);
@@ -1554,11 +1522,18 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
 
         //LMA: UW handling, adding support for other quests.
         //if (!is_already_dead&&(GServer->MapList.Index[Position->Map]->QSDkilling>0||GServer->MapList.Index[Position->Map]->QSDDeath>0)&&IsPlayer()&&Enemy->IsPlayer())
-        if (!is_already_dead&&((GServer->MapList.Index[Position->Map]->QSDkilling>0&&IsPlayer()&&Enemy->IsPlayer())||(GServer->MapList.Index[Position->Map]->QSDDeath&&Enemy->IsPlayer())))
+        if (!is_already_dead && ((GServer->MapList.Index[Position->Map]->QSDkilling>0 && IsPlayer() && Enemy->IsPlayer())||(GServer->MapList.Index[Position->Map]->QSDDeath && Enemy->IsPlayer())))
         {
             Log(MSG_INFO,"UWKILL begin skill atk");
             UWKill(Enemy);
         }
+
+		if(IsMonster())	//PY: Monster just killed something so we need to enact AIP type 4
+		{
+			CMonster* thisMonster = reinterpret_cast<CMonster*>(this);
+			if(thisMonster != NULL)
+				thisMonster->DoAi(thisMonster->MonAI, 4);
+		}
 
         //LMA: test for quest hack (stackable).
         #ifdef QHACK
@@ -1727,7 +1702,7 @@ void CCharacter::UseBuffSkill( CCharacter* Target, CSkills* skill )
 	GServer->SendToVisible( &pak, (CCharacter*)this );
 
 	//LMA: Patch for Revive stuff...
-	if(skill->skilltype==20&&Target->IsPlayer())
+	if(skill->skilltype == 20 && Target->IsPlayer())
 	{
 	    CPlayer* thisclient = GServer->GetClientByID(Target->clientid,Position->Map);
 	    if (thisclient==NULL)
@@ -1742,11 +1717,11 @@ void CCharacter::UseBuffSkill( CCharacter* Target, CSkills* skill )
 	    }
 
         //not exact but should be fair enough...
-        Log(MSG_INFO,"before Revive, HP %I64i, Xp %I64i, skill %i",thisclient->Stats->HP,thisclient->CharInfo->Exp,skill->atkpower);
-        unsigned long long new_exp=(unsigned long long) (thisclient->CharInfo->Exp*3*skill->atkpower/(100*100));
-        thisclient->CharInfo->Exp+=new_exp;
-        thisclient->Stats->HP=thisclient->Stats->MaxHP*30/100;
-	    Log(MSG_INFO,"Revive, new HP %I64i, %I64i, Xp added %I64i, new %I64i",thisclient->Stats->HP,Target->Stats->HP,new_exp,thisclient->CharInfo->Exp);
+        Log(MSG_INFO,"before Revive, HP %i, Xp %i, skill %i",thisclient->Stats->HP,thisclient->CharInfo->Exp,skill->atkpower);
+        long new_exp = (long) (thisclient->CharInfo->Exp * 3 * skill->atkpower/(100*100));
+        thisclient->CharInfo->Exp += new_exp;
+        thisclient->Stats->HP = thisclient->Stats->MaxHP * 30 / 100;
+	    Log(MSG_INFO,"Revive, new HP %i, %i, Xp added %i, new %i",thisclient->Stats->HP,Target->Stats->HP,new_exp,thisclient->CharInfo->Exp);
         BEGINPACKET( pak, 0x79b );
         ADDDWORD   ( pak, thisclient->CharInfo->Exp );
         ADDWORD    ( pak, thisclient->CharInfo->stamina );
@@ -1853,21 +1828,21 @@ bool CCharacter::TakeExp( CCharacter *Target )
         CPlayer* thisclient = GServer->GetClientByID(Target->clientid,Position->Map);
     }
 
-    if (thisclient==NULL)
+    if (thisclient == NULL)
     {
         Log(MSG_WARNING,"Can't find clientID %i to take his Exp...",Target->clientid);
         return true;
     }
 
     Log(MSG_INFO,"Player %i died, Xp before %I64i",Target->clientid,thisclient->CharInfo->Exp);
-    unsigned long long new_exp=(unsigned long long) (thisclient->CharInfo->Exp*3/100);
+     long new_exp = ( long) (thisclient->CharInfo->Exp*3/100);
     thisclient->CharInfo->Exp-=new_exp;
     BEGINPACKET( pak, 0x79b );
     ADDDWORD   ( pak, thisclient->CharInfo->Exp );
     ADDWORD    ( pak, thisclient->CharInfo->stamina );
     ADDWORD    ( pak, 0 );
     thisclient->client->SendPacket( &pak );
-    Log(MSG_INFO,"Player %i died, Xp taken %I64i, new %I64i",Target->clientid,new_exp,thisclient->CharInfo->Exp);
+    Log(MSG_INFO,"Player %i died, Xp taken % i, new % i",Target->clientid,new_exp,thisclient->CharInfo->Exp);
 
 
     return true;
@@ -1934,7 +1909,7 @@ void CCharacter::UWKill(CCharacter* Enemy)
         killed_level=killer_level;
     }
 
-    UINT bonus_exp=GServer->GetColorExp(killer_level,killed_level,7000);
+    UINT bonus_exp = GServer->GetColorExp(killer_level,killed_level,7000);
     plkiller->CharInfo->Exp += bonus_exp;
 
     //LMA: Only if not level up
@@ -1944,7 +1919,7 @@ void CCharacter::UWKill(CCharacter* Enemy)
         ADDDWORD   ( pak, plkiller->CharInfo->Exp );
         ADDWORD    ( pak, plkiller->CharInfo->stamina );
 
-        if(plkilled!=NULL)
+        if(plkilled != NULL)
         {
             ADDWORD    ( pak, plkilled->clientid );
         }

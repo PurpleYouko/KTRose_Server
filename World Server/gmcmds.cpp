@@ -2424,6 +2424,94 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         SendPM(thisclient, buffer);
 		return true;
     }
+	if(strcmp(command, "setstat")==0)
+	{
+		if ((tmp = strtok(NULL, " "))==NULL)
+        {
+            SendPM(thisclient, "Please input after the setmystat command, below is a list of commands");
+            SendPM(thisclient, "maxhp = Max HP");
+			return true;
+        }
+		char buffer[200];
+		if(strcmp(tmp, "maxhp") == 0)
+        {
+            if ((tmp = strtok(NULL, " "))==NULL) 
+			{
+				sprintf ( buffer, "Maximum HP not set");
+				SendPM(thisclient, buffer);
+				return true; 
+			}
+			int newMaxHP = atoi(tmp);
+			thisclient->Stats->CheatMaxHP = newMaxHP;
+			thisclient->Stats->MaxHP = thisclient->GetMaxHP();
+			sprintf ( buffer, "Maximum HP set to %i", thisclient->Stats->CheatMaxHP);
+            SendPM(thisclient, buffer);
+			BEGINPACKET( pak, 0x7ec );
+			ADDWORD( pak, thisclient->Stats->HP );
+			ADDWORD( pak, thisclient->Stats->MP );
+			ADDWORD( pak, thisclient->Stats->MaxHP );
+			ADDWORD( pak, thisclient->Stats->MaxMP );
+			thisclient->client->SendPacket( &pak );
+        }
+		if(strcmp(tmp, "hp")==0)
+        {
+            if ((tmp = strtok(NULL, " "))==NULL) return true; unsigned int HP = atoi(tmp);
+			thisclient->SetCurrentHP(HP);
+			sprintf ( buffer, "Maximum HP set to %i", thisclient->Stats->HP);
+            SendPM(thisclient, buffer);
+        }
+		if(strcmp(tmp, "movespeed") == 0)
+		{
+			if ((tmp = strtok(NULL, " "))==NULL) 
+			{
+				sprintf ( buffer, "Move Speed not set");
+				SendPM(thisclient, buffer);
+				return true; 
+			}
+			int newMoveSpeed = atoi(tmp);
+			//thisclient->SetMaxHP(MaxHP);
+			thisclient->Stats->CheatMoveSpeed = newMoveSpeed;
+			thisclient->Stats->Move_Speed = thisclient->GetMoveSpeed();
+			sprintf ( buffer, "Move Speed set to %i", thisclient->Stats->CheatMoveSpeed);
+            SendPM(thisclient, buffer);
+			//Now send an update packet to the client
+			BEGINPACKET( pak, 0x7b8 );
+			ADDWORD( pak, thisclient->clientid );
+			ADDWORD( pak, thisclient->Stats->Move_Speed );
+			ADDWORD( pak, thisclient->Stats->Attack_Speed );
+			ADDBYTE( pak, thisclient->Stats->MaxWeight );
+			thisclient->client->SendPacket( &pak );
+		}
+		if(strcmp(tmp, "ap") == 0)
+		{
+			if ((tmp = strtok(NULL, " "))==NULL) 
+			{
+				sprintf ( buffer, "Attack Power not set");
+				SendPM(thisclient, buffer);
+				return true; 
+			}
+			int newAttackPower = atoi(tmp);
+			//thisclient->SetMaxHP(MaxHP);
+			thisclient->Stats->CheatAttackPower = newAttackPower;
+			thisclient->Stats->Attack_Power = thisclient->GetAttackPower();
+			sprintf ( buffer, "Attack Power set to %i", thisclient->Stats->CheatAttackPower);
+		}
+		if(strcmp(tmp, "aspd") == 0)
+		{
+			if ((tmp = strtok(NULL, " "))==NULL) 
+			{
+				sprintf ( buffer, "Attack speed not set");
+				SendPM(thisclient, buffer);
+				return true; 
+			}
+			int newAttackSpeed = atoi(tmp);
+			//thisclient->SetMaxHP(MaxHP);
+			thisclient->Stats->CheatAttackSpeed = newAttackSpeed;
+			thisclient->Stats->Attack_Speed = thisclient->GetAttackSpeed();
+			sprintf ( buffer, "Attack Speed set to %i", thisclient->Stats->CheatAttackSpeed);
+		}
+		return true;
+	}
     if(strcmp(command, "mystat")==0)    // mystat - by PurpleYouko
     {
         if ((tmp = strtok(NULL, " "))==NULL)
@@ -2439,144 +2527,92 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
             SendPM(thisclient, "Example; /mystat ap");
          return true;
         }
-         char buffer[200];
-         if(strcmp(tmp, "ap")==0)
-         {
-             sprintf ( buffer, "My Attack Power is %i", thisclient->Stats->Attack_Power );
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "acc")==0)
-         {
-             sprintf ( buffer, "My Accuracy is %i", thisclient->Stats->Accury );
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "team")==0)
-         {
-             //LMA: pvp team.
-             sprintf ( buffer, "My team is %i, pvp status is %i", thisclient->pvp_id,thisclient->pvp_status);
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "dodge")==0)
-         {
-             sprintf ( buffer, "My dodge is %i", thisclient->Stats->Dodge);
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "def")==0)
-         {
-             sprintf ( buffer, "My defense is %i", thisclient->Stats->Defense);
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "crit")==0)
-         {
-             sprintf ( buffer, "My critical is %i", thisclient->Stats->Critical);
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "mspd")==0)
-         {
-             sprintf ( buffer, "My move speed is %i", thisclient->Stats->Move_Speed);
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "pos")==0)
-         {
-             sprintf ( buffer, "pos: %i (%.2f,%.2f)", thisclient->Position->Map,thisclient->Position->current.x,thisclient->Position->current.y);
-             SendPM(thisclient, buffer);
-         }
-         else if(strcmp(tmp, "aspd")==0)
-         {
-             sprintf ( buffer, "My attack speed is %i", thisclient->Stats->Attack_Speed);
-             SendPM(thisclient, buffer);
-         }
-		 return true;
-    }
-    if(strcmp(command, "mystat2")==0)    // mystat2 - by PurpleYouko - from osprose to test
-    {
-         if ((tmp = strtok(NULL, " "))==NULL)return true;
-         if(strcmp(tmp, "ap")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My Attack Power is %i", thisclient->Stats->Attack_Power );
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "acc")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My Accuracy is %i", thisclient->Stats->Accury );
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "hp")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My current HP is %I64i", thisclient->Stats->HP );
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "mp")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My current MP is %u", thisclient->Stats->MP );
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "maxhp")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My Maximum HP is %I64i", thisclient->GetMaxHP());
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "maxmp")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My maximum MP is %u", thisclient->GetMaxMP());
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "dodge")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My dodge is %i", thisclient->Stats->Dodge);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "def")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My defense is %i", thisclient->Stats->Defense);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "mdef")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My Magic defense is %i", thisclient->Stats->Magic_Defense);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "crit")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My critical is %i", thisclient->Stats->Critical);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "mspd")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My move speed is %i", thisclient->Stats->Move_Speed);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "aspd")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My attack speed is %i", thisclient->Stats->Attack_Speed);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "stamina")==0)
-         {
-             char buffer2[200];
-             sprintf ( buffer2, "My Stamina is %i", thisclient->CharInfo->stamina);
-             SendPM(thisclient, buffer2);
-         }
-         else if(strcmp(tmp, "clan")==0)
-         {
-             SendPM(thisclient, "My clan id is: %i My clan rank is: %i", thisclient->Clan->clanid, thisclient->Clan->clanrank);
-         }
-         else if(strcmp(tmp, "map")==0)
-         {
-             SendPM(thisclient, "My current map is: %i ", thisclient->Position->Map);
-         }
+        char buffer[200];
+        if(strcmp(tmp, "ap")==0)
+        {
+            sprintf ( buffer, "My Attack Power is %i", thisclient->Stats->Attack_Power );
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "acc")==0)
+        {
+            sprintf ( buffer, "My Accuracy is %i", thisclient->Stats->Accury );
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "team")==0)
+        {
+            //LMA: pvp team.
+            sprintf ( buffer, "My team is %i, pvp status is %i", thisclient->pvp_id,thisclient->pvp_status);
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "dodge")==0)
+        {
+            sprintf ( buffer, "My dodge is %i", thisclient->Stats->Dodge);
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "def")==0)
+        {
+            sprintf ( buffer, "My defense is %i", thisclient->Stats->Defense);
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "crit")==0)
+        {
+            sprintf ( buffer, "My critical is %i", thisclient->Stats->Critical);
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "mspd")==0)
+        {
+            sprintf ( buffer, "My move speed is %i", thisclient->Stats->Move_Speed);
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "pos")==0)
+        {
+            sprintf ( buffer, "pos: %i (%.2f,%.2f)", thisclient->Position->Map,thisclient->Position->current.x,thisclient->Position->current.y);
+            SendPM(thisclient, buffer);
+        }
+        else if(strcmp(tmp, "aspd")==0)
+        {
+            sprintf ( buffer, "My attack speed is %i", thisclient->Stats->Attack_Speed);
+            SendPM(thisclient, buffer);
+        }
+		else if(strcmp(tmp, "hp")==0)
+        {
+            char buffer2[200];
+            sprintf ( buffer2, "My current HP is %i", thisclient->Stats->HP );
+            SendPM(thisclient, buffer2);
+        }
+        else if(strcmp(tmp, "mp")==0)
+        {
+            char buffer2[200];
+            sprintf ( buffer2, "My current MP is %u", thisclient->Stats->MP );
+            SendPM(thisclient, buffer2);
+        }
+        else if(strcmp(tmp, "maxhp")==0)
+        {
+            char buffer2[200];
+            sprintf ( buffer2, "My Maximum HP is %i", thisclient->GetMaxHP());
+            SendPM(thisclient, buffer2);
+        }
+        else if(strcmp(tmp, "maxmp")==0)
+        {
+            char buffer2[200];
+            sprintf ( buffer2, "My maximum MP is %u", thisclient->GetMaxMP());
+            SendPM(thisclient, buffer2);
+		}
+		else if(strcmp(tmp, "stamina")==0)
+        {
+            char buffer2[200];
+            sprintf ( buffer2, "My Stamina is %i", thisclient->CharInfo->stamina);
+            SendPM(thisclient, buffer2);
+        }
+		else if(strcmp(tmp, "map")==0)
+        {
+            SendPM(thisclient, "My current map is: %i ", thisclient->Position->Map);
+        }
+		else if(strcmp(tmp, "clan")==0)
+        {
+            SendPM(thisclient, "My clan id is: %i My clan rank is: %i", thisclient->Clan->clanid, thisclient->Clan->clanrank);
+        }
+
 		 return true;
     }
     if(strcmp(command, "npc")==0)
@@ -2970,10 +3006,21 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
     if (strcmp(command, "save")==0) // *** SAVE USER DATA *****
     {
         if(Config.Command_Save > thisclient->Session->accesslevel)
-	       return true;
+		{
+	        Log(MSG_INFO, "%s unable to use save function. Access level %i is not higher than required level %i ", thisclient->CharInfo->charname,thisclient->Session->accesslevel,Config.Command_Save );
+			return true;
+		}
         thisclient->savedata();
         return true;
 	}
+	if (strcmp(command, "qsave")==0) // *** QUICK SAVE USER DATA *****
+    {
+        if(Config.Command_Save > thisclient->Session->accesslevel)
+	       return true;
+        thisclient->quicksave();
+        return true;
+	}
+
     if (strcmp(command, "savetown")==0) /// geo edit for /savetown // 30 sep 07
     {
         if ((tmp = strtok(NULL, " ")) == NULL) tmp = 0; int loc=atoi(tmp);
@@ -5399,7 +5446,7 @@ bool CWorldServer::pakGMServerInfo( CPlayer* thisclient )
 	ADDBYTE( pak, 0 );
 	thisclient->client->SendPacket( &pak );
     // Exp / Zulies / Drop rates
-	sprintf( buffer, "Exp %i | Zulies %i | Drops %i", Config.EXP_RATE, Config.ZULY_RATE, Config.DROP_RATE );
+	sprintf( buffer, "Exp %i | Zulies %I64i | Drops %i", Config.EXP_RATE, Config.ZULY_RATE, Config.DROP_RATE );
 	RESETPACKET( pak, 0x0784 );
 	ADDSTRING( pak, "[SYS]ServerInfo" );
 	ADDBYTE( pak, 0 );

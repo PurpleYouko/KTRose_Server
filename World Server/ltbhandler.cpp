@@ -34,7 +34,7 @@ void LTBStoreData(const char* filename, LTBData* data)
     char templma[2];
     //char tempfield[1024];
 
-
+	//Log(MSG_INFO, "Loading LTB file %s",filename);
     FILE* fh = fopen( filename, "rb" );
 	if (  fh== NULL )
 	{
@@ -88,7 +88,8 @@ void LTBStoreData(const char* filename, LTBData* data)
 
 	for (unsigned int k=0;k<list_dialog.size();k++)
 	{
-        lang=k%nb_box;
+        
+		lang=k%nb_box;
 	    no_block=int(k/nb_box);
 
 		if(lang==LTBINDEX)
@@ -97,7 +98,7 @@ void LTBStoreData(const char* filename, LTBData* data)
             templtb.sentence="NoSentence";
             korean_save="";
 		}
-
+		//Log(MSG_INFO, "Reading LTB sentence number%i",k);
 		if(list_dialog[k].offsetd==0)
 		{
             if (lang==LTBENGLISH)

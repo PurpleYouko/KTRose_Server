@@ -107,8 +107,8 @@ QUESTREWD(000)
                         ADDDWORD( pak, 0xcccccccc );
                         ADDWORD ( pak, 0xcccc );
                         client->client->SendPacket(&pak);
-                        client->CharInfo->Zulies+=zaward;
-                        Log(MSG_WARNING,"Giving %u zuly to player %s",zaward,client->CharInfo->charname);
+                        client->CharInfo->Zulies += zaward;
+                        Log(MSG_WARNING,"Giving %I64i zuly to player %s",zaward,client->CharInfo->charname);
                     }
 
                 }
@@ -583,7 +583,7 @@ QUESTREWD(005){
 		case 1://Zuly
 		{
 			client->CharInfo->Zulies += GetRewardValue(data->btEquation, data->iValue, client, 1);//dunno nDupCount for this one!
-			BEGINPACKET(pak, 0x71D);
+			BEGINPACKET(pak, 0x71d);
 			ADDQWORD(pak, client->CharInfo->Zulies);
 			client->client->SendPacket(&pak);
 		}

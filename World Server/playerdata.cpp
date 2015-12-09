@@ -26,7 +26,7 @@
 bool CPlayer::loaddata( )
 {
 	MYSQL_ROW row;
-	MYSQL_RES *result = GServer->DB->QStore("SELECT level,face,hairStyle,sex,classid,zuly,str,dex,_int, con,cha,sen,curHp,curMp,id,statp,skillp,exp,stamina,quickbar,basic_skills, class_skills,class_skills_level,respawnid,clanid,clan_rank,townid,rewardpoints,unionid,unionfame,union01,union02,union03,union04,union05,bonusxp,timerxp,shoptype,timershop,isGM,unique_skills,mileage_skills,driving_skills,unique_skills_level,mileage_skills_level,bonusddrop,timerddrop,bonusstatdrop,timerstatdrop,bonusgraydrop,timergraydrop,isDev FROM characters WHERE char_name='%s'", CharInfo->charname);
+	MYSQL_RES *result = GServer->DB->QStore("SELECT level,face,hairStyle,sex,classid,zuly,str,dex,_int, con,cha,sen,curHp,curMp,id,statp,skillp,exp,stamina,quickbar,basic_skills, class_skills,class_skills_level,respawnid,clanid,clan_rank,townid,rewardpoints,unionid,unionfame,union01,union02,union03,union04,union05,bonusxp,timerxp,shoptype,timershop,isGM,unique_skills,mileage_skills,driving_skills,unique_skills_level,mileage_skills_level,bonusddrop,timerddrop,bonusstatdrop,timerstatdrop,bonusgraydrop,timergraydrop,isDev,highestoverkill FROM characters WHERE char_name='%s'", CharInfo->charname);
 	if(result==NULL) return false;
 	if(mysql_num_rows(result)!=1)
 	{
@@ -41,8 +41,7 @@ bool CPlayer::loaddata( )
 	CharInfo->Hair = atoi(row[2]);
 	CharInfo->Sex = atoi(row[3]);
 	CharInfo->Job = atoi(row[4]);
-	CharInfo->Zulies = atol(row[5]);
-	//CharInfo->Zulies = atoll(row[5]);	//atoll doesn't seem to compile properly in VS2010 using c++ 11. Come back to this later
+	CharInfo->Zulies = atoll(row[5]);	//atoll doesn't exist in c98 (MS compilers prior to 2012). Defined as equal to _atoi64 in CRoseFile.hpp just to keep syntax consistent
 	Attr->Str = atoi(row[6]);
 	Attr->Dex = atoi(row[7]);
 	Attr->Int = atoi(row[8]);
@@ -54,7 +53,7 @@ bool CPlayer::loaddata( )
 	CharInfo->charid = atoi(row[14]);
 	CharInfo->StatPoints = atoi(row[15]);
 	CharInfo->SkillPoints = atoi(row[16]);
-	CharInfo->Exp = atoi(row[17]);
+	CharInfo->Exp = atol(row[17]);
 	CharInfo->stamina = atoi(row[18]);
 	CharInfo->MaxStamina = 5000;
     Position->respawn = atoi(row[23]);
@@ -92,7 +91,7 @@ bool CPlayer::loaddata( )
     wait_validation_graydrop=0;
 
     last_fuel=0;
-
+	Log( MSG_WARNING, "User '%s' loaded with ID: %i and Str: %i", CharInfo->charname,CharInfo->charid,Attr->Str);
     //LMA: shout hack.
     next_shout=0;
     spam_shout=false;
@@ -113,9 +112,11 @@ bool CPlayer::loaddata( )
     Shop->mil_shop_time=atoi(row[38]);
 
     //GM Additional Security by PurpleYouKo
-    //CharInfo->isGM=atoi(row[45]);     // GM Security
-    CharInfo->isGM=atoi(row[39]);       // GM Security
+    CharInfo->isGM = atoi(row[39]);       // GM Security
     CharInfo->isDev = atoi(row[51]);    // Dev Security
+
+	//just for fun
+	CharInfo->HighestOverkill = atof(row[52]);
 
     //resetting some values:
     sp_hp=0;
@@ -486,6 +487,7 @@ bool CPlayer::loaddata( )
     }
 
 	GServer->DB->QFree( );
+	
 
 	//LMA: Saving Skills if needed.
     if (do_save)
@@ -548,101 +550,150 @@ bool CPlayer::loaddata( )
     }
 
     Log(MSG_INFO,"%s:: craft talent %%bonus is %i",CharInfo->charname,pc_craft_talent);
-
     //Log(MSG_INFO,"%s:: summon jauge %i",CharInfo->charname,summon_jauge);
 
-	result = GServer->DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem,sp_value FROM items WHERE owner=%i", CharInfo->charid);
-    if(result==NULL) return false;
-	while(row = mysql_fetch_row(result))
-    {
-        if(!GServer->IsValidItem( atoi(row[1]), atoi(row[0]) ) || atoi(row[6])==0)
+	//PY: imported from KTRose to handle all the unionvars and reward points
+	CharInfo->Pending_Exp = 0;
+    Log(MSG_INFO,"Loading union data");
+	result = GServer->DB->QStore("SELECT unionid,union1points,union2points,union3points,union4points,union5points,union6points,union7points,union8points,union9points,union10points FROM characters WHERE char_name='%s'", CharInfo->charname);
+	if(result == NULL) return false;
+	if(mysql_num_rows(result)!=1)
+	{
+        Log( MSG_WARNING, "Number of user with charname '%s' is %i", CharInfo->charname,mysql_num_rows(result));
+        return false;
+    }
+	row = mysql_fetch_row(result);
+	
+	//PY: this is bizarre. The code below had to be moved into the CharInfo class due to bizarre run time errors
+	for (char points=0; points<11;points++)
+	{
+        if(points == 9)
         {
-            Log(MSG_WARNING, "char %s have a invalid or empty item in inventory: %i-%i [%i], this item will be deleted", CharInfo->charname, atoi(row[1]), atoi(row[0]), atoi(row[6]) );
-            continue;
+            CharInfo->unionvar[points] = Session->KTPoints;
         }
-
-		UINT itemnum = atoi(row[5]);
-		items[itemnum].itemnum = atoi(row[0]);
-		items[itemnum].itemtype = atoi(row[1]);
-		items[itemnum].refine = atoi(row[2]);
-		items[itemnum].durability = atoi(row[3]);
-		items[itemnum].lifespan = atoi(row[4]);
-		items[itemnum].count = atoi(row[6]);
-		items[itemnum].stats = atoi(row[7]);
-		items[itemnum].socketed = (atoi(row[8])==1)?true:false;
-		items[itemnum].appraised = (atoi(row[9])==1)?true:false;
-		items[itemnum].gem = atoi(row[10])>3999?0:atoi(row[10]);
-		items[itemnum].sp_value = atoi(row[11]);
-
-		//LMA: checking the count too :(
-        if((items[itemnum].itemtype<10||items[itemnum].itemtype>12)&&items[itemnum].count!=1)
+        else
         {
-            Log(MSG_WARNING,"%s:: Wrong item quantity in slot %i, %u*(%u::%u), reseting it to 1.",CharInfo->charname,itemnum,items[itemnum].count,items[itemnum].itemtype,items[itemnum].itemnum);
-            items[itemnum].count=1;
+            CharInfo->unionvar[points] = atoi(row[points]);
         }
-
-		CalculateSignature(itemnum);  //Calculate signature.
-
-        //LMA: up to refine 15 now (2010/05)...
-        switch (items[itemnum].refine)
-        {
-            case 0:
-            case 16:
-            case 32:
-            case 48:
-            case 64:
-            case 80:
-            case 96:
-            case 112:
-            case 128:
-            case 144:
-            #ifdef REFINENEW
-            case 160:
-            case 176:
-            case 192:
-            case 208:
-            case 224:
-            case 240:
-            #endif
-            {
-                //Ok.
-            }
-            break;
-            default:
-            {
-                Log(MSG_WARNING,"Invalid refine %i for item (%i:%i) for %s",items[itemnum].refine,items[itemnum].itemtype,items[itemnum].itemnum,CharInfo->charname);
-                items[itemnum].refine=0;
-            }
-            break;
-
-        }
-
-	}
-
+    }
 	GServer->DB->QFree( );
-	result = GServer->DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem FROM storage WHERE owner=%i", Session->userid);
-	if(result==NULL) return false;
-	nstorageitems = mysql_num_rows(result);
-	while(row = mysql_fetch_row(result))
-    {
-        if(!GServer->IsValidItem( atoi(row[1]), atoi(row[0]) ) || atoi(row[6])==0)
-        {
-            Log(MSG_WARNING, "char %s have a invalid or empty item in storage: %i%i [%i], this item will be deleted", CharInfo->charname, atoi(row[1]), atoi(row[0]), atoi(row[6]) );
-            continue;
-        }
-		UINT itemnum = atoi(row[5]);
-		storageitems[itemnum].itemnum = atoi(row[0]);
-		storageitems[itemnum].itemtype = atoi(row[1]);
-		storageitems[itemnum].refine = atoi(row[2]);
-		storageitems[itemnum].durability = atoi(row[3]);
-		storageitems[itemnum].lifespan = atoi(row[4]);
-		storageitems[itemnum].count = atoi(row[6]);
-		storageitems[itemnum].stats = atoi(row[7]);
-		storageitems[itemnum].socketed = (atoi(row[8])==1)?true:false;
-		storageitems[itemnum].appraised = (atoi(row[9])==1)?true:false;
-		storageitems[itemnum].gem = atoi(row[10]);
+	// code to reset players back to the correct faction after using the KTRose shop
+	if(CharInfo->unionvar[0] == 9)
+	{
+        //Log(MSG_DEBUG, "UnionVar 7 used to reset player Union from %i to %i",Union_s->unionvar[0],Union_s->unionvar[7] );
+        CharInfo->unionvar[0] = CharInfo->unionvar[7];
+        CharInfo->unionvar[7] = 0;
+    }
+	//PY: end imported code
+
+	if(!loadinventory())
+	{
+		Log(MSG_WARNING, "Something went wrong with inventory load for character %s", CharInfo->charname);
+		//return false;
 	}
-	GServer->DB->QFree( );
+	else	//PY: this is all unnecessary now but keeping it until all characters have been loaded and converted
+	{
+		result = GServer->DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem,sp_value FROM items WHERE owner=%i", CharInfo->charid);
+		if(result==NULL) return false;
+		while(row = mysql_fetch_row(result))
+		{
+			if(!GServer->IsValidItem( atoi(row[1]), atoi(row[0]) ) || atoi(row[6])==0)
+			{
+				Log(MSG_WARNING, "char %s have a invalid or empty item in inventory: %i-%i [%i], this item will be deleted", CharInfo->charname, atoi(row[1]), atoi(row[0]), atoi(row[6]) );
+				continue;
+			}
+
+			UINT itemnum = atoi(row[5]);
+			items[itemnum].itemnum = atoi(row[0]);
+			items[itemnum].itemtype = atoi(row[1]);
+			items[itemnum].refine = atoi(row[2]);
+			items[itemnum].durability = atoi(row[3]);
+			items[itemnum].lifespan = atoi(row[4]);
+			items[itemnum].count = atoi(row[6]);
+			items[itemnum].stats = atoi(row[7]);
+			items[itemnum].socketed = (atoi(row[8])==1)?true:false;
+			items[itemnum].appraised = (atoi(row[9])==1)?true:false;
+			items[itemnum].gem = atoi(row[10])>3999?0:atoi(row[10]);
+			items[itemnum].sp_value = atoi(row[11]);
+
+			//LMA: checking the count too :(
+			if((items[itemnum].itemtype<10||items[itemnum].itemtype>12)&&items[itemnum].count!=1)
+			{
+				Log(MSG_WARNING,"%s:: Wrong item quantity in slot %i, %u*(%u::%u), reseting it to 1.",CharInfo->charname,itemnum,items[itemnum].count,items[itemnum].itemtype,items[itemnum].itemnum);
+				items[itemnum].count=1;
+			}
+
+			CalculateSignature(itemnum);  //Calculate signature.
+
+			//LMA: up to refine 15 now (2010/05)...
+			switch (items[itemnum].refine)
+			{
+				case 0:
+				case 16:
+				case 32:
+				case 48:
+				case 64:
+				case 80:
+				case 96:
+				case 112:
+				case 128:
+				case 144:
+				#ifdef REFINENEW
+				case 160:
+				case 176:
+				case 192:
+				case 208:
+				case 224:
+				case 240:
+				#endif
+				{
+					//Ok.
+				}
+				break;
+				default:
+				{
+					Log(MSG_WARNING,"Invalid refine %i for item (%i:%i) for %s",items[itemnum].refine,items[itemnum].itemtype,items[itemnum].itemnum,CharInfo->charname);
+					items[itemnum].refine=0;
+				}
+				break;
+			}
+		}
+		GServer->DB->QFree( );
+	}
+	SaveBackupStorage(1); // makes a copy of the account's storage at the moment of login
+
+	if(!loadstorage())
+	{
+		Log(MSG_WARNING, "Something went wrong with storage load for character %s", CharInfo->charname);
+		//return false;
+	}
+	else
+	{
+		//PY: don't need this any more after converting
+		result = GServer->DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem FROM storage WHERE owner=%i", Session->userid);
+		if(result==NULL) return false;
+		nstorageitems = mysql_num_rows(result);
+		while(row = mysql_fetch_row(result))
+		{
+			if(!GServer->IsValidItem( atoi(row[1]), atoi(row[0]) ) || atoi(row[6])==0)
+			{
+				Log(MSG_WARNING, "char %s have a invalid or empty item in storage: %i%i [%i], this item will be deleted", CharInfo->charname, atoi(row[1]), atoi(row[0]), atoi(row[6]) );
+				continue;
+			}
+			UINT itemnum = atoi(row[5]);
+			storageitems[itemnum].itemnum = atoi(row[0]);
+			storageitems[itemnum].itemtype = atoi(row[1]);
+			storageitems[itemnum].refine = atoi(row[2]);
+			storageitems[itemnum].durability = atoi(row[3]);
+			storageitems[itemnum].lifespan = atoi(row[4]);
+			storageitems[itemnum].count = atoi(row[6]);
+			storageitems[itemnum].stats = atoi(row[7]);
+			storageitems[itemnum].socketed = (atoi(row[8])==1)?true:false;
+			storageitems[itemnum].appraised = (atoi(row[9])==1)?true:false;
+			storageitems[itemnum].gem = atoi(row[10]);
+		}
+		GServer->DB->QFree( );
+	}
 
 	//LMA: Loading ItemMall
     RebuildItemMall();
@@ -709,7 +760,7 @@ bool CPlayer::loaddata( )
     }
     #endif
     //LMA: end
-
+	Log( MSG_WARNING, "End of load sequence. User '%s' now has ID: %i and Str: %i", CharInfo->charname,CharInfo->charid,Attr->Str);
 	return true;
 }
 
@@ -842,12 +893,16 @@ int CPlayer::CheckSignature( int slot )
 
 // This is a REALLY bad way of saving the character data, but it works ^^
 //LMA: should be more efficient now ;)
+//PY: this can just go away completely
+/*
 void CPlayer::savedata( )
 {
-    lastSaveTime = clock();
+	lastSaveTime = clock();
+	Log(MSG_INFO, "saving data for char '%s' ", CharInfo->charname );
+	Log( MSG_DEBUG, "User '%s' currently has ID: %i and Str: %i", CharInfo->charname,CharInfo->charid,Attr->Str);
     if(Session->userid!=0)
     {
-        CMap* map = GServer->MapList.Index[Position->Map];
+		CMap* map = GServer->MapList.Index[Position->Map];
     	CRespawnPoint* thisrespawn = map->GetNearRespawn( this );
     	if(thisrespawn == NULL)
     	   Position->respawn = 4;
@@ -865,14 +920,14 @@ void CPlayer::savedata( )
         }
 
         //long int hp = Stats->HP;
-        long long hp = Stats->HP;
-    	if(hp<=0)
-    	   hp=Stats->MaxHP * 10 / 100;
-	   if(Stats->MP<0)
-	       Stats->MP=0;
+        int hp = Stats->HP;
+    	if(hp <= 0)
+    	   hp = Stats->MaxHP * 10 / 100;
+		if(Stats->MP < 0)
+	       Stats->MP = 0;
 
         //LMA: bonus XP (coupon)
-        int temp_xp=bonusxp;
+        int temp_xp = bonusxp;
         time_t temp_timer=timerxp;
         if(once)    {temp_xp=0; temp_timer=0;}
 
@@ -894,7 +949,8 @@ void CPlayer::savedata( )
 
         //LMA: new save.
         //GServer->DB->QExecute("UPDATE characters SET classid=%i,level=%i,zuly=%i,curHp=%i,curMp=%i,str=%i,con=%i,dex=%i,_int=%i,cha=%i,sen=%i,exp=%i,skillp=%i,statp=%i, stamina=%i,quickbar='%s',respawnid=%i,clanid=%i,clan_rank=%i, townid=%i, rewardpoints=%i, bonusxp=%i, timerxp=%i, shoptype=%i, timershop=%i, unionid=%i, unionfame=%i, union01=%i, union02=%i, union03=%i, union04=%i, union05=%i WHERE id=%i",
-        GServer->DB->QExecute("UPDATE characters SET classid=%i,level=%i,zuly=%I64i,curHp=%i,curMp=%i,str=%i,con=%i,dex=%i,_int=%i,cha=%i,sen=%i,exp=%i,skillp=%i,statp=%i, stamina=%i,quickbar='%s',respawnid=%i,clanid=%i,clan_rank=%i, townid=%i, rewardpoints=%i, bonusxp=%i, timerxp=%i, shoptype=%i, timershop=%i, unionid=%i, unionfame=%i, union01=%i, union02=%i, union03=%i, union04=%i, union05=%i, bonusddrop=%i, timerddrop=%i, bonusstatdrop=%i, timerstatdrop=%i, bonusgraydrop=%i, timergraydrop=%i WHERE id=%i",
+		/*
+		GServer->DB->QExecute("UPDATE characters SET classid=%i,level=%i,zuly=%i,curHp=%i,curMp=%i,str=%i,con=%i,dex=%i,_int=%i,cha=%i,sen=%i,exp=%i,skillp=%i,statp=%i,stamina=%i,quickbar='%s',respawnid=%i,clanid=%i,clan_rank=%i, townid=%i, rewardpoints=%i, bonusxp=%i, timerxp=%i, shoptype=%i, timershop=%i, unionid=%i, unionfame=%i, union01=%i, union02=%i, union03=%i, union04=%i, union05=%i, bonusddrop=%i, timerddrop=%i, bonusstatdrop=%i, timerstatdrop=%i, bonusgraydrop=%i, timergraydrop=%i WHERE id=%i",
 
                     CharInfo->Job,Stats->Level, CharInfo->Zulies, (UINT) hp, (UINT) Stats->MP,
                     Attr->Str,Attr->Con,Attr->Dex,Attr->Int,Attr->Cha,Attr->Sen,
@@ -903,11 +959,28 @@ void CPlayer::savedata( )
                     CharInfo->unionid,CharInfo->unionfame,CharInfo->union01,CharInfo->union02,CharInfo->union03,CharInfo->union04,CharInfo->union05,
                     temp_ddrop,temp_timer_ddrop,temp_statdrop,temp_timer_statdrop,temp_graydrop,temp_timer_graydrop,CharInfo->charid);
 
-        //LMA: intelligent item save.
+        //Log(MSG_INFO, "Basic Data Saved for char '%s' ", CharInfo->charname );
+		*/
+		/*
+		//PY: KTRose save. Breaking it up into smaller queries
+		GServer->DB->QExecute("UPDATE characters SET level=%i,face=%i,hairStyle=%i,sex=%i,classid=%i,zuly=%i,str=%i,dex=%i,_int=%i,con=%i,cha=%i,sen=%i,curHp=%i,curMp=%i WHERE char_name='%s'",
+			Stats->Level, CharInfo->Face, CharInfo->Hair, CharInfo->Sex, CharInfo->Job, CharInfo->Zulies, Attr->Str, Attr->Dex, Attr->Int, Attr->Con, Attr->Cha, Attr->Sen, hp, Stats->MP, CharInfo->charname );
+
+		GServer->DB->QExecute("UPDATE characters SET id=%i,statp=%i,skillp=%i,exp=%i,stamina=%i,respawnid=%i,clanid=%i,clan_rank=%i,townid=%i WHERE char_name='%s'",
+            CharInfo->charid, CharInfo->StatPoints, CharInfo->SkillPoints, CharInfo->Exp, CharInfo->stamina, Position->respawn, Clan->clanid, Clan->clanrank, Position->saved, CharInfo->charname );
+
+		Log(MSG_INFO, "Saved basic data for char '%s' ", CharInfo->charname );
+		GServer->DB->QExecute("UPDATE characters SET unionid=%i,union1points=%i,union2points=%i,union3points=%i,union4points=%i,union5points=%i,union6points=%i,union7points=%i,union8points=%i,union9points=%i,union10points=%i WHERE char_name='%s'",
+                    CharInfo->unionvar[0], CharInfo->unionvar[1],CharInfo->unionvar[2], CharInfo->unionvar[3], CharInfo->unionvar[4], CharInfo->unionvar[5], CharInfo->unionvar[6], CharInfo->unionvar[7], CharInfo->unionvar[8], CharInfo->unionvar[9], CharInfo->unionvar[10], CharInfo->charname );
+
+
+		Log(MSG_INFO, "Saved UnionVar data for char '%s' ", CharInfo->charname );
+		//LMA: intelligent item save.
     	int res_check=0;
     	int nb_saved=0;
     	int nb_delete=0;
     	int sp_item_value=0;
+
     	for(UINT i=0;i<MAX_INVENTORY;i++)
         {
             //Already deleted
@@ -944,10 +1017,617 @@ void CPlayer::savedata( )
 		//QSD Save
 		//2do, save on used?
         savequests(this);
-
+		Log(MSG_INFO, "Quest data Saved for char '%s' ", CharInfo->charname );
+		//PY now save the data in the new format
+		//saveinventory();
+		//Log(MSG_INFO, "Inventory Saved for char '%s' ", CharInfo->charname );
+		//savestorage();
+		//Log(MSG_INFO, "Storage Saved for char '%s' ", CharInfo->charname );
 		Log(MSG_INFO, "Data Saved for char '%s' ", CharInfo->charname );
     }
 }
+*/
+
+// //PY: imported from KTRose. Way better than the crap above
+void CPlayer::savedata( )
+{
+    lastSaveTime = clock();
+	Log(MSG_INFO, "PY_Save data for char '%s' ", CharInfo->charname );
+    if(Session->userid!=0)
+    {
+        CMap* map = GServer->MapList.Index[Position->Map];
+    	CRespawnPoint* thisrespawn = map->GetNearRespawn( this );
+    	CPlayer* thisclient = GServer->GetClientByID( clientid );
+    	if(thisrespawn == NULL)
+    	   Position->respawn = 4;
+    	else
+    	   Position->respawn = thisrespawn->id;
+	    char quick[1024];
+	    char basic[1024];
+	    //char sclass[1024];
+ 	    //char slevel[1024];
+        char active[1024];
+        char activelvl[1024];
+        char pasive[1024];
+        char pasivelvl[1024];		
+    	
+        for(UINT i=0;i<32;i++)
+        {
+            if(i==0)
+            	sprintf(&quick[i], "%i",quickbar[i]);
+            else
+                sprintf(&quick[strlen(quick)], ",%i",quickbar[i]);
+        }
+		
+        long int hp = Stats->HP;
+        if(hp <= 0)
+    	    hp = Stats->MaxHP * 10 / 100;
+	    if(Stats->MP < 0)
+	        Stats->MP = 0;
+		//Log( MSG_DEBUG, "User '%s' currently has ID: %i and Str: %i", CharInfo->charname,CharInfo->charid,Attr->Str);
+        
+		GServer->DB->QExecuteUpdate("UPDATE characters SET level=%i,face=%i,hairStyle=%i,sex=%i,classid=%i,zuly=%I64i,str=%i,dex=%i,_int=%i, con=%i,cha=%i,sen=%i,curHp=%i,curMp=%i,statp=%i,skillp=%i,exp=%I32i,stamina=%i,respawnid=%i,clanid=%i,clan_rank=%i,townid=%i,highestoverkill=%f WHERE char_name='%s'",
+                    Stats->Level, CharInfo->Face, CharInfo->Hair, CharInfo->Sex, CharInfo->Job, CharInfo->Zulies, Attr->Str, Attr->Dex, Attr->Int, Attr->Con, Attr->Cha, Attr->Sen, hp, Stats->MP, CharInfo->StatPoints, CharInfo->SkillPoints,
+                    CharInfo->Exp, CharInfo->stamina, Position->respawn, Clan->clanid, Clan->clanrank, Position->saved, CharInfo->HighestOverkill,
+					CharInfo->charname );
+		
+		//Log(MSG_INFO, "Saved basic data for char '%s' ", CharInfo->charname );
+
+        GServer->DB->QExecute("UPDATE characters SET unionid=%i,union1points=%i,union2points=%i,union3points=%i,union4points=%i,union5points=%i,union6points=%i,union7points=%i,union8points=%i,union9points=%i,union10points=%i WHERE char_name='%s'",
+                    CharInfo->unionvar[0], CharInfo->unionvar[1],CharInfo->unionvar[2], CharInfo->unionvar[3], CharInfo->unionvar[4], CharInfo->unionvar[5], CharInfo->unionvar[6], CharInfo->unionvar[7], CharInfo->unionvar[8], CharInfo->unionvar[9], CharInfo->unionvar[10], 
+					CharInfo->charname );
+
+		//Log(MSG_INFO, "Saved unionvar data for char '%s' ", CharInfo->charname );
+
+        //save the inventory
+    	saveinventory();
+    	//save the storage items
+    	savestorage();
+		//save the skills
+
+        saveskills();
+		//Why is this still here and active?
+		//if savestorage is live and functional then this antiquated crap needs to be removed
+
+    	if(!GServer->DB->QExecute("DELETE FROM storage WHERE owner=%i", Session->userid)) return;
+    	for(UINT i=0;i<160;i++)
+        {
+    		if (storageitems[i].count > 0)
+            {
+    			GServer->DB->QExecute("INSERT INTO storage (owner,itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem) VALUES(%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i)",
+    								Session->userid, storageitems[i].itemnum, storageitems[i].itemtype,storageitems[i].refine, storageitems[i].durability,
+    								storageitems[i].lifespan, i, storageitems[i].count, storageitems[i].stats, (storageitems[i].socketed?1:0),
+    								(storageitems[i].appraised?1:0), storageitems[i].gem );
+    		}
+    	}
+		
+        savequests( this );
+		GServer->DB->QExecute("UPDATE accounts SET zulystorage = %I64i, logtime = %i,ktpoints=%i WHERE id = %i", CharInfo->Storage_Zulies, Session->logtime,Session->KTPoints, Session->userid);
+		Log(MSG_INFO, "Data Saved for char '%s' ", CharInfo->charname );
+    }
+}
+
+
+//PY Character save
+void CPlayer::quicksave( )
+{
+     GServer->DB->QExecute("UPDATE characters SET level=%i,face=%i,hairStyle=%i,sex=%i,classid=%i,zuly=%i,str=%i,dex=%i,_int=%i, con=%i,cha=%i,sen=%i,curHp=%i,curMp=%i,statp=%i,skillp=%i,exp=%i,stamina=%i,respawnid=%i,clanid=%i,clan_rank=%i,townid=%i WHERE char_name='%s'",
+         Stats->Level, CharInfo->Face, CharInfo->Hair, CharInfo->Sex, CharInfo->Job, CharInfo->Zulies, Attr->Str, Attr->Dex, Attr->Int, Attr->Con, Attr->Cha, Attr->Sen, Stats->HP, Stats->MP, CharInfo->StatPoints, CharInfo->SkillPoints,
+         CharInfo->Exp, CharInfo->stamina, Position->respawn, Clan->clanid, Clan->clanrank, Position->saved, 
+		 CharInfo->charname );
+     Log(MSG_INFO, "Data Quick Saved for char '%s' ", CharInfo->charname );
+}
+
+//PY Inventory save
+void CPlayer::saveinventory( )
+{
+    //build the strings
+    char tmp1[1024] = "";
+    char tmp2[1024] = "";
+    char tmp3[1024] = "";
+    char tmp4[1024] = "";
+    char tmp5[1024] = "";
+    char tmp6[1024] = "";
+    char tmp7[1024] = "";
+    char tmp8[1024] = "";
+    char tmp9[1024] = "";
+    char slot[1024] = "";
+    int tran = 0;
+    for(unsigned int i=0;i<=MAX_INVENTORY; i++) //inventory holds 140
+    {
+        int socketed = 0;
+        int appraised = 0;
+        //tran += items[i].itemnum + items[i].itemtype + items[i].refine;
+        //tran += items[i].durability + items[i].lifespan + items[i].count + items[i].stats;
+        //Log(MSG_INFO,"slot: %i itemid: %i type: %i count: %i",i, items[i].itemnum,items[i].itemtype,items[i].count);
+        if(i == 0)
+        {
+            if(items[i].count == 0)
+            {
+                sprintf(&tmp1[strlen(tmp1)], "0");
+                sprintf(&tmp2[strlen(tmp2)], "0");
+                sprintf(&tmp3[strlen(tmp3)], "0");
+                sprintf(&tmp4[strlen(tmp4)], "0");
+                sprintf(&tmp5[strlen(tmp5)], "0");
+                sprintf(&tmp6[strlen(tmp6)], "0");
+                sprintf(&tmp7[strlen(tmp7)], "0");
+                sprintf(&tmp8[strlen(tmp8)], "0");
+                sprintf(&tmp9[strlen(tmp9)], "0");
+                sprintf(&slot[strlen(slot)], "%i",i);
+            }
+            else
+            {
+                if(items[i].socketed == true)
+                    socketed = 1;
+                if(items[i].appraised == true)
+                    appraised = 1;
+                sprintf(&tmp1[strlen(tmp1)], "%i",items[i].itemnum);
+                sprintf(&tmp2[strlen(tmp2)], "%i",items[i].itemtype);
+                sprintf(&tmp3[strlen(tmp3)], "%i",items[i].refine);
+                sprintf(&tmp4[strlen(tmp4)], "%i",items[i].durability);
+                sprintf(&tmp5[strlen(tmp5)], "%i",items[i].lifespan);
+                sprintf(&tmp6[strlen(tmp6)], "%i",items[i].count);
+                sprintf(&tmp7[strlen(tmp7)], "%i",items[i].stats);
+                sprintf(&tmp8[strlen(tmp8)], "%i",socketed);
+                sprintf(&tmp9[strlen(tmp9)], "%i",appraised);
+                sprintf(&slot[strlen(slot)], "%i",i);
+            }
+        }
+        else
+        {
+            if(items[i].count == 0)
+            {
+                sprintf(&tmp1[strlen(tmp1)], "|0");
+                sprintf(&tmp2[strlen(tmp2)], "|0");
+                sprintf(&tmp3[strlen(tmp3)], "|0");
+                sprintf(&tmp4[strlen(tmp4)], "|0");
+                sprintf(&tmp5[strlen(tmp5)], "|0");
+                sprintf(&tmp6[strlen(tmp6)], "|0");
+                sprintf(&tmp7[strlen(tmp7)], "|0");
+                sprintf(&tmp8[strlen(tmp8)], "|0");
+                sprintf(&tmp9[strlen(tmp9)], "|0");
+                sprintf(&slot[strlen(slot)], "|%i",i);
+            }
+            else
+            {
+                if(items[i].socketed == true)
+                    socketed = 1;
+                if(items[i].appraised == true)
+                    appraised = 1;
+                if(items[i].gem != 0 && items[i].gem != items[i].stats)
+                    items[i].stats = items[i].gem;
+                sprintf(&tmp1[strlen(tmp1)], "|%i",items[i].itemnum);
+                sprintf(&tmp2[strlen(tmp2)], "|%i",items[i].itemtype);
+                sprintf(&tmp3[strlen(tmp3)], "|%i",items[i].refine);
+                sprintf(&tmp4[strlen(tmp4)], "|%i",items[i].durability);
+                sprintf(&tmp5[strlen(tmp5)], "|%i",items[i].lifespan);
+                sprintf(&tmp6[strlen(tmp6)], "|%i",items[i].count);
+                sprintf(&tmp7[strlen(tmp7)], "|%i",items[i].stats);
+                sprintf(&tmp8[strlen(tmp8)], "|%i",socketed);
+                sprintf(&tmp9[strlen(tmp9)], "|%i",appraised);
+                sprintf(&slot[strlen(slot)], "|%i",i);
+            }
+        }
+    }
+    //Log(MSG_INFO,"Save string1 = %s ", tmp1);
+    //Log(MSG_INFO,"Save string2 = %s ", tmp2);
+    //Log(MSG_INFO,"Save string3 = %s ", tmp3);
+    //Log(MSG_INFO,"Save string4 = %s ", tmp4);
+    //Log(MSG_INFO,"Save string5 = %s ", tmp5);
+    //Log(MSG_INFO,"Save string6 = %s ", tmp6);
+    //Log(MSG_INFO,"Save string7 = %s ", tmp7);
+    //Log(MSG_INFO,"Save string8 = %s ", tmp8);
+    //Log(MSG_INFO,"Save string9 = %s ", tmp9);
+    //check if a record exists for this player
+	tran = 100;
+    MYSQL_RES *result = GServer->DB->QStore("SELECT itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,slot,trans_action FROM charitems WHERE owner=%i", CharInfo->charid);
+    MYSQL_ROW row;
+    bool doesexist = false;
+    while(row = mysql_fetch_row(result))
+    {
+        doesexist = true;
+    }
+    GServer->DB->QFree( );
+    if(doesexist == true)
+    {
+        //record exists so update it
+        //Log(MSG_INFO,"record exists.... updating");
+        GServer->DB->QExecute("UPDATE charitems SET itemid='%s',itemtype='%s',refine='%s',durability='%s',lifespan='%s',count='%s',stats='%s',socketed='%s',appraised='%s',slot='%s',trans_action=%i WHERE owner='%i'",
+                    tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,slot,tran,CharInfo->charid);
+    }
+    else
+    {
+        //record does not exist so make a new one
+        //Log(MSG_INFO,"record does not exist.... creating new record");
+        //GServer->DB->QExecute("INSERT INTO charitems (owner,trans_action) VALUES ('%i','%i')",CharInfo->charid,tran);
+        GServer->DB->QExecute("INSERT INTO charitems (owner,itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,slot,trans_action) VALUES('%i','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%i')",
+    				CharInfo->charid,tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,slot,tran);
+    }
+    //save zuly
+    GServer->DB->QExecute("UPDATE characters SET zuly=%I64i WHERE char_name='%s'",
+         CharInfo->Zulies, CharInfo->charname );
+    //Log(MSG_INFO,"Inventory saved");
+    return;
+}
+
+//PY Storage save
+void CPlayer::savestorage( )
+{
+    //build the strings. As we need a slot zero for storage we are going to have to add a buffer entry first
+    //for some bizarre reason when we load teh storage it ignores the leading zero so stuff gets shifted left without this
+    char tmp1[1024] = "0";
+    char tmp2[1024] = "0";
+    char tmp3[1024] = "0";
+    char tmp4[1024] = "0";
+    char tmp5[1024] = "0";
+    char tmp6[1024] = "0";
+    char tmp7[1024] = "0";
+    char tmp8[1024] = "0";
+    char tmp9[1024] = "0";
+    char slot[1024] = "0";
+    long tran = 0;
+    for(unsigned int i=0;i<=MAX_STORAGE; i++) //Storage holds 160
+    {
+        int socketed = 0;
+        int appraised = 0;
+        tran += storageitems[i].itemnum + storageitems[i].itemtype + storageitems[i].refine;
+        tran += storageitems[i].durability + storageitems[i].lifespan + storageitems[i].count + storageitems[i].stats;
+
+        if(storageitems[i].count == 0)
+        {
+            sprintf(&tmp1[strlen(tmp1)], "|0");
+            sprintf(&tmp2[strlen(tmp2)], "|0");
+            sprintf(&tmp3[strlen(tmp3)], "|0");
+            sprintf(&tmp4[strlen(tmp4)], "|0");
+            sprintf(&tmp5[strlen(tmp5)], "|0");
+            sprintf(&tmp6[strlen(tmp6)], "|0");
+            sprintf(&tmp7[strlen(tmp7)], "|0");
+            sprintf(&tmp8[strlen(tmp8)], "|0");
+            sprintf(&tmp9[strlen(tmp9)], "|0");
+            if(i != 0) //don't write the zero value for slot since we already started the string with a leading zero
+                sprintf(&slot[strlen(slot)], "|%i",i);
+        }
+        else
+        {
+            if(storageitems[i].socketed == true)
+                socketed = 1;
+            if(storageitems[i].appraised == true)
+                appraised = 1;
+            sprintf(&tmp1[strlen(tmp1)], "|%i",storageitems[i].itemnum);
+            sprintf(&tmp2[strlen(tmp2)], "|%i",storageitems[i].itemtype);
+            sprintf(&tmp3[strlen(tmp3)], "|%i",storageitems[i].refine);
+            sprintf(&tmp4[strlen(tmp4)], "|%i",storageitems[i].durability);
+            sprintf(&tmp5[strlen(tmp5)], "|%i",storageitems[i].lifespan);
+            sprintf(&tmp6[strlen(tmp6)], "|%i",storageitems[i].count);
+            sprintf(&tmp7[strlen(tmp7)], "|%i",storageitems[i].stats);
+            sprintf(&tmp8[strlen(tmp8)], "|%i",socketed);
+            sprintf(&tmp9[strlen(tmp9)], "|%i",appraised);
+            if(i != 0) //don't write the zero value for slot since we already started the string with a leading zero
+                sprintf(&slot[strlen(slot)], "|%i",i);
+        }
+    }
+    //check if a record exists for this player
+    MYSQL_RES *result = GServer->DB->QStore("SELECT itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,slot,trans_action FROM charstorage WHERE owner=%i", Session->userid);
+    MYSQL_ROW row;
+    bool doesexist = false;
+    while(row = mysql_fetch_row(result))
+    {
+        doesexist = true;
+    }
+    GServer->DB->QFree( );
+    if(doesexist == true)
+    {
+        //record exists so update it
+        //Log(MSG_INFO,"record exists.... updating");
+        GServer->DB->QExecute("UPDATE charstorage SET itemid='%s',itemtype='%s',refine='%s',durability='%s',lifespan='%s',count='%s',stats='%s',socketed='%s',appraised='%s',slot='%s',trans_action=%i WHERE owner='%i'",
+                    tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,slot,tran,Session->userid);
+    }
+    else
+    {
+        //record does not exist so make a new one
+        //Log(MSG_INFO,"record does not exist.... creating new record");
+        //GServer->DB->QExecute("INSERT INTO charitems (owner,trans_action) VALUES ('%i','%i')",CharInfo->charid,tran);
+        GServer->DB->QExecute("INSERT INTO charstorage (owner,itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,slot,trans_action) VALUES('%i','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%i')",
+    				Session->userid,tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,slot,tran);
+    }
+    //save zuly storage
+    GServer->DB->QExecute("UPDATE accounts SET zulystorage = %i WHERE id = %i", CharInfo->Storage_Zulies, Session->userid);
+    //Log(MSG_INFO,"Storage saved");
+    return;
+}
+
+//PY Storage save
+void CPlayer::SaveBackupStorage( int logstate )
+{
+    //build the strings. As we need a slot zero for storage we are going to have to add a buffer entry first
+    //for some bizarre reason when we load the storage it ignores the leading zero so stuff gets shifted left without this
+    char tmp1[1024] = "0";
+    char tmp2[1024] = "0";
+    char tmp3[1024] = "0";
+    char tmp4[1024] = "0";
+    char tmp5[1024] = "0";
+    char tmp6[1024] = "0";
+    char tmp7[1024] = "0";
+    char tmp8[1024] = "0";
+    char tmp9[1024] = "0";
+    char slot[1034] = "0";
+    long tran = 0;
+    for(unsigned int i=0;i<=MAX_STORAGE; i++) //Storage holds 160
+    {
+        int socketed = 0;
+        int appraised = 0;
+        if(storageitems[i].count == 0)
+        {
+            sprintf(&tmp1[strlen(tmp1)], "|0");
+            sprintf(&tmp2[strlen(tmp2)], "|0");
+            sprintf(&tmp3[strlen(tmp3)], "|0");
+            sprintf(&tmp4[strlen(tmp4)], "|0");
+            sprintf(&tmp5[strlen(tmp5)], "|0");
+            sprintf(&tmp6[strlen(tmp6)], "|0");
+            sprintf(&tmp7[strlen(tmp7)], "|0");
+            sprintf(&tmp8[strlen(tmp8)], "|0");
+            sprintf(&tmp9[strlen(tmp9)], "|0");
+            if(i != 0) //don't write the zero value for slot since we already started the string with a leading zero
+                sprintf(&slot[strlen(slot)], "|%i",i);
+        }
+        else
+        {
+            if(storageitems[i].socketed == true)
+                    socketed = 1;
+            if(storageitems[i].appraised == true)
+                    appraised = 1;
+            sprintf(&tmp1[strlen(tmp1)], "|%i",storageitems[i].itemnum);
+            sprintf(&tmp2[strlen(tmp2)], "|%i",storageitems[i].itemtype);
+            sprintf(&tmp3[strlen(tmp3)], "|%i",storageitems[i].refine);
+            sprintf(&tmp4[strlen(tmp4)], "|%i",storageitems[i].durability);
+            sprintf(&tmp5[strlen(tmp5)], "|%i",storageitems[i].lifespan);
+            sprintf(&tmp6[strlen(tmp6)], "|%i",storageitems[i].count);
+            sprintf(&tmp7[strlen(tmp7)], "|%i",storageitems[i].stats);
+            sprintf(&tmp8[strlen(tmp8)], "|%i",socketed);
+            sprintf(&tmp9[strlen(tmp9)], "|%i",appraised);
+            if(i != 0) //don't write the zero value for slot since we already started the string with a leading zero
+                sprintf(&slot[strlen(slot)], "|%i",i);
+        }
+    }
+    MYSQL_RES *result = GServer->DB->QStore("SELECT thisrev FROM backupstorage WHERE owner=%i", Session->userid);
+    MYSQL_ROW row;
+    int thisrev = 0;
+    int tmprev = 0;
+    while(row = mysql_fetch_row(result))
+    {
+        tmprev = atoi(row[0]);
+        if(tmprev > thisrev)thisrev = tmprev;
+    }
+    thisrev ++; // add 1 to the highest existing rev number for this user
+    GServer->DB->QFree( );
+    // Timestamp
+    time_t rtime;
+    time(&rtime);
+    char *timestamp = ctime(&rtime);
+    timestamp[ strlen(timestamp)-1 ] = ' ';
+    GServer->DB->QExecute("INSERT INTO backupstorage (owner,itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,slot,trans_action,datestamp,thisrev) VALUES('%i','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%i','%s','%i')",
+        Session->userid,tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,slot,logstate,timestamp,thisrev);
+    //Log(MSG_INFO,"backup Storage saved for User %i revision number %i logstate %i",Session->userid, thisrev, logstate);
+    return;
+}
+
+bool CPlayer::loadinventory()
+{
+// PY loadup code
+	//Log(MSG_INFO,"Loading inventory data");
+	MYSQL_ROW row;
+    MYSQL_RES *result = GServer->DB->QStore("SELECT itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,trans_action FROM charitems WHERE owner=%i", CharInfo->charid);
+    if(result == NULL)
+    {
+        GServer->DB->QFree( );
+		Log(MSG_WARNING, "Something a bit wrong with this query");
+        return false;
+    }
+    const char *tmpid;
+    char *itmp = 0;
+    int itemid;
+    while( row = mysql_fetch_row(result) )
+    {
+        tmpid = strtok( row[0] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].itemnum = atoi(itmp);
+        }
+	    tmpid = strtok( row[1] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].itemtype = atoi(itmp);
+        }
+        tmpid = strtok( row[2] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].refine = atoi(itmp);
+        }
+        tmpid = strtok( row[3] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].durability = atoi(itmp);
+        }
+        tmpid = strtok( row[4] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].lifespan = atoi(itmp);
+        }
+        tmpid = strtok( row[5] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+            {
+                items[i].count = atoi(itmp);
+                //Log(MSG_INFO,"slot: %i itemid: %i type: %i count: %i",i, items[i].itemnum,items[i].itemtype,items[i].count); //PAT items seem to load ok here
+            }
+        }
+        tmpid = strtok( row[6] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+            {
+                items[i].stats = atoi(itmp);
+                if(items[i].stats >300)
+                {
+                    items[i].gem = items[i].stats;
+                }
+                else
+                    items[i].gem = 0;
+            }
+        }
+        tmpid = strtok( row[7] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].socketed = (atoi(itmp)==1)?true:false;
+            //just in case there is a discrepency in the database this will fix sockets.
+            if(items[i].gem != 0)
+                items[i].socketed = true;
+        }
+        tmpid = strtok( row[8] , "|");
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                items[i].appraised = (atoi(itmp)==1)?true:false;
+        }
+        for(unsigned int i=1;i<=MAX_INVENTORY; i++)
+        {
+            // first delete bad items
+            if(items[i].itemnum > GServer->EquipList[items[i].itemtype].STBMax)
+            {
+                Log(MSG_INFO,"deleting item in slot: %i itemid: %i type: %i count: %i",i, items[i].itemnum,items[i].itemtype,items[i].count);
+                //Item number too high
+                items[i].itemnum = 0;
+                items[i].itemtype = 0;
+                items[i].count = 0;
+                items[i].durability = 0;
+
+            }
+                // find item type for crafting
+            if(items[i].itemtype > 0 && items[i].itemtype < 10)
+                items[i].type = GServer->EquipList[items[i].itemtype].Index[items[i].itemnum]->type;
+            if(items[i].itemtype == 10)
+                items[i].type = GServer->UseList.Index[items[i].itemnum]->type;
+            if(items[i].itemtype == 11)
+                items[i].type = GServer->JemList.Index[items[i].itemnum]->type;
+            if(items[i].itemtype == 12)
+                items[i].type = GServer->NaturalList.Index[items[i].itemnum]->type;
+            if(items[i].itemtype == 14)
+                items[i].type = GServer->PatList.Index[items[i].itemnum]->type;
+            //Log(MSG_INFO,"slot: %i itemid: %i type: %i count: %i",i, items[i].itemnum,items[i].itemtype,items[i].count);
+        }
+    }
+	GServer->DB->QFree( );
+	return true;
+}
+
+bool CPlayer::loadstorage()
+{
+	// PY loadup code for storage
+	//Log(MSG_INFO,"Loading storage data");
+	MYSQL_ROW row;
+    MYSQL_RES *result = GServer->DB->QStore("SELECT itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,trans_action FROM charstorage WHERE owner=%i", Session->userid);
+    if(result == NULL)
+    {
+        GServer->DB->QFree( );
+		Log(MSG_WARNING, "Something a bit wrong with this query. Maybe the first time a character has loaded this character");
+        return false;
+    }
+	const char *tmpid;
+    char *itmp;
+    int itemid = 0;
+    while( row = mysql_fetch_row(result) )
+    {
+        tmpid = strtok( row[0] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].itemnum = atoi(itmp);
+        }
+	    tmpid = strtok( row[1] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].itemtype = atoi(itmp);
+        }
+        tmpid = strtok( row[2] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].refine = atoi(itmp);
+        }
+        tmpid = strtok( row[3] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].durability = atoi(itmp);
+        }
+        tmpid = strtok( row[4] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].lifespan = atoi(itmp);
+        }
+        tmpid = strtok( row[5] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].count = atoi(itmp);
+        }
+        tmpid = strtok( row[6] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+            {
+                storageitems[i].stats = atoi(itmp);
+                if(storageitems[i].stats > 300)
+                {
+                    storageitems[i].gem = items[i].stats;
+                }
+                else
+                    storageitems[i].gem = 0;
+            }
+        }
+        tmpid = strtok( row[7] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].socketed = (atoi(itmp)==1)?true:false;
+            //just in case there is a discrepency in the database this will fix sockets.
+            if(storageitems[i].gem != 0)
+                storageitems[i].socketed = true;
+        }
+        tmpid = strtok( row[8] , "|");
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                storageitems[i].appraised = (atoi(itmp)==1)?true:false;
+        }
+        for(unsigned int i=0;i<=MAX_STORAGE; i++)
+        {
+                // find item type for crafting
+            if(storageitems[i].itemtype > 0 && storageitems[i].itemtype < 10)
+                storageitems[i].type = GServer->EquipList[storageitems[i].itemtype].Index[storageitems[i].itemnum]->type;
+            if(storageitems[i].itemtype == 10)
+                storageitems[i].type = GServer->UseList.Index[storageitems[i].itemnum]->type;
+            if(storageitems[i].itemtype == 11)
+                storageitems[i].type = GServer->JemList.Index[storageitems[i].itemnum]->type;
+            if(storageitems[i].itemtype == 12)
+                storageitems[i].type = GServer->NaturalList.Index[storageitems[i].itemnum]->type;
+            if(storageitems[i].itemtype == 14)
+                storageitems[i].type = GServer->PatList.Index[storageitems[i].itemnum]->type;
+        }
+    }
+	GServer->DB->QFree( );
+	return true;
+}
+
 
 //LMA: Saving skills here...
 void CPlayer::saveskills( )
@@ -971,7 +1651,7 @@ void CPlayer::saveskills( )
     pc_craft_talent=0;
 
     //class skills and level.
-    for(UINT i=0;i<MAX_CLASS_SKILL;i++)
+    for(UINT i=0;i < MAX_CLASS_SKILL;i++)
     {
         if(i==0)
         {
@@ -1020,7 +1700,7 @@ void CPlayer::saveskills( )
     }
 
     //unique skills.
-    for(UINT i=90;i<90+MAX_UNIQUE_SKILL;i++)
+    for(UINT i=90;i < 90 + MAX_UNIQUE_SKILL;i++)
     {
         if(i==90)
         {
@@ -1069,7 +1749,7 @@ void CPlayer::saveskills( )
     }
 
     //mileage skills and level.
-    for(UINT i=120;i<120+MAX_MILEAGE_SKILL;i++)
+    for(UINT i=120;i<120 + MAX_MILEAGE_SKILL;i++)
     {
         if(i==120)
         {
@@ -1083,7 +1763,7 @@ void CPlayer::saveskills( )
         }
 
         //LMA: % dealer rebate and other stuff.
-        if (cskills[i].thisskill!=NULL)
+        if (cskills[i].thisskill != NULL)
         {
             for(int j=0;j<3;j++)
             {
@@ -1124,7 +1804,7 @@ void CPlayer::saveskills( )
     }
 
     //basic skills.
-    for(UINT i=320;i<320+MAX_BASIC_SKILL;i++)
+    for(UINT i=320;i < 320 + MAX_BASIC_SKILL;i++)
     {
         if(i==320)
             sprintf(&basic[0], "%i",cskills[i].id);
@@ -1167,7 +1847,7 @@ void CPlayer::saveskills( )
     }
 
     //driving skills.
-    for(UINT i=60;i<60+MAX_DRIVING_SKILL;i++)
+    for(UINT i=60;i < 60 + MAX_DRIVING_SKILL;i++)
     {
         if(i==60)
             sprintf(&drive[0], "%i",cskills[i]);
@@ -1209,10 +1889,10 @@ void CPlayer::saveskills( )
 
     }
 
-    pc_rebate=pc_temp;
-    pc_up=pc_union;
-    summon_jauge=50+val_summon;
-    Log(MSG_INFO,"%s:: New jauge is %i",CharInfo->charname,summon_jauge);
+    pc_rebate = pc_temp;
+    pc_up = pc_union;
+    summon_jauge = 50 + val_summon;
+    Log(MSG_INFO,"%s:: New Gauge is %i",CharInfo->charname,summon_jauge);
 
     //LMA: Saving Skills Data for a player.
     GServer->DB->QExecute("UPDATE characters SET class_skills='%s',class_skills_level='%s',basic_skills='%s',driving_skills='%s',unique_skills='%s',mileage_skills='%s',unique_skills_level='%s',mileage_skills_level='%s' WHERE id=%i",
@@ -1298,7 +1978,7 @@ int CPlayer::GoodSkill(int skill_id)
         return -1;
     }
 
-    int type=GServer->SkillList[skill_id]->skill_tab;
+    int type = GServer->SkillList[skill_id]->skill_tab;
 
     if (type==11)
         return 2;   //basic

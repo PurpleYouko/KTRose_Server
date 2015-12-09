@@ -571,9 +571,12 @@ bool CPlayer::RefreshHPMP()
     if ( etime < CLOCKS_PER_SEC )
         return true;
 
-    BEGINPACKET( pak, 0x7ec );
-    ADDWORD    ( pak, Stats->HP );
-    ADDWORD    ( pak, Stats->MP );
+    BEGINPACKET	( pak, 0x7ec );
+    ADDWORD		( pak, Stats->HP );
+    ADDWORD		( pak, Stats->MP );
+	//PY messing with packets usually gets me in trouble
+	ADDWORD		( pak, GetMaxHP( ) );	//added here and at client
+	ADDWORD		( pak, GetMaxMP( ) );	//added here and at client
     client->SendPacket ( &pak );
 
     if (Party->party != NULL)
@@ -732,40 +735,40 @@ bool CPlayer::RefreshHPMP()
 // HP/MP Regeneration Function
 bool CPlayer::Regeneration()
 {
-    if (Stats->MaxHP==Stats->HP)
+    if (Stats->MaxHP == Stats->HP)
        lastRegenTime_hp = clock();
 
-    if (Stats->MaxMP==Stats->MP)
+    if (Stats->MaxMP == Stats->MP)
       lastRegenTime_mp = clock();
 
-    if ((Stats->MaxHP==Stats->HP)&&(Stats->MaxMP==Stats->MP))
+    if ((Stats->MaxHP == Stats->HP)&&(Stats->MaxMP == Stats->MP))
        return true;
 
-     UINT bonus_sitted=1;
-     UINT bonus_fairy=1;
-     int bonus_hp=0;
-     int bonus_mp=0;
-     int nb_sec_stance=8;   //Original setting was 5
+     UINT bonus_sitted = 1;
+     UINT bonus_fairy = 1;
+     int bonus_hp = 0;
+     int bonus_mp = 0;
+     int nb_sec_stance = 8;   //Original setting was 5
 
      if(Fairy)
      {
-         nb_sec_stance= 8;      //Original setting was 3
+         nb_sec_stance = 8;      //Original setting was 3
          bonus_mp++;
          bonus_hp++;
-         bonus_fairy=3;
+         bonus_fairy = 3;
      }
      if (Status->Stance==1)
      {
-         nb_sec_stance= 5;      //Original setting was 3
+         nb_sec_stance = 5;      //Original setting was 3
          bonus_mp++;
          bonus_hp++;
-         bonus_sitted=3;
+         bonus_sitted = 3;
      }
 
      int TimeDiff=nb_sec_stance*CLOCKS_PER_SEC;
 
     //LMA: HP
-    if (Stats->HP<Stats->MaxHP)
+    if (Stats->HP < Stats->MaxHP)
     {
         clock_t etimeHP = clock() - lastRegenTime_hp;
 
@@ -773,9 +776,9 @@ bool CPlayer::Regeneration()
         {
             unsigned int hpamount = GetHPRegenAmount( );
 
-            if (bonus_hp!=0)
+            if (bonus_hp != 0)
             {
-               Stats->HP += (long int) (hpamount*bonus_sitted)*bonus_fairy;
+               Stats->HP += (int) (hpamount*bonus_sitted)*bonus_fairy;
                //Log(MSG_INFO,"REGEN HP %i(%i*%i)*%i",(long int) (hpamount*bonus_sitted)*bonus_fairy,hpamount,bonus_sitted,bonus_fairy);
             }
             else
@@ -799,9 +802,9 @@ bool CPlayer::Regeneration()
         {
             unsigned int mpamount = GetMPRegenAmount( );
 
-            if (bonus_mp!=0)
+            if (bonus_mp !=0 )
             {
-               Stats->MP += (long int) (mpamount * bonus_sitted)* bonus_fairy;
+               Stats->MP += (int) (mpamount * bonus_sitted)* bonus_fairy;
                //Log(MSG_INFO,"RegenMP %i(%i*%i)*%i",(long int) (mpamount*bonus_sitted)*bonus_fairy,mpamount,bonus_sitted,bonus_fairy);
             }
             else

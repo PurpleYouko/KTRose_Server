@@ -31,6 +31,7 @@ CDatabase::CDatabase( char* server , char* username, char* password, char* datab
     Database = database;
     Port = port;
     Mysql = mysql;
+	LastPing = time( NULL );
     SQLMutex = PTHREAD_MUTEX_INITIALIZER;
     mysql_init( Mysql );
 }
@@ -38,13 +39,13 @@ CDatabase::CDatabase( char* server , char* username, char* password, char* datab
 // deconstructor
 CDatabase::~CDatabase( )
 {
-     Log(MSG_INFO,"deconstructor");
+     //Log(MSG_INFO,"deconstructor");
 }
 
 // disconnect from mysql
 void CDatabase::Disconnect( )
 {
-    Log(MSG_INFO,"Closing mysql");
+    //Log(MSG_INFO,"Closing mysql");
     mysql_close( Mysql );
 }
 
@@ -89,8 +90,7 @@ int CDatabase::Reconnect( )
 int CDatabase::QExecuteUpdate( const char *Format,... )
 {
     bool Qfail = true;
-    //char query[1024];
-    char query[80000];
+    char query[100000];
 	va_list ap;
     va_start( ap, Format );
 	vsprintf( query, Format, ap );
@@ -113,7 +113,6 @@ int CDatabase::QExecuteUpdate( const char *Format,... )
         else Qfail = false;
     }
     pthread_mutex_unlock( &SQLMutex );
-    //Log( MSG_QUERY, "OUT ExecU");
     return mysql_affected_rows(Mysql);
 }
 
@@ -121,18 +120,13 @@ int CDatabase::QExecuteUpdate( const char *Format,... )
 bool CDatabase::QExecute( const char *Format,... )
 {
     bool Qfail = true;
-    //char query[1024];
-    //char query[1300];   //LMA: sometimes we need more...
-    char query[80000];
+    char query[100000];
 	va_list ap;
     va_start( ap, Format );
 	vsprintf( query, Format, ap );
 	va_end  ( ap );
     Log( MSG_QUERY,"IN QExec:: %s",query );
-
-    int no_err=0;
-    no_err=pthread_mutex_lock( &SQLMutex );
-
+    pthread_mutex_lock( &SQLMutex );
     while(Qfail)
     {
         if(mysql_query( Mysql, query )!=0)
@@ -149,7 +143,6 @@ bool CDatabase::QExecute( const char *Format,... )
         else Qfail = false;
     }
     pthread_mutex_unlock( &SQLMutex );
-    //Log( MSG_QUERY,"OUT:: QExec");
     return true;
 }
 

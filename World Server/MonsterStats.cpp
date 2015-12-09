@@ -259,20 +259,20 @@ unsigned int CMonster::GetMagicDefense()
 
 // return max hp
 // unsigned int CMonster::GetMaxHP( )
-unsigned long long CMonster::GetMaxHP( )
+unsigned int CMonster::GetMaxHP( )
 {
     //UINT MaxHP = 0;
-    unsigned long long MaxHP = 0;
-    MaxHP = (unsigned long long ) thisnpc->hp;
+    unsigned long MaxHP = 0;
+    MaxHP = (unsigned long ) thisnpc->MaxHP;
 
-    if(owner==0)
+    if(owner == 0)
     {
-        MaxHP = MaxHP * ((unsigned long long) thisnpc->level);
+        MaxHP = MaxHP * ((unsigned long) thisnpc->level);
     }
 
-    if(MaxHP==0)
+    if(MaxHP == 0)
     {
-        MaxHP = (unsigned long long) thisnpc->shp;
+        MaxHP = (unsigned long) thisnpc->shp;
     }
 
     return MaxHP;
@@ -281,18 +281,18 @@ unsigned long long CMonster::GetMaxHP( )
 //LMA: We for the maxHP and HP sometimes
 bool CMonster::ForceMaxHP( )
 {
-    unsigned long long MaxHP = 0;
-    MaxHP = (unsigned long long ) thisnpc->hp;
-    MaxHP = MaxHP * ((unsigned long long) thisnpc->level);
+    unsigned int MaxHP = 0;
+    MaxHP = (unsigned int ) thisnpc->hp;
+    MaxHP = MaxHP * ((unsigned int) thisnpc->level);
 
     if(MaxHP==0)
     {
-        MaxHP = (unsigned long long) thisnpc->shp;
+        MaxHP = (unsigned int) thisnpc->shp;
     }
 
     if(MaxHP>MAXHPMOB)
     {
-        MaxHP=(unsigned long long) MAXHPMOB;
+        MaxHP=(unsigned int) MAXHPMOB;
     }
 
     Stats->MaxHP=MaxHP;

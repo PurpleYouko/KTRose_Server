@@ -639,7 +639,7 @@ void CWorldServer::ClearClientID( unsigned int id )
     }
 
     #ifdef STATICID
-    Log(MSG_INFO,"In clear CID %i",id);
+    //Log(MSG_INFO,"In clear CID %i",id);
     //LMA: if the thread is already blocked, it should return EBUSY
     //else 0
     UINT res_blockP=pthread_mutex_trylock(&GServer->PlayerMutex);
@@ -668,7 +668,7 @@ void CWorldServer::ClearClientID( unsigned int id )
         pthread_mutex_unlock( &GServer->MapMutex );
     }
 
-    Log(MSG_INFO,"Out clear CID %i",id);
+    //Log(MSG_INFO,"Out clear CID %i",id);
     #endif
 
 

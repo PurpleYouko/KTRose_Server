@@ -93,8 +93,7 @@ unsigned int CCharacter::GetMoveSpeed( )
 }
 
 // virtual [return maxhp]
-//unsigned int CCharacter::GetMaxHP( )
-unsigned long long CCharacter::GetMaxHP( )
+unsigned int CCharacter::GetMaxHP( )
 {
     return 0;
 }

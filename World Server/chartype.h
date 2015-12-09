@@ -51,6 +51,11 @@ struct POSITION
     //fPoint battle;
 };
 
+struct UNION_s	//PY used for union variables and reward points
+{
+    UINT unionvar;
+};
+
 //LMA: For UW.
 struct UWPOSITION
 {
@@ -61,38 +66,47 @@ struct UWPOSITION
 struct STATS
 {
     int Level;
-    long long HP;
-    long long MP;
-    /*
-    unsigned int MaxHP;
-    unsigned int MaxMP;
-    */
-    unsigned long long MaxHP;
-    unsigned long long MaxMP;
-    unsigned int stance;
-
-
-    unsigned int Attack_Power;
+    long HP;
+    long MP;
+    long MaxHP;
+    long MaxMP;
+    int stance;
+	int CheatMaxHP;
+	int CheatMaxMP;
+	unsigned int CheatMoveSpeed;
+	int CheatAttackPower;
+    int Attack_Power;
+	unsigned int CheatDefense;
     unsigned int Defense;
+	unsigned int CheatCritical;
     unsigned int Critical;
+	unsigned int CheatDodge;
     unsigned int Dodge;
+	unsigned int CheatAccuracy;
     unsigned int Accury;
+	unsigned int CheatMagicDefense;
     unsigned int Magic_Defense;
     unsigned int Move_Speed;
 	unsigned int Mspd_base;
     unsigned int Base_Speed;
+	unsigned int CheatAttackSpeed;
     unsigned int Attack_Speed;
     float Attack_Distance;
+	unsigned int CheatXPRate;
 	unsigned int xprate;
+	unsigned int CheatItemDropRate;
     unsigned int itemdroprate;
+	unsigned int CheatZulyDropRate;
 	unsigned int zulydroprate;
 	unsigned int itemdropcountrate;
     unsigned int MaxWeight;
+	unsigned int CheatMaxSummonGauge;
     unsigned int MaxSummonGauge;
     unsigned int MPReduction;
     unsigned int side; //future expansion of drop system
     unsigned int sidechance; //future expansion of drop system
     unsigned int ExtraDamage_add;
+	unsigned int CheatMagicAttack;
 	unsigned int magicattack;
 	int ItemXPRate;
     int ItemDropRate;
@@ -245,17 +259,19 @@ struct INFO
     int union04;              //LMA: Union
     int union05;              //LMA: Union
     int nb_kills;             //LMA: Union
+	UINT unionvar[11];		//PY: new array to hold all the union points and stuff
     BYTE Sex;
     UINT Face;
     UINT Hair;
-    //UINT Exp;
-    unsigned long long Exp;
+    long Exp;
+	UINT Pending_Exp;		//temporary storage space for exp during calculations
+	float HighestOverkill;	//just a bit of fun. We can track highest ever overkill rate just for giggles. Maybe give rewards or something
     UINT Job;
     //long int Zulies;
     //long int Storage_Zulies;
     //DevilKing's update for more than 2 billion zuly
-    long long Zulies;
-    long long Storage_Zulies;
+    __int64 Zulies;
+    __int64 Storage_Zulies;
     long int LastGlobal;
     int StatPoints;
     int SkillPoints;
@@ -276,8 +292,16 @@ struct SESSION
 	int accesslevel;
 	bool isLoggedIn;
 	bool inGame;
+	UINT Respawned;
+	BYTE RespawnChoice;
     bool codedebug;
     bool first_id;
+	UINT KTPoints;
+    UINT NewPoints;
+    UINT logtime;		// tracks total log points. 1 point = 1 hour. 5 points = 1KTPoint
+    clock_t LogTime;	// time for the current session
+    UINT TotalLogTime;
+    UINT award;
 };
 
 struct RIDE
@@ -339,6 +363,7 @@ struct CLAN
     unsigned int back;
     char clanname[17];
 };
+
 
 
 //***************Monster only******************************************/
