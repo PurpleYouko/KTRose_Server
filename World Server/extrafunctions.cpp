@@ -24,7 +24,7 @@
 unsigned CWorldServer::BuildItemHead( CItem thisitem )
 {
 	//if (thisitem.count==0) return 0;
-	if (thisitem.count==0||thisitem.itemnum==0||thisitem.itemtype==0) return 0;
+	if (thisitem.count == 0 || thisitem.itemnum == 0 || thisitem.itemtype == 0) return 0;
     return ( ( thisitem.itemnum & 0x7ffffff ) << 5 ) | ( thisitem.itemtype & 0x1f );
 }
 
@@ -32,7 +32,7 @@ unsigned CWorldServer::BuildItemHead( CItem thisitem )
 unsigned CWorldServer::BuildItemData( CItem thisitem )
 {
 	//if (thisitem.count==0) return 0;
-	if (thisitem.count==0||thisitem.itemnum==0||thisitem.itemtype==0) return 0;
+	if (thisitem.count == 0 || thisitem.itemnum == 0 || thisitem.itemtype == 0) return 0;
 	if ( thisitem.itemtype >= 10 && thisitem.itemtype <= 13 )
     {
 		return thisitem.count;
@@ -2850,11 +2850,11 @@ UINT CWorldServer::gi(UINT itemvalue, short type)
     UINT itemnum=0;
 
 
-    itemtype= itemvalue/1000;
-    if (itemtype>=1&&itemtype<=14)
+    itemtype= itemvalue / 1000;
+    if (itemtype >= 1 && itemtype <= 14)
     {
-        itemnum=itemvalue % 1000;
-        if(type==0)
+        itemnum = itemvalue % 1000;
+        if(type == 0)
         {
             return itemtype;
         }
@@ -2862,13 +2862,13 @@ UINT CWorldServer::gi(UINT itemvalue, short type)
         return itemnum;
     }
 
-    if(itemtype==0)
+    if(itemtype == 0)
     {
-        itemtype=itemvalue/100;
-        if (itemtype>=1&&itemtype<=14)
+        itemtype = itemvalue / 100;
+        if (itemtype >= 1 && itemtype <= 14)
         {
-            itemnum=itemvalue % 100;
-            if(type==0)
+            itemnum = itemvalue % 100;
+            if(type == 0)
             {
                 return itemtype;
             }
@@ -2876,7 +2876,7 @@ UINT CWorldServer::gi(UINT itemvalue, short type)
             return itemnum;
         }
 
-        if(itemtype==0)
+        if(itemtype == 0)
         {
             itemtype=itemvalue/10;
             if (itemtype>=1&&itemtype<=14)
@@ -2894,7 +2894,7 @@ UINT CWorldServer::gi(UINT itemvalue, short type)
 
         if(itemtype==0)
         {
-            Log(MSG_WARNING,"Impossible to get an item from %u",itemvalue);
+            Log(MSG_WARNING,"Impossible to get an item from %u", itemvalue);
             return 0;
         }
 
@@ -3091,42 +3091,42 @@ UINT CWorldServer::GetBreakID(UINT itemnum,UINT itemtype)
 {
     UINT breakid=0;
 
-    if(itemtype<=0||itemtype==7||itemtype>=10)
+    if(itemtype <= 0||itemtype == 7||itemtype >= 11) //PY: Type 10 can have break ids
     {
         return 0;
     }
 
-    if (itemnum>=EquipList[itemtype].max)
+    if (itemnum >= EquipList[itemtype].max)
     {
         Log(MSG_WARNING,"Wrong itemnum %u > %u, (itemtype %u)",itemnum,EquipList[itemtype].max,itemtype);
         return 0;
     }
 
-    breakid=EquipList[itemtype].Index[itemnum]->breakid;
+    breakid = EquipList[itemtype].Index[itemnum]->breakid;
 
     //some checks.
-   if (breakid!=0)
+   if (breakid != 0)
     {
-        if(breakid>=maxBreak)
+        if(breakid >= maxBreak)
         {
             Log(MSG_WARNING,"The breakid %u for (%i::%i) is > %u",breakid,itemtype,itemnum,maxBreak);
             return 0;
         }
 
-        if(BreakList[breakid]->itemnum==0||BreakList[breakid]->itemtype==0)
+        if(BreakList[breakid]->product[0] == 0)
         {
             Log(MSG_WARNING,"The breakid %u leads to an empty break?",breakid);
             return 0;
         }
 
-        if(itemnum!=BreakList[breakid]->itemnum||itemtype!=BreakList[breakid]->itemtype)
+		/*
+        if(itemnum != BreakList[breakid]->itemnum||itemtype != BreakList[breakid]->itemtype)
         {
-            Log(MSG_INFO,"The breakid %u for (%i::%i) is also used for another item?",breakid,itemtype,itemnum);
+            Log(MSG_INFO,"The breakid %u for (%i::%i) is also used for another item?",breakid,itemtype,itemnum); //PY: SO BLOODY WHAT? they are supposed to be shared. *Facepalm*
         }
+		*/
 
     }
-
-
     return breakid;
 }
 

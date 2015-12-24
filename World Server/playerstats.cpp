@@ -3302,7 +3302,7 @@ unsigned int CPlayer::GetMoveSpeed( )
         Status->Stance = WALKING;
     }
 
-	if(Stats->CheatMoveSpeed != 0)
+	if(Stats->CheatMoveSpeed != 0 && Status->Stance != WALKING)
 	{
 		//Log(MSG_WARNING, "Cheat Max HP has been set to %i", Stats->CheatMaxHP);
 		Stats->Move_Speed = Stats->CheatMoveSpeed;
@@ -3314,7 +3314,7 @@ unsigned int CPlayer::GetMoveSpeed( )
         case WALKING: //walking
         {
             mspeed = 200;
-            Stats->Base_Speed=mspeed;   //LMA: Changing the base speed too ^_^
+            Stats->Base_Speed = mspeed;   //LMA: Changing the base speed too ^_^
         }
         break;
         case 1:
@@ -3439,100 +3439,6 @@ unsigned int CPlayer::GetMoveSpeed( )
         break;
         case DRIVING: //cart
         {
-            /*
-			if(!Status->CanRun)
-            {
-                mspeed=300;
-                Stats->Base_Speed=mspeed;   //LMA: Changing the base speed too ^_^
-
-                if(Fairy)
-                {
-                    mspeed = (unsigned int)floor(mspeed*1.2);
-                }
-
-
-                return mspeed;
-            }
-
-            UINT porc = 1;
-            UINT nb_parts=0;
-            float lma_speed;
-
-            //LMA: new algo for mspeed calculation...
-            for (int k=135;k<140;k++)
-            {
-                 if(items[k].itemnum!=0&&GServer->PatList.Index[items[k].itemnum]->speed>0)
-                 {
-                    nb_parts++;
-                    porc = porc * GServer->PatList.Index[items[k].itemnum]->speed;
-                 }
-
-            }
-
-            if (nb_parts>0)
-            {
-                float tmpval = pow((double)100.0, nb_parts);
-				lma_speed = floor(porc*1000/(pow(100,nb_parts)));
-            }
-
-            //LMA: new way:
-            
-            //if(items[138].itemnum!=0)
-            //{
-            //    lma_speed+=GServer->PatList.Index[items[138].itemnum]->modifier;
-            //}
-            
-
-            //LMA: adding DASH if needed.
-            for (int k=135;k<140;k++)
-            {
-                if(items[k].itemnum==0)
-                    continue;
-
-                for(int j=0;j<2;j++)
-                {
-                    if(GServer->PatList.Index[items[k].itemnum]->options[j]!=A_DASH)
-                        continue;
-                    lma_speed+=GServer->PatList.Index[items[k].itemnum]->val_options[j];
-                }
-
-            }
-
-            mspeed= (UINT) lma_speed;
-
-            //LMA: Base Speed.
-            Stats->Base_Speed=mspeed;
-            //if(Fairy)  mspeed = (unsigned int)floor(mspeed*1.2);
-
-            //LMA: new way :)
-            if(Fairy)
-            {
-                if(GServer->PatList.Index[items[135].itemnum]->parttype!=31)
-                {
-                    //cart
-                    //mspeed+=148;
-                    mspeed = (unsigned int)floor(mspeed*1.2);
-                }
-                else
-                {
-                    //CG
-                    //mspeed+=101;
-                    mspeed = (unsigned int)floor(mspeed*1.2);
-                }
-
-            }
-
-            if(Status->Dash_up!=0xff)
-            {
-                mspeed += MagicStatus[Status->Dash_up].Value;
-            }
-            if(Status->Dash_down!=0xff)
-            {
-                mspeed -= MagicStatus[Status->Dash_down].Value;
-            }
-			*/
-
-			//PY, Lmame's stuff won't compile so let's try a chunk of code from KT
 			//Log(MSG_INFO, "player is driving");
             float m_speed = 0;
             int patType = GServer->PatList.Index[items[135].itemnum]->type;
@@ -3592,8 +3498,7 @@ unsigned int CPlayer::GetMoveSpeed( )
             Stats->Mspd_base = mspeed;
             if(Fairy)
             {
-                //mspeed = (unsigned int)floor(mspeed * 1.2);
-                mspeed += 110;
+                mspeed = (unsigned int)floor(mspeed * 1.2);
                 if(Session->codedebug) //Debug code
                 {
                     GServer->SendPM(this, "Fairy detected. move speed * 1.2 %i", mspeed);
@@ -5053,6 +4958,17 @@ void CPlayer::SetStats( )
     Stats->MPReduction = GetMPReduction( );
 	Stats->xprate = GetXPRate( );
 	
+	//PY: now we send the new 0x07ed packet containing all the stats
+	BEGINPACKET	( pak, 0x7ed );
+	ADDWORD		( pak, Stats->Attack_Power );
+	ADDWORD		( pak, Stats->Defense );
+	ADDWORD		( pak, Stats->Accury );
+	ADDWORD		( pak, Stats->Dodge );
+	ADDWORD		( pak, Stats->Magic_Defense );
+	ADDWORD		( pak, Stats->Critical );
+	ADDWORD		( pak, Stats->Move_Speed );
+	ADDWORD		( pak, Stats->MaxWeight );
+	GServer->SendToVisible( &pak, this );
 }
 
 void CPlayer::SetMaxHP(unsigned int MaxHP )		//PY: test code to artificially set MaxHP to a different level than it should be. Intention is to force the client to accept server stats

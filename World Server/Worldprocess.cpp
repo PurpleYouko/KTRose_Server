@@ -345,7 +345,7 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
 // Give Exp
 bool CWorldServer::GiveExp( CMonster* thismon )
 {
-    //Log(MSG_DEBUG,"Awarding EXP");
+    Log(MSG_DEBUG,"Awarding EXP");
     int tmpMult = 1;
     if( thismon->owner != 0) // Summon
 	{
@@ -382,12 +382,25 @@ bool CWorldServer::GiveExp( CMonster* thismon )
                 for( int q=0;q<10;q++)
                 {
                     // Give Quest Item
-                    if( thisclient->quest.quests[q].QuestID!=0 )
+                    if( thisclient->quest.quests[q].QuestID != 0 )
                     {
-                        Log(MSG_DEBUG,"Giving quest reward item for quest %i",thisclient->quest.quests[q].QuestID);
-                        BEGINPACKET( pak, 0x731 )
-                        ADDWORD    ( pak, thismon->montype );
-                        thisclient->client->SendPacket( &pak );
+                        Log(MSG_DEBUG,"Giving quest reward item for quest %i Killed monster type %i",thisclient->quest.quests[q].QuestID,thismon->montype);
+                        //P: Suppressing this completely for a test of the drop code added below
+						//BEGINPACKET( pak, 0x731 )
+                        //ADDWORD    ( pak, thismon->montype );
+                        //thisclient->client->SendPacket( &pak );
+						
+						//PY: If I'm right thismon->thisnpc->die_quest contains the hash needed to complete the trigger and just bypass the initial part of this process
+						int success = thisclient->ExecuteQuestTrigger(thismon->thisnpc->die_quest);
+						if(success == 5) // quest success
+						{
+							Log(MSG_DEBUG,"Death QSD Trigger %i successful. Sending success: ",thismon->thisnpc->die_quest);
+							BEGINPACKET ( pak, 0x730);
+							ADDBYTE ( pak, success);
+							ADDBYTE ( pak, 0);
+							ADDDWORD( pak, thismon->thisnpc->die_quest);
+							thisclient->client->SendPacket(&pak);
+						}
                         break;
                     }
                 }

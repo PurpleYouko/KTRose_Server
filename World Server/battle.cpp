@@ -380,80 +380,91 @@ void CCharacter::DoAttack( )
 // do normal attack
 void CCharacter::NormalAttack( CCharacter* Enemy )
 {
-    //LMA: Sometimes it's fired several times, no need to kill several times ;)
-    bool is_already_dead=Enemy->IsDead();
+	if(Enemy->IsDead())
+	{
+		//if the monster is already dead then we might just as well return without doing anything
+		//return;
+	}
 
-    Position->destiny = Position->current;
-
-    //LMA: Log
-    //if(IsPlayer())
-    //    Log(MSG_INFO,"Forcing destiny to current (%.2f,%.2f), (%.2f,%.2f)",Position->current.x,Position->current.y,Position->destiny .x,Position->destiny .y);
-
+    //this might not be necessary any more since fixing movespeed discrepencies. We shall see
+	Position->destiny = Position->current;
 
     reduceItemsLifeSpan( false );
     Enemy->OnBeAttacked( this );
-    float attack = (float)Stats->Attack_Power - ((Enemy->Stats->Magic_Defense+Enemy->Stats->Defense )/2);
-    if(attack<0) attack = 5;
-    attack *= 0.65;
-    float d_attack = attack / 100;
-    if(attack<0) attack = 5;
-    attack += (float)GServer->RandNumber( 0, 7 ) - 2;
-    attack += ((Stats->Level - Enemy->Stats->Level) * d_attack);
-    if(attack<7) attack = 5;
-    unsigned int hitpower = (int)floor(attack + GServer->RandNumber(0, 4));
-    /*if(IsPlayer( ))
-        hitpower = (long int)floor(attack * 1.2 );*/
-    if(IsPlayer( )) //temp fix to find balance btw monster and player
-        hitpower = (int)floor(attack * (GServer->Config.PlayerDmg/100.00));
-    if(IsMonster( )) //temp fix to find balance btw monster and player
-        hitpower = (int)floor(attack * (GServer->Config.MonsterDmg/100.00));
-
-    if(IsPlayer())//Add Dmg
+	unsigned int hitpower = 0;
+	bool critical = false;
+	//Calculate hit chance as a percentage
+	Log(MSG_DEBUG,"Accuracy is: %i)",Stats->Accury);
+	Log(MSG_DEBUG,"Enemy Dodge is: %i)",Enemy->Stats->Dodge);
+	int totalChance = Stats->Accury + Enemy->Stats->Dodge;
+	double acdm = Stats->Accury * 100 / totalChance;
+	int hitChance = (int)floor(acdm);
+	Log(MSG_DEBUG,"TotalChance: %i HitChance = %i)",totalChance, hitChance);
+	//so did we succeed or not?
+	if(GServer->RandNumber( 0, 100 ) > hitChance)
     {
-        if( Stats->ExtraDamage_add !=0 )
-        {
-            int hitsave = hitpower;
-            hitpower += ((hitpower * Stats->ExtraDamage_add) / 100);
-            Log(MSG_INFO,"ExtraDmg Normal atk: before %i, after %i (ED: %i)",hitsave,hitpower,Stats->ExtraDamage_add);
-        }
-    }
-
-    bool critical = false;
-    if(hitpower <= 0)
-    {
-        hitpower = 0;
+        hitpower = 0; // dodged
+		Log(MSG_DEBUG,"Enemy Dodged the attack)");
     }
     else
-    {
-        if(GServer->RandNumber(0,300)<Stats->Critical)
+	{
+		 if(Stats->magicattack == 1) //magic attacks such as wands and some monsters
+        {
+			unsigned int totalpower = Stats->Attack_Power + Enemy->Stats->Magic_Defense;
+            double hitmod = Stats->Attack_Power *100 / totalpower;								//percentage of hitpower to use
+            hitpower = (unsigned int)floor((double)(Stats->Attack_Power * hitmod / 100));
+			Log(MSG_DEBUG,"Magic type attack: base AP: %i Defense: %i total: %i Modifier: %f Modified AP: %i)",Stats->Attack_Power,Enemy->Stats->Magic_Defense,totalpower,hitmod,hitpower);
+        }
+        else
+        {
+			unsigned int totalpower = Stats->Attack_Power + Enemy->Stats->Defense;
+            double hitmod = Stats->Attack_Power * 100 / totalpower;								//percentage of hitpower to use * 100
+            hitpower = (unsigned int)floor((double)(Stats->Attack_Power * hitmod / 100));
+			Log(MSG_DEBUG,"normal type attack: base AP: %i Defense: %i total: %i Modifier: %f Modified AP: %i)",Stats->Attack_Power,Enemy->Stats->Defense,totalpower,hitmod,hitpower);
+        }
+		//add some randomness. + or - 5% of hitpower
+        int min = (int)floor((double)(hitpower * 0.85));
+        int max = (int)floor((double)(hitpower * 1.15));
+        int dif = max - min;
+        int mod = GServer->RandNumber( 0, dif );
+        hitpower = min + mod;
+		if(IsPlayer( )) //temp fix to find balance btw monster and player
+			hitpower = (int)floor(hitpower * (GServer->Config.PlayerDmg/100.00));
+		if(IsMonster( )) //temp fix to find balance btw monster and player
+			hitpower = (int)floor(hitpower * (GServer->Config.MonsterDmg/100.00));
+		if(GServer->RandNumber(0,300) < Stats->Critical)		//PY: Why 300? a little Arbitrary no?
+
         {
             hitpower = (int)floor(hitpower*1.5);
             critical = true;
         }
-    }
-    // dodge
-    int hitvalue = (int)floor((double)Stats->Accury * 50 / Enemy->Stats->Dodge);
-    if(hitvalue>100) hitvalue = 100;
-    if(GServer->RandNumber( 0, 100 )>hitvalue)
-        hitpower = 0; // dodged
-    if(!Enemy->IsSummon( ) && Enemy->IsMonster( ))
+		Log(MSG_DEBUG,"Attack was successful with HitPower: %i Crit: %b)",hitpower, critical);
+
+	}
+    if(IsPlayer())//Add Damage from additional bonuses such as equipped items. Not at all sure about this function. it's a bit ad hoc
     {
-        Enemy->AddDamage( this, (int) hitpower );
-        Enemy->damagerecieved += (int) hitpower;// is for AI
-		this->damagedealt += (int) hitpower;// is for AI
+        if( Stats->ExtraDamage_add != 0 )
+        {
+            int hitsave = hitpower;
+            hitpower += ((hitpower * Stats->ExtraDamage_add) / 100);
+            Log(MSG_DEBUG,"ExtraDmg Normal atk: before %i, after %i (ED: %i)",hitsave,hitpower,Stats->ExtraDamage_add);
+        }
     }
 
+    
+    if(hitpower <= 0)
+    {
+        hitpower = 0;
+    }
+	if(!Enemy->IsSummon( ) && Enemy->IsMonster( ))
+    {
+        
+		Enemy->AddDamage( this, (int) hitpower );
+        Enemy->damagerecieved += (int) hitpower;		// is for AI
+		this->damagedealt += (int) hitpower;			// is for AI
+    }
     Enemy->Stats->HP -=  (int) hitpower;
-
-    if (Enemy->IsMonster())
-    {
-        Log(MSG_INFO,"Normal Attack, monster HP %i, hitpower %i",Enemy->Stats->HP,hitpower);
-    }
-    else
-    {
-        Log(MSG_INFO,"Normal Attack, Player HP %i, hitpower %i",Enemy->Stats->HP,hitpower);
-    }
-
+	
     // actually the target was hit, if it was sleeping, set duration of
     // sleep to 0. map process will remove sleep then at next player-update
     if (Enemy->Status->Sleep != 0xff) 
@@ -485,46 +496,28 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
     //LMA: little test (see TESTDEATH)
     //ADDDWORD   ( pak, hitpower );
 
-    if(Enemy->IsDead())
+    if(Enemy->IsDead())		//enemy HP <= 0
     {
         //LMA: UW handling, we add the handling for other quests as well...
         //if (!is_already_dead&&(GServer->MapList.Index[Position->Map]->QSDkilling>0||GServer->MapList.Index[Position->Map]->QSDDeath>0)&&IsPlayer()&&Enemy->IsPlayer())
-        if (!is_already_dead && ((GServer->MapList.Index[Position->Map]->QSDkilling>0 && IsPlayer()&&Enemy->IsPlayer())||(GServer->MapList.Index[Position->Map]->QSDDeath && Enemy->IsPlayer())))
-        {
+        //if (!is_already_dead && ((GServer->MapList.Index[Position->Map]->QSDkilling>0 && IsPlayer()&&Enemy->IsPlayer())||(GServer->MapList.Index[Position->Map]->QSDDeath && Enemy->IsPlayer())))
+        //{
             //Log(MSG_INFO,"UWKILL begin normal atk");
-            UWKill(Enemy);
-        }
+        //    UWKill(Enemy);
+        //}
 		if(IsMonster())	//PY: Monster just killed something so we need to enact AIP type 4
 		{
 			CMonster* thisMonster = reinterpret_cast<CMonster*>(this);
 			if(thisMonster != NULL)
+			{
 				thisMonster->DoAi(thisMonster->MonAI, 4);
+				thisMonster->DeathDelayTimer = clock();
+			}
 		}
 
-        //LMA: test for quest hack (stackable).
-        #ifdef QHACK
-        if(!is_already_dead && Enemy->die_quest!=0 && Enemy->IsMonster() && IsPlayer())
-        {
-            QuestKill(Enemy->die_quest);
-        }
-        #endif
-        //LMA END
 
-        //LMA: TESTDEATH :: We try to force the DEATH
-        //ADDDWORD   ( pak, Enemy->Stats->MaxHP );
         ADDDWORD   ( pak, hitpower );
 
-        //Logs.
-        /*if(IsPlayer()&&Enemy->IsPlayer())
-        {
-            CPlayer* plkilled=(CPlayer*) Enemy;
-            CPlayer* plkiller=(CPlayer*) this;
-            Log(MSG_INFO,"NA CID %i (%s) killed %i (%s) (NORMAL_ATTACK).",clientid,plkiller->CharInfo->charname,Enemy->clientid,plkilled->CharInfo->charname);
-        }
-        else
-        {
-            Log(MSG_INFO,"NA CID %i killed %i (NORMAL_ATTACK).",clientid,Enemy->clientid);
-        }*/
 
         CDrop* thisdrop = NULL;
         //Log(MSG_WARNING,"Dead, critical %i",critical);
@@ -547,12 +540,12 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
                 monster->DeathDelayTimer = clock();
             }
             int nb_drops = Stats->itemdroprate + GServer->Config.DROP_RATE;
-            if (IsPlayer())
-            {
-                CPlayer* plkiller=(CPlayer*) this;
-                nb_drops = plkiller->bonusddrop;
+            //if (IsPlayer())
+            //{
+            //    CPlayer* plkiller=(CPlayer*) this;
+            //    nb_drops = plkiller->bonusddrop;
                 //Log(MSG_INFO,"Drop time, there should be %i drops",nb_drops);
-            }
+            //}
 
             //No drop if already dead and drop done.
             if(Enemy->drop_dead)
@@ -560,7 +553,6 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
                 //Log(MSG_WARNING,"Trying to make a monster (CID %u, type %u) drop again but already did.",Enemy->clientid,Enemy->char_montype);
                 nb_drops=0;
             }
-			//nb_drops = 3;	//PY: drops code testing
             for (int k=0;k<nb_drops;k++)
             {
                 thisdrop = Enemy->GetDrop( );
@@ -581,8 +573,8 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
         //LMA: test
         //OnEnemyDie( Enemy );
         ClearBattle(Battle);
-        if(!is_already_dead)
-            TakeExp(Enemy);
+        //if(!is_already_dead)
+        //    TakeExp(Enemy);
         //end of test.
         //Log(MSG_WARNING,"End of dead packet",);
 
@@ -1348,14 +1340,14 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
     bool is_already_dead=Enemy->IsDead();
 
     //We Check if The Skill need a Bow, Gun, Launcher or Crossbow and reduce the number of Arrow, Bullet or Canon the player have by 1 (Client is Buged)
-    bool need_arrows=false;
-    if(skill->weapon[0]==BOW || skill->weapon[0] == GUN || skill->weapon[0] == LAUNCHER || skill->weapon[0] == CROSSBOW)
+    bool need_arrows = false;
+    if(skill->weapon[0] == BOW || skill->weapon[0] == GUN || skill->weapon[0] == LAUNCHER || skill->weapon[0] == CROSSBOW)
     {
-        need_arrows=true;
+        need_arrows = true;
     }
-    if(skill->weapon[1]==BOW || skill->weapon[1] == GUN || skill->weapon[1] == LAUNCHER || skill->weapon[1] == CROSSBOW)
+    if(skill->weapon[1] == BOW || skill->weapon[1] == GUN || skill->weapon[1] == LAUNCHER || skill->weapon[1] == CROSSBOW)
     {
-        need_arrows=true;
+        need_arrows = true;
     }
     if (need_arrows)
     {
@@ -1366,7 +1358,7 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
     Enemy->reduceItemsLifeSpan(true);
 
     //Skill power calculations LMA/Tomiz : New Way
-    long int skillpower=0;
+    long int skillpower = 0;
     long int level_diff = Stats->Level - Enemy->Stats->Level;
 
     //LMA: fix by will1023631
@@ -1383,7 +1375,7 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
 
     }*/
 
-    if(Enemy->IsMonster() && skill->formula !=0)
+    if(Enemy->IsMonster() && skill->formula != 0)
     {
         if(level_diff >= 5)
         {
@@ -1391,7 +1383,7 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
         }
         else if (level_diff < 5 && level_diff > 0)
         {
-            skillpower += Stats->Attack_Power - Stats->Attack_Power*(level_diff / 5);
+            skillpower += Stats->Attack_Power - Stats->Attack_Power * (level_diff / 5);
         }
         else if (level_diff <= 0)
         {
@@ -1414,26 +1406,26 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
     {
         case 1://Weapon type dmg
         {
-            skillpower+=skill->atkpower +(long int)floor((double)GetSen( )/2);
-            skillpower+=skillpower*GetSen( )/10000;
-            skillpower-=skillpower*Stats->Defense / 10000;
-            skillpower-= Stats->Defense * 5 / 100;
+            skillpower += skill->atkpower +(long int)floor((double)GetSen( )/2);
+            skillpower += skillpower  *GetSen( ) / 10000;
+            skillpower -= skillpower * Stats->Defense / 10000;
+            skillpower -= Stats->Defense * 5 / 100;
             Log(MSG_INFO,"%i cast Weapon Dmg Skill with %i sen, Attack power %u, skillpower %li, Deff %u, level diff %li, to %i",clientid,GetSen( ),skill->atkpower,skillpower,Enemy->Stats->Defense,level_diff,Enemy->clientid);
         }
         break;
         case 2://Magical type dmg
         {
-            skillpower+=skill->atkpower +(long int)floor((double)GetInt( )/2);
-            skillpower+=skillpower*GetInt( )/10000;
-            skillpower-=skillpower*Stats->Magic_Defense / 10000;
-            skillpower-= Stats->Magic_Defense * 5 / 100;
+            skillpower += skill->atkpower +(long int)floor((double)GetInt( )/2);
+            skillpower += skillpower*GetInt( ) / 10000;
+            skillpower -= skillpower*Stats->Magic_Defense / 10000;
+            skillpower -= Stats->Magic_Defense * 5 / 100;
             Log(MSG_INFO,"%i cast Magical Dmg Skill with %i int, Attack power %u, skillpower %li, MDeff %u, level diff %li, to %i",clientid,GetInt( ),skill->atkpower,skillpower,Enemy->Stats->Magic_Defense,level_diff,Enemy->clientid);
         }
         break;
         default:
         {
             skillpower += 5;
-            Log(MSG_INFO,"%i cast Unknow Formula Skill (%i), Attack power %u, skillpower %li, Deff %u,MDeff %u, level diff %li, to %i",clientid,skill->formula,skill->atkpower,skillpower,Enemy->Stats->Defense,Enemy->Stats->Magic_Defense,level_diff,Enemy->clientid);
+            Log(MSG_INFO,"%i cast Unknown Formula Skill (%i), Attack power %u, skillpower %li, Deff %u,MDeff %u, level diff %li, to %i",clientid,skill->formula,skill->atkpower,skillpower,Enemy->Stats->Defense,Enemy->Stats->Magic_Defense,level_diff,Enemy->clientid);
         }
         break;
     }
@@ -1444,13 +1436,13 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
 
     bool bflag = false;
     Enemy->OnBeAttacked( this );
-    if(skillpower<=0) skillpower = 0;
+    if(skillpower <= 0) skillpower = 0;
     if(IsPlayer())//Add Dmg
     {
         if( Stats->ExtraDamage_add != 0)
         {
             //LMA: ED, Devilking / Arnold
-            long int hitsave=skillpower;
+            long int hitsave = skillpower;
             skillpower += ((skillpower * Stats->ExtraDamage_add) / 100);
             Log(MSG_INFO,"ExtraDmg Skill atk: before %i, after %i (ED: %i)",hitsave,skillpower,Stats->ExtraDamage_add);
         }

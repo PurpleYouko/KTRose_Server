@@ -761,6 +761,7 @@ bool CPlayer::loaddata( )
     #endif
     //LMA: end
 	Log( MSG_WARNING, "End of load sequence. User '%s' now has ID: %i and Str: %i", CharInfo->charname,CharInfo->charid,Attr->Str);
+	
 	return true;
 }
 
@@ -1076,6 +1077,8 @@ void CPlayer::savedata( )
         GServer->DB->QExecute("UPDATE characters SET unionid=%i,union1points=%i,union2points=%i,union3points=%i,union4points=%i,union5points=%i,union6points=%i,union7points=%i,union8points=%i,union9points=%i,union10points=%i WHERE char_name='%s'",
                     CharInfo->unionvar[0], CharInfo->unionvar[1],CharInfo->unionvar[2], CharInfo->unionvar[3], CharInfo->unionvar[4], CharInfo->unionvar[5], CharInfo->unionvar[6], CharInfo->unionvar[7], CharInfo->unionvar[8], CharInfo->unionvar[9], CharInfo->unionvar[10], 
 					CharInfo->charname );
+
+		GServer->DB->QExecute("UPDATE characters SET quickbar='%s' WHERE char_name='%s'",quick, CharInfo->charname );
 
 		//Log(MSG_INFO, "Saved unionvar data for char '%s' ", CharInfo->charname );
 

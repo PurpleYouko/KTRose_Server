@@ -22,13 +22,15 @@
 // Written by Brett19
 #include "worldserver.h"
 
-struct CSTBData {
+struct CSTBData 
+{
 	unsigned rowcount;
 	unsigned fieldcount;
 	int** rows;
 };
 
-struct CSTBDataChar {
+struct CSTBDataChar 
+{
 	unsigned rowcount;
 	unsigned fieldcount;
 	unsigned long** rows;
@@ -39,8 +41,5 @@ void STBFreeData( CSTBData* data );
 int STBStoreDataChar( const char* filename, CSTBDataChar* data ); //LMA: returning unsigned long
 void STBFreeDataChar( CSTBDataChar* data );
 
-//LMA: test for quest hack (stackable).
-#ifdef QHACK
+
 int STBStoreDataNPC( const char* filename, CSTBDataChar* data ); //LMA: returning unsigned long
-#endif
-//LMA: end

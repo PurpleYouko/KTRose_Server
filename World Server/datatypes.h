@@ -559,6 +559,7 @@ struct CUseData
     UINT cooldown_type;  //LMA: cooldown type.
     UINT cooldown;  //LMA: cooldown.
     UINT STLId;
+	UINT breakid;			//PY Break ID for chests and stuff
 };
 
 //LMA: QuestItemData
@@ -601,25 +602,26 @@ struct CNPCData {
   	UINT specialtab;
     float atkdistance;
     UINT aggresive;
-    UINT helpless;  //LMA: doesn't fight back when attacked.
+    UINT helpless;		//LMA: doesn't fight back when attacked.
     UINT shp;
+	UINT boss;			//Is the monster a boss or not? used in drops, boss fights and Exp rewards
     UINT dialogid;
     UINT eventid;
-    UINT askills[4];   //Attack skills
-    UINT bskills[4];   //self buff skills
-    UINT dskills[4];   //debuff skills
-    UINT sigskill;     //signature
-    clock_t lastskill; //last skill time
-    UINT delayskill;   //delay between two skills
-    UINT side;  //hidden
-    UINT sidechance;  //hidden
-    UINT refNPC;    //LMA: AIP?
-    UINT STLId; //LMA: STL ID
+    UINT askills[4];	//Attack skills
+    UINT bskills[4];	//self buff skills
+    UINT dskills[4];	//debuff skills
+    UINT sigskill;		//signature
+    clock_t lastskill;	//last skill time
+    UINT delayskill;	//delay between two skills
+    UINT side;			//hidden
+    UINT sidechance;	//hidden
+    UINT refNPC;		//LMA: AIP?
+    UINT STLId;			//LMA: STL ID
 
     //LMA: test for quest hack (stackable).
-    #ifdef QHACK
+    //#ifdef QHACK
     dword die_quest;
-    #endif
+    //#endif
     dword _EntityType;
 };
 
@@ -894,7 +896,7 @@ struct CSkills
     UINT weapon[5];
     UINT rskill[3];
     UINT lskill[3];
-    UINT c_class[4];
+    UINT c_class;
     UINT req[2]; // New
     UINT reqam[2]; // New
     UINT zuly;   // New
@@ -915,6 +917,7 @@ struct CSkills
     UINT svalue1;
     UINT gm_aoe;
     UINT STLId;
+	UINT ZulyLevelupCost;
 };
 
 //LMA: Grade structure.
@@ -1417,11 +1420,16 @@ struct CBreakList
     UINT amount_min[20];
     UINT amount_max[20];
     UINT prob[20];
+	long minChance[20];
+	long maxChance[20];
     //UINT numToGive;
     //UINT total;
     UINT reward_min;
     UINT reward_max;
     int nb_reward;
+	UINT TotalChance;
+	UINT minDis;
+	UINT maxDis;
 };
 
 // Quests (qsd)

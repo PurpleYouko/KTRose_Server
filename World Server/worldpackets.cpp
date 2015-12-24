@@ -377,7 +377,7 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
 	ADDDWORD   ( pak, 0x87654321 );
 	ADDDWORD   ( pak, 0x00000000 );
 	thisclient->client->SendPacket( &pak );
-    thisclient->SetStats( );
+    
     pakPlayer(thisclient);
     pakInventory(thisclient);
     pakQuestData(thisclient);
@@ -396,6 +396,16 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
 	//SendSysMsg( thisclient, "Open Source Rose Online Private Server" );
 
 	thisclient->SetStats( );
+	//PY send client all the cmbat stats through the new system added to the client
+	RESETPACKET	( pak, 0x7ed );
+	ADDWORD		( pak, thisclient->Stats->Attack_Power );
+	ADDWORD		( pak, thisclient->Stats->Defense );
+	ADDWORD		( pak, thisclient->Stats->Accury );
+	ADDWORD		( pak, thisclient->Stats->Dodge );
+	ADDWORD		( pak, thisclient->Stats->Magic_Defense );
+	ADDWORD		( pak, thisclient->Stats->Critical );
+	SendToVisible( &pak, thisclient );
+
 	return true;
 }
 
@@ -410,22 +420,45 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 		return false;
 	}
 
-	if(thisclient->Stats->HP<=0)
-        thisclient->Stats->HP=10*thisclient->GetMaxHP( )/100;
+	if(thisclient->Stats->HP <= 0)
+        thisclient->Stats->HP = 10 * thisclient->GetMaxHP( )/100;
 
 	Log( MSG_INFO, "User '%s'(#%i) assigned id #%i", thisclient->Session->username, thisclient->Session->userid, thisclient->clientid );
     if( thisclient->Party->party )
     {
-        BEGINPACKET( pak, 0x7d5 );
-        ADDDWORD   ( pak, thisclient->CharInfo->charid );
-        ADDWORD    ( pak, thisclient->clientid );
-        ADDWORD    ( pak, thisclient->GetMaxHP( ) );
-        ADDWORD    ( pak, thisclient->Stats->HP );
-        //ADDDWORD   ( pak, 0x01000000 );//Tomiz: Was not commented before
-        ADDDWORD   ( pak, GServer->BuildBuffs( thisclient ));//Tomiz : Buff Data
-        //ADDDWORD   ( pak, 0x0000000f );//Tomiz: Was not commented before
-        ADDDWORD   ( pak, 0x1f40008c );//Tomiz
-        ADDWORD    ( pak, 0x1388 );
+        /// send party details
+		//receiving structure
+		/*
+		struct tag_PARTY_MEMBER // John sent by the server
+		{	
+			DWORD	m_dwUserTAG;
+			WORD	m_wObjectIDX;
+			short	m_nMaxHP;
+			short	m_nHP;
+			DWORD	m_dwStatusFALG;
+
+			short	m_nCON;						// BYTE	m_btCON; //Increasing the maximum range of 300 stats as of 2004. 7.21
+
+			BYTE	m_btRecoverHP;				// item_recover_hp + passive_recover_hp
+			BYTE	m_btRecoverMP;				// item_recover_mp + passive_recover_mp
+
+			short	m_nSTAMINA;
+
+			//char	m_szCharName[];				// ** PARTY_MEMBER_ADD Only when the value contains
+		} ;
+		*/
+		BEGINPACKET( pak, 0x7d5 );
+        ADDDWORD    ( pak, thisclient->CharInfo->charid );
+        ADDWORD     ( pak, thisclient->clientid );
+        ADDWORD     ( pak, thisclient->GetMaxHP( ) );
+        ADDWORD     ( pak, thisclient->Stats->HP );
+        ADDDWORD    ( pak, GServer->BuildBuffs( thisclient ));	//Tomiz : Buff Data
+        //PY: should be a short and two bytes here. Player's CON followed by HP recovery rate and MP recovery rate. 
+		//TODO: To be investigated and fixed later
+		ADDDWORD    ( pak, 0x1f40008c );//Tomiz
+		//PY: should be stamina so what's this 0x1388 crap. 0x1388 is equal to 5000 decimal so this is max stamina instead of Actual stamina
+        //ADDWORD    ( pak, 0x1388 );
+		ADDWORD		( pak, thisclient->CharInfo->stamina );
         thisclient->Party->party->SendToMembers( &pak, thisclient );
     }
 
@@ -562,22 +595,16 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 	RESETPACKET(pak, 0x782 );
 	ADDWORD    ( pak, thisclient->clientid );
 	ADDBYTE    ( pak, thisclient->Status->Stance );
-
-	//LMA: Base Speed.
-	//ADDWORD    ( pak, thisclient->Stats->Move_Speed );
-	ADDWORD    ( pak, thisclient->Stats->Base_Speed);
+	ADDWORD    ( pak, thisclient->Stats->Move_Speed );
 
 	SendToVisible( &pak, thisclient );
-
-	//Log(MSG_INFO,"Pak Player %s, stance %i base move_speed %i",thisclient->CharInfo->charname,thisclient->Status->Stance,thisclient->Stats->Base_Speed);
-
-
+	
     thisclient->CleanPlayerVector( );
 	thisclient->Session->inGame = true;
-	thisclient->firstlogin=clock();    //LMA for fairy
+	thisclient->firstlogin = clock();    //LMA for fairy
 
 	//LMA: In some special cases, we have to warp the guy again...
-	if(thisclient->map_warp_zone!=0&&thisclient->Warp_Zone.x!=0&&thisclient->Warp_Zone.y!=0)
+	if(thisclient->map_warp_zone != 0 && thisclient->Warp_Zone.x != 0 && thisclient->Warp_Zone.y != 0)
 	{
 	    CMap* mapWarp = MapList.Index[thisclient->map_warp_zone];
 	    mapWarp->TeleportPlayer(thisclient,thisclient->Warp_Zone);
@@ -625,9 +652,9 @@ bool CWorldServer::pakMoveChar( CPlayer* thisclient, CPacket* P )
     {
         if(!thisclient->Status->CanRun)
         {
-            thisclient->Status->Stance=WALKING;
-            thisclient->Stats->Base_Speed=thisclient->GetMoveSpeed();
-            thisclient->Stats->Move_Speed=thisclient->Stats->Base_Speed;
+            thisclient->Status->Stance = WALKING;
+            thisclient->Stats->Base_Speed = thisclient->GetMoveSpeed();
+            thisclient->Stats->Move_Speed = thisclient->Stats->Base_Speed;
         }
 
     }
@@ -1390,18 +1417,7 @@ bool CWorldServer::pakChangeEquip( CPlayer* thisclient, CPacket* P )
 	thisclient->items[destslot] = tmpitm;
 	thisclient->UpdateInventory( srcslot, destslot );
 
-    //LMA: test.
-    //Log(MSG_INFO,"Item Srcslot (after UV) %i, %i::%i",srcslot,thisclient->items[srcslot].itemtype,thisclient->items[srcslot].itemnum);
-
-	BEGINPACKET( pak, 0x7a5 );
-	ADDWORD    ( pak, thisclient->clientid );
-	ADDWORD    ( pak, srcslot );
-	ADDWORD    ( pak, thisclient->items[srcslot].itemnum );
-	ADDWORD    ( pak, BuildItemRefine( thisclient->items[srcslot] ) );
-	ADDWORD    ( pak, thisclient->Stats->Move_Speed );
-	SendToVisible( &pak, thisclient );
-
-	//LMA: narose sends change a new way sometimes...
+    //LMA: narose sends change a new way sometimes...
     if (destslot<10)
     {
         BEGINPACKET( pak, 0x7a5 );
@@ -1445,7 +1461,7 @@ bool CWorldServer::pakChangeEquip( CPlayer* thisclient, CPacket* P )
                     thisclient->items[newslot] = thisclient->items[8];
                     ClearItem( thisclient->items[8] );
                     thisclient->UpdateInventory( newslot, 8 );
-                    RESETPACKET( pak, 0x7a5 );
+                    BEGINPACKET( pak, 0x7a5 );
                     ADDWORD    ( pak, thisclient->clientid );
                     ADDWORD    ( pak, 8 );
                     ADDWORD    ( pak, thisclient->items[8].itemnum );
@@ -1457,7 +1473,30 @@ bool CWorldServer::pakChangeEquip( CPlayer* thisclient, CPacket* P )
             break;
         }
     }
+	//PY: Moved 7a5 packet down here so that it is sent AFTER calculating stats
     thisclient->SetStats( );
+
+	BEGINPACKET	( pak, 0x7a5 );
+	ADDWORD		( pak, thisclient->clientid );
+	ADDWORD		( pak, srcslot );
+	ADDWORD		( pak, thisclient->items[srcslot].itemnum );
+	ADDWORD    ( pak, BuildItemRefine( thisclient->items[srcslot] ) );		//PY: This seems wrong. The client calls itemnum then the following 3 Shorts
+	//ADDWORD		( pak, thisclient->items[srcslot].stats );		//stats and gem are the same thing
+	//ADDWORD		( pak, thisclient->items[srcslot].socketed);
+	//ADDWORD		( pak, thisclient->items[srcslot].refine );
+	//Now movespeed
+	ADDWORD		( pak, thisclient->Stats->Move_Speed );
+	SendToVisible( &pak, thisclient );
+
+	//PY: now we send the new 0x07ed packet containing all the stats Now sent in the SetStats() function directly
+	//RESETPACKET	( pak, 0x7ed );
+	//ADDWORD		( pak, thisclient->Stats->Attack_Power );
+	//ADDWORD		( pak, thisclient->Stats->Defense );
+	//ADDWORD		( pak, thisclient->Stats->Accury );
+	//ADDWORD		( pak, thisclient->Stats->Dodge );
+	//ADDWORD		( pak, thisclient->Stats->Magic_Defense );
+	//ADDWORD		( pak, thisclient->Stats->Critical );
+	//SendToVisible( &pak, thisclient );
 	return true;
 }
 
@@ -1523,7 +1562,7 @@ bool CWorldServer::pakChangeCart( CPlayer* thisclient, CPacket* P )
 
     //LMA: Getting good mspeed value for packet.
     thisclient->UpdateInventory( srcslot, destslot );
-    unsigned int lma_speed=thisclient->GetCartSpeed();
+    unsigned int lma_speed = thisclient->GetCartSpeed();
     thisclient->Stats->Move_Speed = thisclient->GetMoveSpeed( );
 
 	BEGINPACKET( pak, 0x7ca );
@@ -1541,7 +1580,7 @@ bool CWorldServer::pakChangeCart( CPlayer* thisclient, CPacket* P )
 	ADDWORD    ( pak,0);
 
 	//LMA: change?
-	if(thisclient->Status->Stance==DRIVING)
+	if(thisclient->Status->Stance == DRIVING)
 	{
 	    ADDWORD    ( pak, thisclient->Stats->Move_Speed );
 	    //ADDWORD    ( pak, thisclient->Stats->Base_Speed );
@@ -2314,7 +2353,9 @@ bool CWorldServer::pakChatUnion ( CPlayer* thisclient, CPacket* P )
 	return true;
 }
 
+// PY: This packet structure doesn't exist in 137 client. We don't have a trade channel. Besides 0x07ed is used for something else
 // LMA: Trade Chat.
+/*
 bool CWorldServer::pakChatTrade ( CPlayer* thisclient, CPacket* P )
 {
     //LMA: to avoid chat trade spamming (1 second between each reset and 5 chat per second max).
@@ -2357,6 +2398,7 @@ bool CWorldServer::pakChatTrade ( CPlayer* thisclient, CPacket* P )
 
 	return true;
 }
+*/
 
 // Return to Char Select
 bool CWorldServer::pakCharSelect ( CPlayer* thisclient, CPacket* P )
@@ -3833,119 +3875,148 @@ void CWorldServer::pakQuestData( CPlayer *thisclient )
 }
 
 // Handle quest triggers
+bool CWorldServer::pakQuestTrigger( CPlayer* thisclient, CPacket* P )
+{
+	// action 1 = send text
+	// action 2 = delete quest
+	// action 3 = get quest
+	// action 4 = unknown
+	// action 5 = success
+	byte action = GETBYTE((*P),0);
+	byte slot = GETBYTE((*P),1);
+	dword hash = GETDWORD((*P),2);
+
+	if( thisclient->questdebug ) SendPM( thisclient, "Event Trigger recieved [%08x] Action %i", hash, action);
+	if (action == 2)
+	{
+		if( thisclient->questdebug ) SendPM( thisclient, "Delete quest - Slot %i", slot);
+		for (dword i = slot; i < 9; i++) thisclient->quest.quests[i] = thisclient->quest.quests[i+1];
+		thisclient->quest.quests[9].Clear();
+		
+		BEGINPACKET ( pak, 0x730);
+		ADDBYTE ( pak, 0x03);
+		ADDBYTE ( pak, slot);
+		ADDDWORD( pak, hash);
+		thisclient->client->SendPacket(&pak);
+		return true;
+	}
+	if (action != 3) return false;
+	int success = thisclient->ExecuteQuestTrigger(hash);
+
+	BEGINPACKET ( pak, 0x730);
+	ADDBYTE ( pak, success);
+	ADDBYTE ( pak, 0);
+	ADDDWORD( pak, hash);
+	thisclient->client->SendPacket(&pak);
+	return true;
+}
+// Handle quest triggers
+// PY: This is crap so we won't use it. Keeps returning hack failure to valid quests
+// Switching to pakQuestTrigger from KTRose. Even the name makes more sense
 bool CWorldServer::pakGiveQuest( CPlayer* thisclient, CPacket* P )
 {
-  byte action = GETBYTE((*P),0);
-  byte slot = GETBYTE((*P),1);
-  dword hash = GETDWORD((*P),2);
+	byte action = GETBYTE((*P),0);
+	byte slot = GETBYTE((*P),1);
+	dword hash = GETDWORD((*P),2);
 
 
-  if( thisclient->questdebug )
-  {
-      SendPM( thisclient, "Event Trigger [%08x] Action %i", hash, action);
-  }
+	if( thisclient->questdebug )
+	{
+		SendPM( thisclient, "Event Trigger [%08x] Action %i", hash, action);
+	}
 
-  LogDebugPriority(3);
-  LogDebug("PakGiveQuest %s:: %u ([%08x]), action %i slot %i",thisclient->CharInfo->charname,hash,hash,action,slot);
-  Log(MSG_INFO,"PakGiveQuest %s:: %u ([%08x]), action %i slot %i",thisclient->CharInfo->charname,hash,hash,action,slot);
-  LogDebugPriority(4);
+	LogDebugPriority(3);
+	LogDebug("PakGiveQuest %s:: %u ([%08x]), action %i slot %i",thisclient->CharInfo->charname,hash,hash,action,slot);
+	Log(MSG_INFO,"PakGiveQuest %s:: %u ([%08x]), action %i slot %i",thisclient->CharInfo->charname,hash,hash,action,slot);
+	LogDebugPriority(4);
 
-  if (action == 2)
-  {
-    if( thisclient->questdebug ) SendPM( thisclient, "Delete quest - Slot %i", slot);
-    for (dword i = slot; i < 9; i++) thisclient->quest.quests[i] = thisclient->quest.quests[i+1];
-    thisclient->quest.quests[9].Clear();
-    BEGINPACKET ( pak, 0x730);
-    ADDBYTE ( pak, 0x03);
-    ADDBYTE ( pak, slot);
-    ADDDWORD( pak, hash);
-    thisclient->client->SendPacket(&pak);
+	if (action == 2)
+	{
+		if( thisclient->questdebug ) SendPM( thisclient, "Delete quest - Slot %i", slot);
+		for (dword i = slot; i < 9; i++) thisclient->quest.quests[i] = thisclient->quest.quests[i+1];
+		thisclient->quest.quests[9].Clear();
+		BEGINPACKET ( pak, 0x730);
+		ADDBYTE ( pak, 0x03);
+		ADDBYTE ( pak, slot);
+		ADDDWORD( pak, hash);
+		thisclient->client->SendPacket(&pak);
 
-      LogDebugPriority(3);
-      LogDebug("PakGiveQuest %s:: %u ([%08x]), action %i slot %i delete quest",thisclient->CharInfo->charname,hash,hash,action,slot);
-      Log(MSG_INFO,"PakGiveQuest %s:: %u ([%08x]), action %i slot %i delete quest",thisclient->CharInfo->charname,hash,hash,action,slot);
-      LogDebugPriority(4);
-    return true;
-  }
+		  LogDebugPriority(3);
+		  LogDebug("PakGiveQuest %s:: %u ([%08x]), action %i slot %i delete quest",thisclient->CharInfo->charname,hash,hash,action,slot);
+		  Log(MSG_INFO,"PakGiveQuest %s:: %u ([%08x]), action %i slot %i delete quest",thisclient->CharInfo->charname,hash,hash,action,slot);
+		  LogDebugPriority(4);
+		return true;
+	}
+	if (action != 3)
+	{
+		Log(MSG_INFO,"action not 3, %i",action);
+		return false;
+	}
+	//LMA: TEST HACK QUEST
+	#ifdef QHACK
+	bool is_ok=false;
+	//We test if a quest is a stackable one and then if the player is waiting for one of these...
+	//Is the quest in the "die monster" list...
+	if (MapStackQuest.find(hash) != MapStackQuest.end())
+	{
+		Log(MSG_WARNING,"Player %s sent special questid %u",thisclient->CharInfo->charname,hash);
+		clock_t mytime = clock();
+		for (int k=0;k<10;k++)
+		{
+			if(thisclient->arr_questid[k].questid != hash)
+			{
+				continue;
+			}
+			//checking the time now (1/2 second between death packet and quest packet, max).
+			if (thisclient->arr_questid[k].die_time >= mytime)
+			{
+				thisclient->arr_questid[k].questid = 0;
+				is_ok = true;
+				Log(MSG_WARNING,"Player %s had a valid questid %u waiting in slot %i",thisclient->CharInfo->charname,hash,k);
+				break;
+			}
+		}
+		if(!is_ok)
+		{
+			Log(MSG_HACK,"Player %s tried to use stackable questid %u but didn't expect it.",thisclient->CharInfo->charname,hash);
+			for (int k=0;k<10;k++)
+			{
+				if(thisclient->arr_questid[k].questid==0)
+				{
+					continue;
+				}
+				Log(MSG_WARNING,"qid for %s[%i]=%u (time %u), now=%u",thisclient->CharInfo->charname,k,thisclient->arr_questid[k].questid,thisclient->arr_questid[k].die_time,mytime);
+			}
+			int success = QUEST_FAILURE;    //sending failure to the client.
+			BEGINPACKET ( pak, 0x730);
+			ADDBYTE ( pak, success);
+			ADDBYTE ( pak, 0);
+			ADDDWORD( pak, hash);
+			thisclient->client->SendPacket(&pak);
+			return true;
+		}
+	}
 
-  if (action != 3)
-  {
-      Log(MSG_INFO,"action not 3, %i",action);
-      return false;
-  }
+	#endif
+	//LMA END.
 
-  //LMA: TEST HACK QUEST
-  #ifdef QHACK
-  bool is_ok=false;
-  //We test if a quest is a stackable one and then if the player is waiting for one of these...
-  //Is the quest in the "die monster" list...
-  if (MapStackQuest.find(hash)!=MapStackQuest.end())
-  {
-    Log(MSG_WARNING,"Player %s sent special questid %u",thisclient->CharInfo->charname,hash);
-    clock_t mytime=clock();
+	int success = thisclient->ExecuteQuestTrigger(hash);
 
-    for (int k=0;k<10;k++)
-    {
-        if(thisclient->arr_questid[k].questid!=hash)
-        {
-          continue;
-        }
+	BEGINPACKET ( pak, 0x730);
+	ADDBYTE ( pak, success);
+	ADDBYTE ( pak, 0);
+	ADDDWORD( pak, hash);
+	thisclient->client->SendPacket(&pak);
 
-        //checking the time now (1/2 second between death packet and quest packet, max).
-        if (thisclient->arr_questid[k].die_time>=mytime)
-        {
-            thisclient->arr_questid[k].questid=0;
-            is_ok=true;
-            Log(MSG_WARNING,"Player %s had a valid questid %u waiting in slot %i",thisclient->CharInfo->charname,hash,k);
-            break;
-        }
+	Log(MSG_INFO,"PakGiveQuest %s:: %u end",thisclient->CharInfo->charname,hash);
 
-    }
-
-    if(!is_ok)
-    {
-        Log(MSG_HACK,"Player %s tried to use stackable questid %u but didn't expect it.",thisclient->CharInfo->charname,hash);
-        for (int k=0;k<10;k++)
-        {
-            if(thisclient->arr_questid[k].questid==0)
-            {
-                continue;
-            }
-
-            Log(MSG_WARNING,"qid for %s[%i]=%u (time %u), now=%u",thisclient->CharInfo->charname,k,thisclient->arr_questid[k].questid,thisclient->arr_questid[k].die_time,mytime);
-        }
-
-        int success=QUEST_FAILURE;    //sending failure to the client.
-        BEGINPACKET ( pak, 0x730);
-        ADDBYTE ( pak, success);
-        ADDBYTE ( pak, 0);
-        ADDDWORD( pak, hash);
-        thisclient->client->SendPacket(&pak);
-        return true;
-    }
-
-  }
-
-  #endif
-  //LMA END.
-
-  int success = thisclient->ExecuteQuestTrigger(hash);
-
-  BEGINPACKET ( pak, 0x730);
-  ADDBYTE ( pak, success);
-  ADDBYTE ( pak, 0);
-  ADDDWORD( pak, hash);
-  thisclient->client->SendPacket(&pak);
-
-  Log(MSG_INFO,"PakGiveQuest %s:: %u end",thisclient->CharInfo->charname,hash);
-
-  LogDebugPriority(3);
-  LogDebug("PakGiveQuest %s:: %u ([%08x]), action %i slot %i result %i",thisclient->CharInfo->charname,hash,hash,action,slot,success);
-  Log(MSG_INFO,"PakGiveQuest %s:: %u ([%08x]), action %i slot %i result %i",thisclient->CharInfo->charname,hash,hash,action,slot,success);
-  LogDebugPriority(4);
+	LogDebugPriority(3);
+	LogDebug("PakGiveQuest %s:: %u ([%08x]), action %i slot %i result %i",thisclient->CharInfo->charname,hash,hash,action,slot,success);
+	Log(MSG_INFO,"PakGiveQuest %s:: %u ([%08x]), action %i slot %i result %i",thisclient->CharInfo->charname,hash,hash,action,slot,success);
+	LogDebugPriority(4);
 
 
-  return true;
+	return true;
 }
 
 // Self skills
@@ -6276,7 +6347,7 @@ bool CWorldServer::pakCloseShop( CPlayer* thisclient, CPacket* P )
 // Modified item (put gem, refine, Drill )
 bool CWorldServer::pakModifiedItem( CPlayer* thisclient, CPacket* P )
 {
-    if(thisclient->Shop->open==true)
+    if(thisclient->Shop->open == true)
         return true;
     BYTE action = GETBYTE((*P),0);
     switch(action)
@@ -6339,13 +6410,13 @@ bool CWorldServer::pakModifiedItem( CPlayer* thisclient, CPacket* P )
             bool ischest=false;
 
             //Chests are only itemtype 10
-            if(thisclient->items[chestSlot].itemtype==10)
+            if(thisclient->items[chestSlot].itemtype == 10)
             {
-                ischest=true;
+                ischest = true;
                 thischest = GetChestByID(thisclient->items[chestSlot].itemnum);
-                if(thischest==NULL)
+                if(thischest == NULL)
                 {
-                    ischest=false;
+                    ischest = false;
                 }
 
             }
@@ -8146,22 +8217,23 @@ bool CWorldServer::GiveDasmItems( CPlayer* thisclient,UINT src)
         return false;
 
     //Rapid search.
-    bool is_ok=false;
-    int k=0;
-    bool is_failed=true;
-    bool not_found=true;
+    bool is_ok = false;
+    int k = 0;
+    bool is_failed = true;
+    bool not_found = true;
 
-    UINT breakid=GetBreakID(thisclient->items[src].itemnum,thisclient->items[src].itemtype);
-    if (breakid==0)
+    UINT breakid = GetBreakID(thisclient->items[src].itemnum,thisclient->items[src].itemtype);
+    if (breakid == 0)
     {
         //trying the old way...
+		Log(MSG_WARNING,"The breakid is Zero. Trying the old way");
         for(int i=0;i<maxBreak;i++)
         {
             if(thisclient->items[src].itemnum == BreakList[i]->itemnum && thisclient->items[src].itemtype == BreakList[i]->itemtype)
             {
                 breakid = i;
-                is_failed=false;
-                not_found=false;
+                is_failed = false;
+                not_found = false;
                 break;
             }
 
@@ -8170,30 +8242,27 @@ bool CWorldServer::GiveDasmItems( CPlayer* thisclient,UINT src)
     }
     else
     {
-        is_failed=false;
-        not_found=false;
+        is_failed = false;
+        not_found = false;
+		Log(MSG_WARNING,"The breakid returned is. %i",breakid);
     }
 
-    k=breakid;
+    k = breakid;
 
-   UINT totalprob = 0;
-   for(int i=0;i<BreakList[k]->nb_reward;i++)
-   {
-       totalprob += BreakList[k]->prob[i];
-   }
+	UINT totalprob = BreakList[k]->TotalChance;
 
-   if(totalprob==0)
-   {
-       is_failed=true;
-   }
+	if(totalprob == 0)
+	{
+		is_failed = true;
+	}
 
     //Handling failure!
     if(is_failed)
     {
-        return GiveDefaultDasm(thisclient,src,not_found,is_failed);
+        return GiveDefaultDasm(thisclient, src, not_found, is_failed);
     }
 
-    bool give_all=false;
+    bool give_all = false;
     CItemChests mybreak[4];
     int nb_items=0;
     UINT m[4];
@@ -8203,172 +8272,129 @@ bool CWorldServer::GiveDasmItems( CPlayer* thisclient,UINT src)
        m[kk]=99;
     }
 
+	
+
     //How many rewards for this break?
-    if (BreakList[k]->reward_min==BreakList[k]->reward_max&&BreakList[k]->reward_min==BreakList[k]->nb_reward)
+	// Needs to be from minDis to maxDis
+	int RandNum  = RandNumber(1, 100);
+	int MaxRewards = 4;					//Default 4 rewards (10%)
+	if(RandNum < 90) MaxRewards = 3;	//75 - 90. 15% chance of 3 rewards
+	if(RandNum < 75) MaxRewards = 2;	//50 - 75. 25% cahnce of 2 rewards
+	if(RandNum < 50) MaxRewards = 1;	//0 - 50. 50% chance of only one
+	
+	if( MaxRewards < 1 ) MaxRewards = 1;
+	if( MaxRewards > BreakList[k]->maxDis ) MaxRewards = BreakList[k]->maxDis;
+	if( MaxRewards > 4 ) MaxRewards = 4; //Some of them go up to 15 in the breaklist STB
+
+    //MaxRewards = 1;		//fixed it to 1 for tests
+    Log(MSG_WARNING,"Giving %i items from the break with id %i", MaxRewards, k);
+    for (int z=0;z<MaxRewards;z++)
     {
-        //Special break where all items are to be given.
-        nb_items=BreakList[k]->reward_min;
-        give_all=true;
-        if (nb_items>BreakList[k]->nb_reward)
+        //Now we find which sub-item to give
+		//This method does mean, however, that we can get multiple breaks on a single type out the other end
+		long ItemSelector = RandNumber(1, totalprob);
+		Log(MSG_DEBUG,"ItemSelector: %i. out of total %i", ItemSelector, totalprob);
+		long RunningTotal = 0;
+		int s = 0;
+		for(int i=0;i<BreakList[k]->maxDis;i++)	//Scans through the list to find which item we have selected
+		{
+			RunningTotal += (long)BreakList[k]->prob;
+			long Min = (long)BreakList[k]->minChance;
+			long Max = (long)BreakList[k]->maxChance;
+			if(ItemSelector > Min && ItemSelector < Max)		//We found one
+			{
+				s = i;
+				i = BreakList[k]->maxDis;		//maybe this will break out of the loop without changing s further. break; failed
+			}
+		}
+		
+		Log(MSG_DEBUG,"Item %i is number %i on the list. ID: %i. ", z+1, s+1, BreakList[k]->product[s]);
+		mybreak[z].item.itemnum = gi(BreakList[k]->product[s],1);
+        mybreak[z].item.itemtype = gi(BreakList[k]->product[s],0);
+        mybreak[z].item.socketed = false;
+        mybreak[z].item.appraised = true;
+        mybreak[z].item.lifespan = 100;
+        mybreak[z].item.durability = RandNumber(40,90);
+        mybreak[z].item.refine = 0;
+        mybreak[z].item.stats = 0;
+        mybreak[z].item.gem = 0;
+        mybreak[z].item.sp_value = 0;
+        mybreak[z].item.last_sp_value = 0;
+        mybreak[z].slot = 0;
+        mybreak[z].is_ok = true;
+
+        if(BreakList[k]->amount_min[s] != BreakList[k]->amount_max[s])
         {
-            Log(MSG_WARNING,"Not enough reward for the break %i, needed %i, had only %i",k,nb_items,BreakList[k]->nb_reward);
-            nb_items=BreakList[k]->nb_reward;
+            mybreak[z].item.count = RandNumber(BreakList[k]->amount_min[s],BreakList[k]->amount_max[s]-BreakList[k]->amount_min[s]+1);
         }
-
-    }
-    else
-    {
-        nb_items=RandNumber(BreakList[k]->reward_min,BreakList[k]->reward_max-BreakList[k]->reward_min+1);
-        if (nb_items<=0)
+        else
         {
-            nb_items=1;
+            mybreak[z].item.count = BreakList[k]->amount_max[s];
         }
-
+		
     }
 
-    if (nb_items>4)
-    {
-        Log(MSG_WARNING,"Too many items are to be given in the break %i, min=%i, max=%i",k,BreakList[k]->reward_min,BreakList[k]->reward_max);
-        nb_items=4;
-    }
-
-    if(give_all)
-    {
-        for (int no_reward=0;no_reward<nb_items;no_reward++)
-        {
-            mybreak[no_reward].item.itemnum = gi(BreakList[k]->product[no_reward],1);
-            mybreak[no_reward].item.itemtype = gi(BreakList[k]->product[no_reward],0);
-            mybreak[no_reward].item.socketed = false;
-            mybreak[no_reward].item.appraised = true;
-            mybreak[no_reward].item.lifespan = 100;
-            mybreak[no_reward].item.durability = RandNumber(40,50);
-            mybreak[no_reward].item.refine = 0;
-            mybreak[no_reward].item.stats = 0;
-            mybreak[no_reward].item.gem = 0;
-            mybreak[no_reward].item.sp_value=0;
-            mybreak[no_reward].item.last_sp_value=0;
-            mybreak[no_reward].slot=0;
-            mybreak[no_reward].is_ok=true;
-
-            if(BreakList[k]->amount_min[no_reward]!=BreakList[k]->amount_max[no_reward])
-            {
-                mybreak[no_reward].item.count = RandNumber(BreakList[k]->amount_min[no_reward],BreakList[k]->amount_max[no_reward]-BreakList[k]->amount_min[no_reward]+1);
-            }
-            else
-            {
-                mybreak[no_reward].item.count =BreakList[k]->amount_max[no_reward];
-            }
-
-        }
-
-    }
-    else
-    {
-        int no_reward=0;
-        while(no_reward<nb_items)
-       {
-           UINT rand = RandNumber(0,99999);
-           for(int i=0;i<BreakList[k]->nb_reward;i++)
-           {
-               if(rand < BreakList[k]->prob[i])
-               {
-                   m[no_reward] = i;
-                   break;
-               }
-               else
-               {
-                   rand -= BreakList[k]->prob[i];
-               }
-
-           }
-
-           if(m[no_reward]<20)
-           {
-                mybreak[no_reward].item.itemnum = gi(BreakList[k]->product[m[no_reward]],1);
-                mybreak[no_reward].item.itemtype = gi(BreakList[k]->product[m[no_reward]],0);
-                mybreak[no_reward].item.socketed = false;
-                mybreak[no_reward].item.appraised = true;
-                mybreak[no_reward].item.lifespan = 100;
-                mybreak[no_reward].item.durability = RandNumber(40,50);
-                mybreak[no_reward].item.refine = 0;
-                mybreak[no_reward].item.stats = 0;
-                mybreak[no_reward].item.gem = 0;
-                mybreak[no_reward].item.sp_value=0;
-                mybreak[no_reward].item.last_sp_value=0;
-                mybreak[no_reward].slot=0;
-                mybreak[no_reward].is_ok=true;
-
-                if(BreakList[k]->amount_min[m[no_reward]]!=BreakList[k]->amount_max[m[no_reward]])
-                {
-                    mybreak[no_reward].item.count = RandNumber(BreakList[k]->amount_min[m[no_reward]],BreakList[k]->amount_max[m[no_reward]]-BreakList[k]->amount_min[m[no_reward]]+1);
-                }
-                else
-                {
-                    mybreak[no_reward].item.count =BreakList[k]->amount_max[m[no_reward]];
-                }
-
-                no_reward++;
-           }
-
-       }
-
-
-    }
+	
 
     //Checking the slots.
-    int nb_ok=0;
-    for(int no_reward=0;no_reward<nb_items;no_reward++)
+    int nb_ok = 0;
+    for(int z=0;z<MaxRewards;z++)
     {
-        unsigned int tempslot = thisclient->AddItem(mybreak[no_reward].item);
+        unsigned int tempslot = thisclient->AddItem(mybreak[z].item);
         if (tempslot == 0xffff)
         {
-            Log(MSG_WARNING,"Can not give a reward to %s (not enough place for item %u*(%i::%i) )",thisclient->CharInfo->charname,mybreak[no_reward].item.count,mybreak[no_reward].item.itemtype,mybreak[no_reward].item.itemnum);
-            mybreak[no_reward].is_ok=false;
+            Log(MSG_WARNING,"Can not give a reward to %s (not enough place for item %u*(%i::%i) )",thisclient->CharInfo->charname,mybreak[z].item.count,mybreak[z].item.itemtype,mybreak[z].item.itemnum);
+            mybreak[z].is_ok = false;
         }
         else
         {
             nb_ok++;
-            mybreak[no_reward].slot=tempslot;
+            mybreak[z].slot = tempslot;
         }
 
     }
 
     //taking the broken item.
-  thisclient->items[src].count -= 1;
-  if( thisclient->items[src].count < 1)
-      ClearItem( thisclient->items[src] );
-  thisclient->UpdateInventory(src);
+	thisclient->items[src].count -= 1;
+	if( thisclient->items[src].count < 1)
+		ClearItem( thisclient->items[src] );
+	thisclient->UpdateInventory(src);
 
     //packet time.
-  BEGINPACKET( pak, 0x7bc );
-  ADDBYTE    ( pak, 0x07 );//disassemble success
-  ADDBYTE    ( pak, nb_ok + 1 );//number of items to follow
+	BEGINPACKET( pak, 0x7bc );
+	ADDBYTE    ( pak, 0x07 );			//disassemble success
+	ADDBYTE    ( pak, nb_ok + 1 );		//number of items to follow
+	//ADDBYTE    ( pak, nb_ok );		//number of items to follow
 
-    for(int no_reward=0;no_reward<nb_items;no_reward++)
+    for(int z=0;z<MaxRewards;z++)
     {
-        if(!mybreak[no_reward].is_ok)
+        if(!mybreak[z].is_ok)
         {
             continue;
         }
 
-        unsigned int tempslot = mybreak[no_reward].slot;
+        unsigned int tempslot = mybreak[z].slot;
         ADDBYTE (pak, tempslot);
-        ADDDWORD(pak, BuildItemHead(thisclient->items[tempslot]));
-        ADDDWORD(pak, BuildItemData(thisclient->items[tempslot]));
-        ADDDWORD( pak, 0x00000000 );
-        ADDWORD ( pak, 0x0000 );
+        //ADDDWORD(pak, BuildItemHead(thisclient->items[tempslot]));		//PY: this doesn't seem to be generating the right data. trying the following
+		ADDWORD ( pak, thisclient->items[tempslot].itemtype );
+		ADDWORD ( pak, thisclient->items[tempslot].itemnum );
+        //ADDDWORD(pak, BuildItemData(thisclient->items[tempslot]));
+		ADDBYTE ( pak, thisclient->items[tempslot].count );
+
+		//ADDDWORD( pak, 0x00000000 );
+        //ADDWORD ( pak, 0x0000 );
     }
 
-  ADDBYTE    ( pak, src );
-  ADDDWORD   ( pak, BuildItemHead( thisclient->items[src] ) );
-  ADDDWORD   ( pak, BuildItemData( thisclient->items[src] ) );
-  ADDWORD    ( pak, 0x0000);
-  ADDWORD    ( pak, 0x0000);
-  ADDWORD    ( pak, 0x0000);
-  thisclient->client->SendPacket( &pak );
-  //   end disassemble
+	ADDBYTE    ( pak, src );
+	ADDDWORD   ( pak, BuildItemHead( thisclient->items[src] ) );
+	//ADDDWORD   ( pak, BuildItemData( thisclient->items[src] ) );
+	ADDBYTE    ( pak, 0x0000);
+	//ADDWORD    ( pak, 0x0000);
+	//ADDWORD    ( pak, 0x0000);
+	thisclient->client->SendPacket( &pak );
+	//   end disassemble
 
-  return true;
+	return true;
 }
 
 

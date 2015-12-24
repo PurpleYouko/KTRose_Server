@@ -270,10 +270,11 @@ unsigned int CMonster::GetMaxHP( )
         MaxHP = MaxHP * ((unsigned long) thisnpc->level);
     }
 
-    if(MaxHP == 0)
-    {
-        MaxHP = (unsigned long) thisnpc->shp;
-    }
+    //PY: what is this shp rubbish? field 42 in the STB is height of flying monsters
+	//if(MaxHP == 0)
+    //{
+    //    MaxHP = (unsigned long) thisnpc->shp;		
+    //}
 
     return MaxHP;
 }
@@ -281,18 +282,17 @@ unsigned int CMonster::GetMaxHP( )
 //LMA: We for the maxHP and HP sometimes
 bool CMonster::ForceMaxHP( )
 {
-    unsigned int MaxHP = 0;
-    MaxHP = (unsigned int ) thisnpc->hp;
-    MaxHP = MaxHP * ((unsigned int) thisnpc->level);
+	unsigned MaxHP = (unsigned long ) thisnpc->MaxHP;
 
-    if(MaxHP==0)
-    {
-        MaxHP = (unsigned int) thisnpc->shp;
-    }
+    //PY: what is this shp rubbish? field 42 (shp) in the STB is height of flying monsters
+	//if(MaxHP==0)
+    //{
+    //    MaxHP = (unsigned int) thisnpc->shp;
+    //}
 
     if(MaxHP>MAXHPMOB)
     {
-        MaxHP=(unsigned int) MAXHPMOB;
+        MaxHP = (unsigned int) MAXHPMOB;
     }
 
     Stats->MaxHP=MaxHP;
@@ -343,12 +343,12 @@ unsigned int CMonster::GetZulyDropRate( )
 bool CMonster::SetStats(bool all)
 {
     if(thisnpc == NULL) return false;
-    Stats->Level = thisnpc->level;    
+    Stats->Level = thisnpc->level;					// PY: going to need to change this to allow for adjustable level monsters. thisnpc values are read directly from STB   
     Stats->Attack_Power = GetAttackPower( );
     Stats->Defense = GetDefense( );
     Stats->xprate = GetXPRate( );
     Stats->itemdroprate = GetItemDropRate( );
-    Stats->zulydroprate = GetZulyDropRate( );
+    //Stats->zulydroprate = GetZulyDropRate( );		//PY: pointless stat. It's always zero. Use thisnpc->money to get the value directly from the STB
     Stats->Attack_Speed = GetAttackSpeed( );
     Stats->Move_Speed = GetMoveSpeed( );
     Stats->Dodge = GetDodge( );

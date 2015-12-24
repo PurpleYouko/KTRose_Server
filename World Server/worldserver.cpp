@@ -736,12 +736,12 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
         case 0x0502: return pakCharDSClient     ( (CPlayer*)thisclient->player, P );
     	case 0x0505: return pakCSCharSelect     ( (CPlayer*)thisclient->player, P );
     	//case 0x0756: return true;//unknown
-    	case 0x0756: return pakChangeRespawn ( (CPlayer*)thisclient->player, P );
+    	case 0x0756: return pakChangeRespawn	( (CPlayer*)thisclient->player, P );
         case 0x0700: return pakPing             ( (CPlayer*)thisclient->player, P );
     	case 0x0707: return pakExit             ( (CPlayer*)thisclient->player, P );
     	case 0x070b: return pakDoIdentify       ( (CPlayer*)thisclient->player, P );
     	case 0x071c: return pakCharSelect       ( (CPlayer*)thisclient->player, P );
-    	case 0x0730: return pakGiveQuest        ( (CPlayer*)thisclient->player, P );
+    	case 0x0730: return pakQuestTrigger     ( (CPlayer*)thisclient->player, P );
     	case 0x0753: return pakDoID             ( (CPlayer*)thisclient->player, P );
     	case 0x0755: return pakUserDied         ( (CPlayer*)thisclient->player, P );
     	case 0x0762: return pakWeight           ( (CPlayer*)thisclient->player, P );
@@ -796,7 +796,7 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
     	case 0x07e0: return pakCreateClan       ( (CPlayer*)thisclient->player, P );
     	case 0x07e1: return pakClanManager      ( (CPlayer*)thisclient->player, P );
     	case 0x07eb: return pakPrintscreen      ( (CPlayer*)thisclient->player, P );
-    	case 0x07ed: return pakChatTrade        ( (CPlayer*)thisclient->player, P );    //LMA: Trade Chat
+    	//case 0x07ed: return pakChatTrade        ( (CPlayer*)thisclient->player, P );    //LMA: Trade Chat	 PY: This packet structure doesn't exist in 137 client
     	case 0x0808: return pakGameGuard        ( (CPlayer*)thisclient->player, P );
     	case 0x0821: return pakExpTC        ( (CPlayer*)thisclient->player, P );  //LMA: Bonus Time Coupon
     	case 0x0796: return pakPvp796        ( (CPlayer*)thisclient->player, P );  //LMA: PVP?

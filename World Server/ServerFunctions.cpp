@@ -1356,36 +1356,38 @@ CDrop* CWorldServer::GetNewDrop( CMonster* thismon )
 
 
 
-    int droprate = 80; // base drop percentage for monsters your own level
-    int DropFloor = Config.BASE_DROP_CHANCE;
-    int leveldif = (int)((float)thismon->thisnpc->level - (float)thisclient->Stats->Level);
-    float mod = droprate * 0.01 * leveldif;
-    int dropchance = int(droprate + mod);
-    if(dropchance < DropFloor) dropchance = DropFloor; //always a small chance of a drop even when the mob is more than 20 levels beneath your own
-    if(thismon->thisnpc->level == 1)
-        dropchance = 80;
+    //int droprate = 80; // base drop percentage for monsters your own level
+    //int DropFloor = Config.BASE_DROP_CHANCE;
+    //int leveldif = (int)((float)thismon->thisnpc->level - (float)thisclient->Stats->Level);
+    //float mod = droprate * 0.01 * leveldif;
+    //int dropchance = int(droprate + mod);
+    //if(dropchance < DropFloor) dropchance = DropFloor; //always a small chance of a drop even when the mob is more than 20 levels beneath your own
+    //if(thismon->thisnpc->level == 1)
+    //    dropchance = 80;
     //if( thisclient->Session->codedebug )
     //    SendPM(thisclient, "Drop chance (based on level diference) = %i", dropchance );
-    int droprand = GServer->RandNumber(0,100);
-    if (droprand > dropchance)
-    {
-        if( thisclient->Session->codedebug )
-            SendPM(thisclient, "Drop rate check failed with %i. No drop this time",droprand);
-        return NULL; // no drop here. not this time anyway.
-    }
+    
+	
+	//int droprand = GServer->RandNumber(0,100);
+    //if (droprand > dropchance)
+    //{
+    //    if( thisclient->Session->codedebug )
+    //        SendPM(thisclient, "Drop rate check failed with %i. No drop this time",droprand);
+    //    return NULL; // no drop here. not this time anyway.
+    //}
 
 
     // Each monster has its own rates for zuly and item drops defined in the stb
     // first check for Zuly drops
     randv = RandNumber( 1, 100);
-    //if( thisclient->Session->codedebug )
-    //{
-    //   SendPM(thisclient, "randv = %i.  money = %i. zulyrate = %i. ", randv,thismon->thisnpc->money,thisclient->Stats->zulydroprate );
-    //}
-    if(randv <= (thismon->thisnpc->money + thisclient->Stats->zulydroprate)) // zuly drop
+    if( thisclient->Session->codedebug )
+    {
+       SendPM(thisclient, "randv = %i.  money = %i. itemrate = %i. ", randv,thismon->thisnpc->money );
+    }
+    if(randv <= thismon->thisnpc->money) // zuly drop
     {
         newdrop->type = 1; //zuly
-        newdrop->amount = thismon->thisnpc->level * 5 * (Config.ZULY_RATE + thisclient->Stats->zulydroprate) + RandNumber( 1, 10 );
+        newdrop->amount = thismon->thisnpc->level * 5 * (Config.ZULY_RATE) + RandNumber( 1, 10 );
         if( thisclient->Session->codedebug )
         {
            SendPM(thisclient, "Zuly drop selected " );
@@ -1393,16 +1395,35 @@ CDrop* CWorldServer::GetNewDrop( CMonster* thismon )
         return  newdrop;
     }
     //now check for item drops
-    //if( thisclient->Session->codedebug )
-    //{
-    //   SendPM(thisclient, "randv = %i. Item = %i. Itemrate = %i", randv,thismon->thisnpc->item,thisclient->Stats->itemdroprate );
-    //}
-    if(randv <= (thismon->thisnpc->item + thisclient->Stats->itemdroprate + thismon->thisnpc->money)) // Item drop
+	if( thisclient->Session->codedebug )
+    {
+       SendPM(thisclient, "randv = %i. Item = %i. Itemrate = %i", randv,thismon->thisnpc->item );
+    }
+	randv = RandNumber( 1, 100);
+    if(randv <= thismon->thisnpc->item) // Item drop
     {
         //OK got an item. Now we find which one
         //Map drop or mob drop? map = 50% mob = 50%. Maybe should be configurable or modified by monster data?
-        int randv2 = RandNumber( 1, 100);
-        if(randv2 <= 50) //map drop
+        int mapChance = 0;
+		switch(thismon->thisnpc->boss)
+		{
+			case 1:	//king
+			case 4:	//World Boss
+				mapChance = 0;
+				break;
+			case 2: //Giant
+			case 3:	//Guardian
+				mapChance = 10;
+				break;
+			case 5:	//Leader
+				mapChance = 20;
+				break;
+			default:
+				mapChance = 50;
+				break;
+		}
+		int randv2 = RandNumber( 1, 100);
+        if(randv2 <= mapChance) //map drop
         {
             for(i=0;i<GServer->MDropList.size();i++)
             {
@@ -1671,12 +1692,12 @@ bool CWorldServer::TeleportTo ( CPlayer* thisclient, int map, fPoint position )
 //LMA: checking compatible class (for skills)
 bool CWorldServer::CheckCompatibleClass(UINT rclass, UINT player_job)
 {
-    if(rclass==player_job)
+    if(rclass == player_job)
         return true;
 
-    if(player_job>=121&&player_job<=122)
+    if(player_job >= 121 && player_job <= 122)
     {
-        if(rclass==111)
+        if(rclass == 111)
         {
             return true;
         }
@@ -1687,9 +1708,9 @@ bool CWorldServer::CheckCompatibleClass(UINT rclass, UINT player_job)
 
     }
 
-    if(player_job>=221&&player_job<=222)
+    if(player_job >= 221 && player_job <= 222)
     {
-        if(rclass==211)
+        if(rclass == 211)
         {
             return true;
         }
@@ -1700,9 +1721,9 @@ bool CWorldServer::CheckCompatibleClass(UINT rclass, UINT player_job)
 
     }
 
-    if(player_job>=321&&player_job<=322)
+    if(player_job >= 321 && player_job <= 322)
     {
-        if(rclass==311)
+        if(rclass == 311)
         {
             return true;
         }
@@ -1713,9 +1734,9 @@ bool CWorldServer::CheckCompatibleClass(UINT rclass, UINT player_job)
 
     }
 
-    if(player_job>=421&&player_job<=422)
+    if(player_job >= 421 && player_job <= 422)
     {
-        if(rclass==411)
+        if(rclass == 411)
         {
             return true;
         }
@@ -1747,103 +1768,94 @@ bool CWorldServer::LearnSkill( CPlayer* thisclient, UINT skill, bool takeSP)
     7 - you do not have sufficient sp
     */
 
-    int b=1;
+    int b = 1;
     CSkills* thisskill = GetSkillByID( skill );
-    if( thisskill==NULL )
+    if( thisskill == NULL )
         return false;
 
     //LMA: Is it an empty skill?
     if(GServer->SkillList[skill]->skill_tab==0)
     {
         Log(MSG_WARNING,"%s:: Incorrect or empty skill %i",thisclient->CharInfo->charname,skill);
-        b=6;
+        b = 6;
     }
 
     if(takeSP&&thisclient->CharInfo->SkillPoints<thisskill->sp )
     {
         Log(MSG_WARNING,"%s:: not enough skill points (%u<%u) for skill %u",thisclient->CharInfo->charname,thisclient->CharInfo->SkillPoints,thisskill->sp,skill);
-        b=7;
+        b = 7;
     }
     else if( thisskill->clevel>thisclient->Stats->Level )
     {
         Log(MSG_WARNING,"%s:: incorrect level for skill %u (%u<%u)",thisclient->CharInfo->charname,skill,thisskill->clevel,thisclient->Stats->Level);
-        b=4;
+        b = 4;
     }
 
-    if(b==1)
+    if(b == 1)
     {
         UINT rclass = 0;
-        for(UINT i=0;i<4; i++)
+        if (thisskill->c_class == 41)
         {
-            if (thisskill->c_class[i] == 0)
-            {
-                continue;
-            }
+            rclass = 111;
+        }
+        else if (thisskill->c_class == 42)
+        {
+            rclass = 211;
+        }
+        else if (thisskill->c_class == 43)
+        {
+            rclass = 311;
+        }
+        else if (thisskill->c_class == 44)
+        {
+            rclass = 411;
+        }
+        else if (thisskill->c_class == 61)
+        {
+            rclass = 121;
+        }
+        else if (thisskill->c_class == 62)
+        {
+            rclass = 122;
+        }
+        else if (thisskill->c_class == 63)
+        {
+            rclass = 221;
+        }
+        else if (thisskill->c_class == 64)
+        {
+            rclass = 222;
+        }
+        else if (thisskill->c_class == 65)
+        {
+            rclass = 321;
+        }
+        else if (thisskill->c_class == 66)
+        {
+            rclass = 322;
+        }
+        else if (thisskill->c_class == 67)
+        {
+            rclass = 421;
+        }
+        else if (thisskill->c_class == 68)
+        {
+            rclass = 422;
+        }
 
-            if (thisskill->c_class[i] == 41)
-            {
-                rclass = 111;
-            }
-             else if (thisskill->c_class[i] == 42)
-            {
-                rclass = 211;
-            }
-            else if (thisskill->c_class[i] == 43)
-            {
-                rclass = 311;
-            }
-            else if (thisskill->c_class[i] == 44)
-            {
-                rclass = 411;
-            }
-            else if (thisskill->c_class[i] == 61)
-            {
-                rclass = 121;
-            }
-            else if (thisskill->c_class[i] == 62)
-            {
-                rclass = 122;
-            }
-            else if (thisskill->c_class[i] == 63)
-            {
-                rclass = 221;
-            }
-            else if (thisskill->c_class[i] == 64)
-            {
-                rclass = 222;
-            }
-            else if (thisskill->c_class[i] == 65)
-            {
-                rclass = 321;
-            }
-            else if (thisskill->c_class[i] == 66)
-            {
-                rclass = 322;
-            }
-            else if (thisskill->c_class[i] == 67)
-            {
-                rclass = 421;
-            }
-            else if (thisskill->c_class[i] == 68)
-            {
-                rclass = 422;
-            }
-
-            //LMA: new way, so "old" job skill can be learned...
-            //if(rclass == thisclient->CharInfo->Job)
-            if(CheckCompatibleClass(rclass,thisclient->CharInfo->Job))
-            {
-                b=1;
-                break;
-            }
-            else
-            {
-                Log(MSG_WARNING,"%s:: Incompatible class for skill %u (%u)",thisclient->CharInfo->charname,skill,rclass);
-                b=2;
-            }
+        //LMA: new way, so "old" job skill can be learned...
+        //if(rclass == thisclient->CharInfo->Job)
+        if(CheckCompatibleClass(rclass,thisclient->CharInfo->Job))
+        {
+            b = 1;
+        }
+        else
+        {
+            Log(MSG_WARNING,"%s:: Incompatible class for skill %u (%u)",thisclient->CharInfo->charname,skill,rclass);
+            b = 2;
         }
     }
-    if(b==1)
+    if(b == 1)
     {
         for(UINT i=0;i<3; i++)
         {
@@ -1871,11 +1883,11 @@ bool CWorldServer::LearnSkill( CPlayer* thisclient, UINT skill, bool takeSP)
 
     }
 
-    if(b==1)
+    if(b == 1)
     {
         //LMA: Looking for good place to save it now...
-        int family=thisclient->GoodSkill(skill);
-        if(family==-1)
+        int family = thisclient->GoodSkill(skill);
+        if(family == -1)
         {
             Log(MSG_WARNING,"%s:: Can't find family for skill %i",thisclient->CharInfo->charname,skill);
             b=6;

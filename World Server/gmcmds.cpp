@@ -2469,7 +2469,6 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
 				return true; 
 			}
 			int newMoveSpeed = atoi(tmp);
-			//thisclient->SetMaxHP(MaxHP);
 			thisclient->Stats->CheatMoveSpeed = newMoveSpeed;
 			thisclient->Stats->Move_Speed = thisclient->GetMoveSpeed();
 			sprintf ( buffer, "Move Speed set to %i", thisclient->Stats->CheatMoveSpeed);
@@ -2491,7 +2490,6 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
 				return true; 
 			}
 			int newAttackPower = atoi(tmp);
-			//thisclient->SetMaxHP(MaxHP);
 			thisclient->Stats->CheatAttackPower = newAttackPower;
 			thisclient->Stats->Attack_Power = thisclient->GetAttackPower();
 			sprintf ( buffer, "Attack Power set to %i", thisclient->Stats->CheatAttackPower);

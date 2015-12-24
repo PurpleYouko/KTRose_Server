@@ -1286,7 +1286,7 @@ AIACT(030)
     //LMA: Sometimes the QSD changes the refNPC for its own purpose, we have to take it back to the previous value.
     CMonster* monster = reinterpret_cast<CMonster*>(entity);
     UINT savelma = monster->thisnpc->refNPC;
-    int is_ok=entity->ExecuteQuestTrigger(hash);
+    int is_ok = entity->ExecuteQuestTrigger(hash);
 
     /*
     if (savelma!=monster->thisnpc->refNPC)

@@ -271,7 +271,7 @@ bool CWorldServer::InitDefaultValues()
 
     //breaklist.
     BreakList=new CBreakList*[BreakData.rowcount];
-    maxBreak=BreakData.rowcount;
+    maxBreak = BreakData.rowcount;
 
     //Skills and NPC as static array too, but no init for this one.
     SkillList=new CSkills*[STB_SKILL.rowcount];
@@ -560,16 +560,16 @@ bool CWorldServer::LoadNPCData( )
         }
 
         newnpc->id = i;
-        newnpc->life = 0;    //LMA: non sense, it's the name lol
-        newnpc->stance = mRUNNING;  //AIP
+        newnpc->life = 0;								
+        newnpc->stance = mRUNNING;						//AIP
         newnpc->wspeed = STB_NPC.rows[i][2];
         newnpc->rspeed = STB_NPC.rows[i][3];
-        //newnpc->dspeed = STB_NPC.rows[i][4];	//row 4 is monster size ...
+        //newnpc->dspeed = STB_NPC.rows[i][4];			//row 4 is monster size ...
         newnpc->weapon = STB_NPC.rows[i][5];
         newnpc->subweapon = STB_NPC.rows[i][6];
         newnpc->level = STB_NPC.rows[i][7];
         newnpc->hp = STB_NPC.rows[i][8];
-		newnpc->MaxHP = STB_NPC.rows[i][8];		//same as hp
+		newnpc->MaxHP = STB_NPC.rows[i][8];				//same as hp
         newnpc->atkpower = STB_NPC.rows[i][9];
         newnpc->hitrate = STB_NPC.rows[i][10];
         newnpc->defense = STB_NPC.rows[i][11];
@@ -581,8 +581,8 @@ bool CWorldServer::LoadNPCData( )
         newnpc->exp = STB_NPC.rows[i][17];
 
         newnpc->dropid = STB_NPC.rows[i][18];
-        newnpc->money = STB_NPC.rows[i][19];
-        newnpc->item = STB_NPC.rows[i][20];
+        newnpc->money = STB_NPC.rows[i][19];			//money Drop Chance
+        newnpc->item = STB_NPC.rows[i][20];				//item Drop Chance
         newnpc->tab1 = STB_NPC.rows[i][21];
         newnpc->tab2 = STB_NPC.rows[i][22];
         newnpc->tab3 = STB_NPC.rows[i][23];
@@ -591,26 +591,16 @@ bool CWorldServer::LoadNPCData( )
         newnpc->atkdistance = STB_NPC.rows[i][26]/100;
         newnpc->aggresive = STB_NPC.rows[i][27];
         newnpc->helpless = 0;
-        newnpc->shp = STB_NPC.rows[i][42];
-        newnpc->dialogid = 0;					//handled in list_npc now
-        newnpc->eventid = 0;					//handled in list_npc now
-        newnpc->side=0;							//hidden
-        newnpc->sidechance=0;					//hidden
-        newnpc->STLId=STB_NPC.rows[i][40];
-		newnpc->die_quest=STB_NPC.rows[i][41];
+        newnpc->shp = STB_NPC.rows[i][42];				//This is height of a flying monster. Nothing to do with maxHP
+		newnpc->boss = STB_NPC.rows[i][43];				//PY: new field added to the STB. tells us if it's a boss or not for drops, Exp and boss fights
+        newnpc->dialogid = 0;							//handled in list_npc now
+        newnpc->eventid = 0;							//handled in list_npc now
+        newnpc->side = 0;								//hidden
+        newnpc->sidechance = 0;							//hidden
+        newnpc->STLId = STB_NPC.rows[i][40];
+		newnpc->die_quest = STB_NPC.rows[i][41];		//this contains the hash of the quest trigger.We can use it to run quest triggers directly
 
-        //LMA: test for quest hack (stackable).
-        #ifdef QHACK
-        //Adding the quest to the list.
-        if(newnpc->die_quest!=0&&(MapStackQuest.find(newnpc->die_quest)!=MapStackQuest.end()))
-        {
-            MapStackQuest.insert ( pair<dword,int>(newnpc->die_quest,1) );
-        }
-        else if(newnpc->die_quest!=0)
-        {
-            MapStackQuest[newnpc->die_quest]++;
-        }
-        #endif
+        
 
         //LMA: Various skills for monsters (won't be used anymore, will be done by AIP, for now left for compatibility).
         for(int m=0;m<4;m++)
@@ -729,81 +719,85 @@ bool CWorldServer::LoadSkillData( )
         }
         char *tmp;
         newskill->id=i;
-        newskill->skillnumber = STB_SKILL.rows[i][1];  // SkillNumber. Base Row, on which skill was level 1
-        newskill->level = STB_SKILL.rows[i][2];        // Skills Level
-        newskill->sp = STB_SKILL.rows[i][3];           // Cost to get skill
-        newskill->skill_tab = STB_SKILL.rows[i][4];    //tab type.  WTF!! This is the Skilltree background image file reference
-        newskill->type = STB_SKILL.rows[i][5];         // Type of skill
-        newskill->range = STB_SKILL.rows[i][6]/100;    // Range of skill
-        newskill->target = STB_SKILL.rows[i][7];       // Skill Target type
-        newskill->aoerange = STB_SKILL.rows[i][8]/100; // AOE Range
-        newskill->atkpower = STB_SKILL.rows[i][9];     // Attack Power. Also craft group for crafting skills
-        newskill->gm_aoe = 0;                          //LMA: GM AOE buff
-        newskill->hostilitycheck = STB_SKILL.rows[i][10];   //Hostility Check
-        //newskill->status[0] = STB_SKILL.rows[i][11];  // status (applied to useitems)
-        //newskill->status[1] = STB_SKILL.rows[i][12];  // status (applied to useitems)
-        newskill->success = STB_SKILL.rows[i][13];     // Success Rate
+        newskill->skillnumber = STB_SKILL.rows[i][1];		// SkillNumber. Base Row, on which skill was level 1
+        newskill->level = STB_SKILL.rows[i][2];				// Skills Level
+        newskill->sp = STB_SKILL.rows[i][3];				// Cost to get skill
+        newskill->skill_tab = STB_SKILL.rows[i][4];			// tab type.  This is the Skilltree background image file reference
+        newskill->type = STB_SKILL.rows[i][5];				// Type of skill
+        newskill->range = STB_SKILL.rows[i][6]/100;			// Range of skill
+        newskill->target = STB_SKILL.rows[i][7];			// Skill Target type
+        newskill->aoerange = STB_SKILL.rows[i][8]/100;		// AOE Range
+        newskill->atkpower = STB_SKILL.rows[i][9];			// Attack Power. Also craft group for crafting skills
+        newskill->gm_aoe = 0;								// LMA: GM AOE buff
+        newskill->hostilitycheck = STB_SKILL.rows[i][10];   // Hostility Check
+        //newskill->status[0] = STB_SKILL.rows[i][11];		// status (applied to useitems)
+        //newskill->status[1] = STB_SKILL.rows[i][12];		// status (applied to useitems)
+        newskill->success = STB_SKILL.rows[i][13];			// Success Rate
         if(newskill->success == 0)
         {
-            newskill->success = 100;                   //success rate is stored as NULL where it is 100%. eg dual scratch
+            newskill->success = 100;						//success rate is stored as NULL where it is 100%. eg dual scratch
         }
-        newskill->duration = STB_SKILL.rows[i][14];    // Duration
-        newskill->formula = STB_SKILL.rows[i][15];     //skill type magical or weapon
-        newskill->costtype[0] = STB_SKILL.rows[i][16];   //not all costs are in MP
-        newskill->costamount[0] = STB_SKILL.rows[i][17]; //some are in HP or Stamina
+        newskill->duration = STB_SKILL.rows[i][14];			// Duration
+        newskill->formula = STB_SKILL.rows[i][15];			//skill type magical or weapon
+        newskill->costtype[0] = STB_SKILL.rows[i][16];		//not all costs are in MP
+        newskill->costamount[0] = STB_SKILL.rows[i][17];	//some are in HP or Stamina
         newskill->mp = STB_SKILL.rows[i][17];               //PY Why is this here?
-        newskill->costtype[1] = STB_SKILL.rows[i][18]; // All driveby skills have 2 costs
-        newskill->costamount[1] = STB_SKILL.rows[i][19]; // The second is normally cart gauge
-        newskill->cooldown = STB_SKILL.rows[i][20]/5;   // The time it takes to be able to use the skill again. (LMA: /5...)
+        newskill->costtype[1] = STB_SKILL.rows[i][18];		// All driveby skills have 2 costs
+        newskill->costamount[1] = STB_SKILL.rows[i][19];	// The second is normally cart gauge
+        newskill->cooldown = STB_SKILL.rows[i][20]/5;		// The time it takes to be able to use the skill again. (LMA: /5...)
         // Warp skill
-        newskill->WarpZone = STB_SKILL.rows[i][21];     //Map id where the skill takes you (see return scrolls)
+        newskill->WarpZone = STB_SKILL.rows[i][21];			//Map id where the skill takes you (see return scrolls)
         newskill->WarpX = STB_SKILL.rows[i][22];
         newskill->WarpY = STB_SKILL.rows[i][23];
         //end Warp skill
-        newskill->SummonMobID = STB_SKILL.rows[i][28];  //The monster summoned by this skill
+															//24, 25, 26 not used in 137 client
+															//27 cooldown group. We probably need this						TO BE ADDED
+        newskill->SummonMobID = STB_SKILL.rows[i][28];		//The monster summoned by this skill
         newskill->ProgressType = STB_SKILL.rows[i][29];
-        newskill->weapon[0] = STB_SKILL.rows[i][30];    // Item Type must be equipped (Only 1)
-        newskill->weapon[1] = STB_SKILL.rows[i][31];    // Item Type must be equipped
-        newskill->weapon[2] = STB_SKILL.rows[i][32];    // Item Type must be equipped
-        newskill->weapon[3] = STB_SKILL.rows[i][33];    // Item Type must be equipped
-        newskill->weapon[4] = STB_SKILL.rows[i][34];    // Item Type must be equipped
-        newskill->c_class[0] = STB_SKILL.rows[i][35];   // Required Class (Only One)
-        newskill->c_class[1] = STB_SKILL.rows[i][36];   // Required Class
-        newskill->c_class[2] = STB_SKILL.rows[i][37];   // Required Class
-        newskill->c_class[3] = STB_SKILL.rows[i][38];   // Required Class
-        newskill->c_class[4] = 0;                       // there is no required class 5
-        newskill->rskill[0] = STB_SKILL.rows[i][39];    // Required Skill
-        newskill->rskill[1] = STB_SKILL.rows[i][41];    // Required Skill
-        newskill->rskill[2] = STB_SKILL.rows[i][43];    // Required Skill
-        newskill->lskill[0] = STB_SKILL.rows[i][40];    // Required Skill Level
-        newskill->lskill[1] = STB_SKILL.rows[i][42];    // Required Skill Level
-        newskill->lskill[2] = STB_SKILL.rows[i][44];    // Required Skill Level
+        newskill->weapon[0] = STB_SKILL.rows[i][30];		// Item Type must be equipped (Only 1)
+        newskill->weapon[1] = STB_SKILL.rows[i][31];		// Item Type must be equipped
+        newskill->weapon[2] = STB_SKILL.rows[i][32];		// Item Type must be equipped
+        newskill->weapon[3] = STB_SKILL.rows[i][33];		// Item Type must be equipped
+        newskill->weapon[4] = STB_SKILL.rows[i][34];		// Item Type must be equipped
+        newskill->c_class = STB_SKILL.rows[i][35];			// Required Class (Only One)
+        													// PY: 36 is not class. Union skill related
+        													// PY: 37 is not class. Union skill related
+        													// PY: 38 is not class. Union skill related
+        
+        newskill->rskill[0] = STB_SKILL.rows[i][39];		// Required Skill
+        newskill->rskill[1] = STB_SKILL.rows[i][41];		// Required Skill
+        newskill->rskill[2] = STB_SKILL.rows[i][43];		// Required Skill
+        newskill->lskill[0] = STB_SKILL.rows[i][40];		// Required Skill Level
+        newskill->lskill[1] = STB_SKILL.rows[i][42];		// Required Skill Level
+        newskill->lskill[2] = STB_SKILL.rows[i][44];		// Required Skill Level
 
-        newskill->req[0] = STB_SKILL.rows[i][45];    //the requirement type (usually 31 = level)
-        newskill->clevel = STB_SKILL.rows[i][46];    //This should never be used any more
-        newskill->reqam[0] = STB_SKILL.rows[i][46];  //this need not always be level but is usually
-        newskill->req[1] = STB_SKILL.rows[i][47];    //the requirement type (in most cases blank)
-        newskill->reqam[1] = STB_SKILL.rows[i][48];  //requirement amount
-        //49 = script
-        //50 = empty
-        //51 = icon number
-        //52 through 87 relate to skill animations, effects and sounf effects. only used in the client
-        newskill->status[0] = STB_SKILL.rows[i][88];  // status
-        newskill->buff[0] = STB_SKILL.rows[i][89];      // Stat
-        newskill->value1[0] = STB_SKILL.rows[i][90];    // Int Value
-        newskill->value2[0] = STB_SKILL.rows[i][91];    // % Value
-        newskill->status[1] = STB_SKILL.rows[i][92];    // status
-        newskill->buff[1] = STB_SKILL.rows[i][93];      // Stat
-        newskill->value1[1] = STB_SKILL.rows[i][94];    // Int Value
-        newskill->value2[1] = STB_SKILL.rows[i][95];    // % Value
-        newskill->status[2] = STB_SKILL.rows[i][96];    // status
-        newskill->buff[2] = STB_SKILL.rows[i][97];      // Stat
-        newskill->value1[2] = STB_SKILL.rows[i][98];    // Int Value
-        newskill->value2[2] = STB_SKILL.rows[i][99];    // % Value
+        newskill->req[0] = STB_SKILL.rows[i][45];			//the requirement type (usually 31 = level)
+        newskill->clevel = STB_SKILL.rows[i][46];			//This should never be used any more
+        newskill->reqam[0] = STB_SKILL.rows[i][46];			//this need not always be level but is usually
+        newskill->req[1] = STB_SKILL.rows[i][47];			//the requirement type (in most cases blank)
+        newskill->reqam[1] = STB_SKILL.rows[i][48];			//requirement amount
+															//49 = script
+															//50 = empty
+															//51 = icon number
+															//52 through 84 relate to skill animations, effects and sounf effects. only used in the client
+		newskill->ZulyLevelupCost = STB_SKILL.rows[i][85];	//85 = Zuly cost to level up skill
+															//86 = Skill Attribute. 1 = normal. 2 = ?. 3 = PAT
+        newskill->status[0] = STB_SKILL.rows[i][88];		// status
+        newskill->buff[0] = STB_SKILL.rows[i][89];			// Stat
+        newskill->value1[0] = STB_SKILL.rows[i][90];		// Int Value
+        newskill->value2[0] = STB_SKILL.rows[i][91];		// % Value
+        newskill->status[1] = STB_SKILL.rows[i][92];		// status
+        newskill->buff[1] = STB_SKILL.rows[i][93];			// Stat
+        newskill->value1[1] = STB_SKILL.rows[i][94];		// Int Value
+        newskill->value2[1] = STB_SKILL.rows[i][95];		// % Value
+        newskill->status[2] = STB_SKILL.rows[i][96];		// status
+        newskill->buff[2] = STB_SKILL.rows[i][97];			// Stat
+        newskill->value1[2] = STB_SKILL.rows[i][98];		// Int Value
+        newskill->value2[2] = STB_SKILL.rows[i][99];		// % Value
 
 
-        newskill->BlockSkill = STB_SKILL.rows[i][100];    // learning this skill blocks learning the other one
-        newskill->Unlocks[0] = STB_SKILL.rows[i][101];   //unlocks this skill for learning
+        newskill->BlockSkill = STB_SKILL.rows[i][100];		// learning this skill blocks learning the other one
+        newskill->Unlocks[0] = STB_SKILL.rows[i][101];		// unlocks this skill for learning
         newskill->UnlockLevel[0] = STB_SKILL.rows[i][102];
         newskill->Unlocks[1] = STB_SKILL.rows[i][103];
         newskill->UnlockLevel[1] = STB_SKILL.rows[i][104];
@@ -814,11 +808,11 @@ bool CWorldServer::LoadSkillData( )
         newskill->Unlocks[4] = STB_SKILL.rows[i][109];
         newskill->UnlockLevel[4] = STB_SKILL.rows[i][110];
 
-        //111 = slot number in the skill tree (client side)
+															//111 = slot number in the skill tree (client side)
         newskill->SkillBook = STB_SKILL.rows[i][112];
 
         //LMA: STL:
-        newskill->STLId=STB_SKILL.rows[i][113];
+        newskill->STLId=STB_SKILL.rows[i][113];				//STL reference
 
         //PY the rest of this stuff needs to be rewritten elsewhere. I hate special cases. Unmodified STB Data should be all we need
 
@@ -1116,433 +1110,6 @@ bool CWorldServer::LoadMonsterSpawn( )
 	return true;
 }
 
-/*
-bool CWorldServer::LoadNMSpawns()
-{
-    Log(MSG_INFO, "Loading NM spawns");
-    MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT spawnid, idinmap, map, montype,spawnx, spawny FROM nmspawns");
-    if(result == NULL) return false;
-    while(row = mysql_fetch_row(result))
-    {
-        CNMSpawns* thisspawn = new (nothrow) CNMSpawns;
-        if(thisspawn == NULL)
-        {
-            Log(MSG_ERROR, "Error allocing memory" );
-            DB->QFree( );
-            return false;
-        }
-        thisspawn->ID = atoi(row[0]);
-        thisspawn->idInMap = atoi(row[1]);
-        thisspawn->Map = atoi(row[2]);
-        thisspawn->MonType = atoi(row[3]);
-        thisspawn->point.x = atof(row[4]);
-        thisspawn->point.y = atof(row[5]);
-        thisspawn->MonCount = 0;
-
-        MapList.Index[thisspawn->Map]->MonsterSpawnList.push_back( thisspawn );
-    }
-    DB->QFree( );
-
-}
-*/
-
-/*
-bool CWorldServer::LoadMobGroups()
-{
-  Log(MSG_LOAD, "MobGroups data    " );
-  //vector<CMobGroup*> mobGroups;
-  MYSQL_ROW row;
-  bool flag = true;
-  char* tmp = NULL;
-
-  //LMA: Day and night (for Halloween)
-  //For pegasus too
-  MYSQL_RES *result=NULL;
-    if(Config.is_pegasus==1)
-    {
-        result = DB->QStore("SELECT `id`, `map`, `x`, `y`, `range`, `respawntime`, `limit`, `tacticalpoints`, `moblist`,`daynight`,`isactive`  FROM `list_mobgroups_p`");
-    }
-    else
-    {
-        result = DB->QStore("SELECT `id`, `map`, `x`, `y`, `range`, `respawntime`, `limit`, `tacticalpoints`, `moblist`,`daynight`,`isactive`  FROM `list_mobgroups`");
-    }
-
-  if (result == NULL) return false;
-  while (row = mysql_fetch_row(result))
-  {
-    //LMA: Active spawn?
-    int is_active=atoi(row[10]);
-    if(is_active==0)
-        continue;
-
-    CMobGroup* thisgroup = new (nothrow) CMobGroup;
-    if (thisgroup == NULL)
-    {
-      Log(MSG_ERROR, "Error allocating memory");
-      DB->QFree();
-      return false;
-    }
-
-    thisgroup->id = atoi(row[0]);
-    thisgroup->map = atoi(row[1]);
-    thisgroup->point.x = atof(row[2]);
-    thisgroup->point.y = atof(row[3]);
-    thisgroup->range = atoi(row[4]);
-    thisgroup->respawntime = atoi(row[5]);
-    thisgroup->limit = atoi(row[6]);
-    thisgroup->tacticalpoints = atoi(row[7]);
-
-    char* mobList = row[8];
-
-    //LMA: Day and night (for Halloween) 0=day and night, 1=day, 2=night
-    thisgroup->daynight=atoi(row[9]);
-
-    thisgroup->lastRespawnTime = clock();
-    thisgroup->active = 0;
-    thisgroup->basicKills = 0;
-    thisgroup->lastKills=0;
-    thisgroup->curTac = 0;
-    thisgroup->curBasic = 0;
-    thisgroup->group_ready=false;
-
-
-    thisgroup->basicMobs.clear();
-    thisgroup->tacMobs.clear();
-
-    //LMA: resetting the error flag
-    flag=true;
-
-    // Fill in basic/tac mobs
-    tmp = strtok(mobList, ",|");
-    while (tmp != NULL)
-    {
-
-      int mobId = atoi(tmp);
-      tmp = strtok(NULL, ",|");
-      if (tmp == NULL) {
-        Log(MSG_ERROR, "MobGroup %i is invalid", thisgroup->id);
-        flag = false;
-        break;
-      }
-      int amount = atoi(tmp);
-      tmp = strtok(NULL, ",|");
-      if (tmp == NULL) {
-        Log(MSG_ERROR, "MobGroup %i is invalid", thisgroup->id);
-        flag = false;
-        break;
-      }
-      int tactical = atoi(tmp);
-      CMob *thismob = new (nothrow) CMob;
-      if (thismob == NULL) {
-        Log(MSG_ERROR, "Error allocating memory");
-        DB->QFree();
-        return false;
-      }
-      thismob->amount = amount;
-      thismob->real_amount=1;
-      thismob->tactical = tactical;
-      thismob->mobId = mobId;
-      thismob->thisnpc = GetNPCDataByID( thismob->mobId );
-
-      //LMA: check
-      if(thisgroup->limit<thismob->amount)
-      {
-          //Log(MSG_WARNING,"spawn %i: limit %u < monster amount %u",thisgroup->id,thisgroup->limit,thismob->amount);
-          //overwriting.
-          thismob->amount=thisgroup->limit;
-      }
-
-      //LMA: We check here and delete the whole group.
-      if (thismob->thisnpc == NULL)
-      {
-        Log(MSG_WARNING, "Group %i:: Invalid monster %i",thisgroup->id,thismob->mobId);
-        flag=false;
-        break;
-      }
-
-    //LMA: shouldn't be PY'drop used in those ones?
-      thismob->mapdrop=NULL;
-      thismob->mobdrop=NULL;
-
-
-    //Org code
-    //  thismob->mapdrop = GetDropData( thisgroup->map );
-     // thismob->mobdrop= GetDropData( thismob->thisnpc->dropid );
-
-
-      if (thismob->tactical)
-        thisgroup->tacMobs.push_back(thismob);
-      else
-        thisgroup->basicMobs.push_back(thismob);
-      tmp = strtok(NULL, ",|");
-     }
-
-        if (!flag)
-        {
-          delete thisgroup;
-          continue;
-        }
-
-        MapList.Index[thisgroup->map]->MobGroupList.push_back(thisgroup);
-        //mobGroups.push_back(thisgroup);
-    }
-
-    DB->QFree( );
-
-
-    return true;
-}
-
-*/
-
-//LMA: Special Spawns (like Halloween or whatever...)
-/*
-bool CWorldServer::LoadMobGroupsSpecial()
-{
-  Log(MSG_LOAD, "MobGroupsSpecial data    " );
-  //vector<CMobGroup*> mobGroups;
-  MYSQL_ROW row;
-  bool flag = true;
-  char* tmp = NULL;
-  //LMA: Day and night (for Halloween)
-  MYSQL_RES *result = DB->QStore("SELECT `id`, `map`, `x`, `y`, `range`, `respawntime`, `limit`, `tacticalpoints`, `moblist`,`daynight`,`isactive`  FROM `list_mobgroups_special`");
-  if (result == NULL) return false;
-  while (row = mysql_fetch_row(result))
-  {
-
-    //LMA: Active spawn?
-    int is_active=atoi(row[10]);
-    if(is_active==0)
-        continue;
-
-    CMobGroup* thisgroup = new (nothrow) CMobGroup;
-    if (thisgroup == NULL)
-    {
-      Log(MSG_ERROR, "Error allocating memory");
-      DB->QFree();
-      return false;
-    }
-
-    thisgroup->id = atoi(row[0]);
-    thisgroup->map = atoi(row[1]);
-    thisgroup->point.x = atof(row[2]);
-    thisgroup->point.y = atof(row[3]);
-    thisgroup->range = atoi(row[4]);
-    thisgroup->respawntime = atoi(row[5]);
-    thisgroup->limit = atoi(row[6]);
-    thisgroup->tacticalpoints = atoi(row[7]);
-
-    char* mobList = row[8];
-
-    //LMA: Day and night (for Halloween) 0=day and night, 1=day, 2=night
-    thisgroup->daynight=atoi(row[9]);
-
-    thisgroup->lastRespawnTime = clock();
-    thisgroup->active = 0;
-    thisgroup->basicKills = 0;
-    thisgroup->curTac = 0;
-    thisgroup->curBasic = 0;
-
-
-    thisgroup->basicMobs.clear();
-    thisgroup->tacMobs.clear();
-
-    //LMA: resetting the error flag
-    flag=true;
-
-    // Fill in basic/tac mobs
-    tmp = strtok(mobList, ",|");
-    while (tmp != NULL)
-    {
-
-      int mobId = atoi(tmp);
-      tmp = strtok(NULL, ",|");
-      if (tmp == NULL) {
-        Log(MSG_ERROR, "MobGroup %i is invalid", thisgroup->id);
-        flag = false;
-        break;
-      }
-      int amount = atoi(tmp);
-      tmp = strtok(NULL, ",|");
-      if (tmp == NULL) {
-        Log(MSG_ERROR, "MobGroup %i is invalid", thisgroup->id);
-        flag = false;
-        break;
-      }
-      int tactical = atoi(tmp);
-      CMob *thismob = new (nothrow) CMob;
-      if (thismob == NULL) {
-        Log(MSG_ERROR, "Error allocating memory");
-        DB->QFree();
-        return false;
-      }
-      thismob->amount = amount;
-      thismob->tactical = tactical;
-      thismob->mobId = mobId;
-      thismob->thisnpc = GetNPCDataByID( thismob->mobId );
-
-      //LMA: We check here and delete the whole group.
-      if (thismob->thisnpc == NULL)
-      {
-        Log(MSG_WARNING, "Group %i:: Invalid monster %i",thisgroup->id,thismob->mobId);
-        flag=false;
-        break;
-      }
-
-    //LMA: shouldn't be PY'drop used in those ones?
-      thismob->mapdrop=NULL;
-      thismob->mobdrop=NULL;
-
-
-    //Org code
-      //thismob->mapdrop = GetDropData( thisgroup->map );
-      //thismob->mobdrop= GetDropData( thismob->thisnpc->dropid );
-
-
-      if (thismob->tactical)
-        thisgroup->tacMobs.push_back(thismob);
-      else
-        thisgroup->basicMobs.push_back(thismob);
-      tmp = strtok(NULL, ",|");
-     }
-
-        if (!flag)
-        {
-          delete thisgroup;
-          continue;
-        }
-
-        MapList.Index[thisgroup->map]->MobGroupList.push_back(thisgroup);
-        //mobGroups.push_back(thisgroup);
-    }
-
-    DB->QFree( );
-
-
-    return true;
-}
-*/
-
-/*
-//LMA: outdated.
-bool CWorldServer::LoadMonsterSpawn( )
-{
-	Log( MSG_LOAD, "SpawnZones data             " );
-    //clear the respawns data first
-
-    for(int i=0;i<MapList.Map.size();i++)
-    {
-        MapList.Index[i]->MonsterSpawnList.clear();
-    }
-
-	MYSQL_ROW row;
-	MYSQL_RES *result = DB->QStore("SELECT id,map,montype,min,max,respawntime,points,triggeramount,bossid FROM list_spawnareas");
-//    MYSQL_RES *result = DB->QStore("SELECT id, map, montype, min, max, respawntime, points, spawntype, triggermontype, triggerammount, agressive, areatrigger, lim, spawnk FROM list_spawnareas");
-	if(result==NULL) return false;
-	while(row = mysql_fetch_row(result))
-    {
-        bool flag = true;
-		char* tmp;
-		CSpawnArea* thisspawn = new (nothrow) CSpawnArea;
-        if(thisspawn==NULL)
-        {
-            Log(MSG_ERROR, "Error allocing memory" );
-            DB->QFree( );
-            return false;
-        }
-		thisspawn->id=atoi(row[0]);
-		thisspawn->map=atoi(row[1]);
-		thisspawn->montype=atoi(row[2]);
-		thisspawn->min=atoi(row[3]);
-		thisspawn->max=atoi(row[4]);
-		thisspawn->respawntime=atoi(row[5]);
-        //log(MSG_LOAD, "line 1 OK");
-		//LMA: Adding support for spawn 'boss' (by Rob)
-		thisspawn->nb_trigger=atoi(row[7]);
-		thisspawn->bossid=atoi(row[8]);
-		thisspawn->cu_trigger=0;
-		thisspawn->bossdropID=0;
-
-		if (thisspawn->nb_trigger==0||thisspawn->bossid==0)
-		{
-    		thisspawn->nb_trigger=0;
-    		thisspawn->bossid=0;
-        }
-        else
-        {
-            CNPCData* tempnpc;
-            tempnpc=GetNPCDataByID( thisspawn->bossid );
-            if(tempnpc==NULL)
-            {
-                Log( MSG_WARNING, "Invalid montype %i for boss ID in spawn ID",thisspawn->bossid,thisspawn->id );
-                thisspawn->bossdropID=0;
-            }
-            else
-            {
-                thisspawn->bossdropID=tempnpc->dropid;
-            }
-
-        }
-
-		thisspawn->amon = 0;
-		char* points;
-		points = row[6];
-		thisspawn->pcount = atoi(strtok( points , ",|"));
-		thisspawn->points = new (nothrow) fPoint[thisspawn->pcount];
-		if(thisspawn->points==NULL)
-        {
-            Log(MSG_ERROR, "Error allocing memory       " );
-            delete thisspawn;
-            DB->QFree( );
-            return false;
-        }
-		thisspawn->lastRespawnTime = clock();
-		for(int i=0; i<thisspawn->pcount; i++)
-        {
-			if ((tmp = strtok(NULL, ",|"))==NULL)
-            {
-				Log( MSG_ERROR, "Spawn area %i have invalid points",thisspawn->id );
-				flag = false;
-				break;
-			}
-			float x=(float)atof(tmp);
-			if ((tmp = strtok(NULL, ",|"))==NULL)
-            {
-				Log( MSG_ERROR, "Spawn area %i have invalid points",thisspawn->id );
-				flag = false;
-				break;
-			}
-			float y=(float)atof(tmp);
-			thisspawn->points[i].x = x;
-			thisspawn->points[i].y = y;
-		}
-        if(flag)
-        {
-            thisspawn->thisnpc = GetNPCDataByID( thisspawn->montype );
-            if(thisspawn->thisnpc==NULL)
-            {
-                Log( MSG_WARNING, "Invalid montype - Spawn %i will not be added", thisspawn->id );
-                delete thisspawn;
-                continue;
-            }
-
-            //LMA: check if out of memory.
-            if (thisspawn->map>=MapList.max)
-            {
-               Log(MSG_WARNING,"Spawn, index overflow trapped %i>%i (should not happen)",thisspawn->map,MapList.max);
-               delete thisspawn;
-               continue;
-            }
-
-    		MapList.Index[thisspawn->map]->MonsterSpawnList.push_back( thisspawn );
-        }
-	}
-	DB->QFree( );
-	Log( MSG_LOAD, "SpawnZones Data loaded" );
-	return true;
-}
-*/
 
 bool CWorldServer::LoadNPCs( )
 {
@@ -1788,287 +1355,6 @@ bool CWorldServer::LoadNewDrops( )
     return true;
 }
 
-//hidden
-/*
-bool CWorldServer::LoadPYDropsData( )
-{
-   	Log( MSG_LOAD, "PYDrops Data                " );
-    MDropList.clear();
-    MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT id,type,min_level,max_level,prob,mob,map,alt,ref FROM item_drops");
-    if(result==NULL)
-    {
-        DB->QFree( );
-        return false;
-    }
-
-    //Creating indexes
-    int nb_max_itemtype[15];
-    nb_max_itemtype[0]=0;
-    nb_max_itemtype[13]=0;
-
-    for(int j=1;j<10;j++)
-    {
-        nb_max_itemtype[j]=EquipList[j].max;
-    }
-
-    nb_max_itemtype[10]=UseList.max;
-    nb_max_itemtype[11]=JemList.max;
-    nb_max_itemtype[12]=NaturalList.max;
-    nb_max_itemtype[14]=PatList.max;
-
-
-    while(row = mysql_fetch_row(result))
-    {
-        CMDrops* newdrop = new (nothrow) CMDrops;
-        assert(newdrop);
-        newdrop->itemnum = atoi(row[0]);
-        newdrop->itemtype = atoi(row[1]);
-        newdrop->level_min = atoi(row[2]);
-        newdrop->level_max = atoi(row[3]);
-        newdrop->prob = atoi(row[4]);
-        newdrop->mob = atoi(row[5]);
-        newdrop->map = atoi(row[6]);
-
-        int record_id= atoi(row[8]);
-
-        char *tmp;
-        if((tmp = strtok( row[7] , "|"))==NULL)
-        {
-            newdrop->alt[0]=0;
-        }
-        else
-        {
-            newdrop->alt[0]=atoi(tmp);
-        }
-
-        //We only use 7 alt drops (why [8] for alt?).
-        //for(unsigned int i=1;i<8; i++)
-        newdrop->alt[7]=0;
-        for(unsigned int i=1;i<7; i++)
-        {
-            if((tmp = strtok( NULL , "|"))==NULL)
-            {
-                newdrop->alt[i]=0;
-            }
-            else
-            {
-                newdrop->alt[i]=atoi(tmp);
-            }
-
-        }
-
-        //LMA: checking stupid drops...
-        if(newdrop->itemtype<=0||newdrop->itemtype==13||newdrop->itemtype>14)
-        {
-            Log(MSG_WARNING,"Incorrect drop itemtype detected (%i) for record %i",newdrop->itemtype,record_id);
-            delete newdrop;
-            continue;
-        }
-
-        //checking items.
-        if (newdrop->itemnum<=0||newdrop->itemnum>=nb_max_itemtype[newdrop->itemtype])
-        {
-            Log(MSG_WARNING,"Incorrect drop itemnum detected (%i==0 or >=%u) for record %i",newdrop->itemnum,nb_max_itemtype[newdrop->itemtype],record_id);
-            delete newdrop;
-            continue;
-        }
-
-        MDropList.push_back( newdrop );
-    }
-
-    DB->QFree( );
-    Log( MSG_LOAD, "PYDrops Data loaded" );
-
-
-    return true;
-}
-
-*/
-
-/*
-//LMA: Drops using the AND system.
-bool CWorldServer::LoadPYDropsDataAnd( )
-{
-   	Log( MSG_LOAD, "PYDropsAnd Data             " );
-    MDropList.clear();
-    MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT id,type,min_level,max_level,prob,mob,map,alt,ref,a_x,a_y,a_range FROM item_drops_and");
-    if(result==NULL)
-    {
-        DB->QFree( );
-        return false;
-    }
-
-    //Creating indexes
-    int nb_max_itemtype[15];
-    nb_max_itemtype[0]=0;
-    nb_max_itemtype[13]=0;
-    int nb_conditions=0;
-
-    for(int j=1;j<10;j++)
-    {
-        nb_max_itemtype[j]=EquipList[j].max;
-    }
-
-    nb_max_itemtype[10]=UseList.max;
-    nb_max_itemtype[11]=JemList.max;
-    nb_max_itemtype[12]=NaturalList.max;
-    nb_max_itemtype[14]=PatList.max;
-
-
-    while(row = mysql_fetch_row(result))
-    {
-        CMDrops* newdrop = new (nothrow) CMDrops;
-        assert(newdrop);
-        newdrop->itemnum = atoi(row[0]);
-        newdrop->itemtype = atoi(row[1]);
-        newdrop->level_min = atoi(row[2]);
-        newdrop->level_max = atoi(row[3]);
-        newdrop->prob = atoi(row[4]);
-        newdrop->mob = atoi(row[5]);
-        newdrop->map = atoi(row[6]);
-        newdrop->a_x=0;
-        newdrop->a_y=0;
-        newdrop->b_x=0;
-        newdrop->b_y=0;
-
-        nb_conditions=0;
-        if(newdrop->mob>0)
-        {
-            nb_conditions++;
-        }
-
-        if(newdrop->level_min>0||newdrop->level_max>0)
-        {
-            nb_conditions++;
-        }
-
-        if(newdrop->map>0)
-        {
-            nb_conditions++;
-        }
-
-        //LMA: An area, only exists in a map of course.
-        if(atoi(row[9])>0&&atoi(row[10])>0&&atoi(row[11])>0&&newdrop->map!=0)
-        {
-            nb_conditions++;
-            newdrop->a_x=atoi(row[9])-atoi(row[11]);
-            newdrop->a_y=atoi(row[10])+atoi(row[11]);
-            newdrop->b_x=atoi(row[9])+atoi(row[11]);
-            newdrop->b_y=atoi(row[10])-atoi(row[11]);
-        }
-
-        int record_id= atoi(row[8]);
-
-        char *tmp;
-        if((tmp = strtok( row[7] , "|"))==NULL)
-        {
-            newdrop->alt[0]=0;
-        }
-        else
-        {
-            newdrop->alt[0]=atoi(tmp);
-        }
-
-        for(unsigned int i=1;i<8; i++)
-        {
-            if((tmp = strtok( NULL , "|"))==NULL)
-            {
-                newdrop->alt[i]=0;
-            }
-            else
-            {
-                newdrop->alt[i]=atoi(tmp);
-            }
-
-        }
-
-        //Log(MSG_INFO,"record_id %i, alt: %i, %i, %i, %i, %i, %i, %i, %i",record_id,newdrop->alt[0],newdrop->alt[1],newdrop->alt[2],newdrop->alt[3],newdrop->alt[4],newdrop->alt[5],newdrop->alt[6],newdrop->alt[7]);
-
-        //LMA: checking stupid drops...
-        if(newdrop->itemtype<=0||newdrop->itemtype==13||newdrop->itemtype>14)
-        {
-            Log(MSG_WARNING,"Incorrect drop itemtype detected (%i) for record %i",newdrop->itemtype,record_id);
-            delete newdrop;
-            continue;
-        }
-
-        //checking items.
-        if (newdrop->itemnum<=0||newdrop->itemnum>=nb_max_itemtype[newdrop->itemtype])
-        {
-            Log(MSG_WARNING,"Incorrect drop itemnum detected (%i==0 or >=%u) for record %i",newdrop->itemnum,nb_max_itemtype[newdrop->itemtype],record_id);
-            delete newdrop;
-            continue;
-        }
-
-        //LMA: Saving drop.
-        if(nb_conditions==1)
-        {
-            if(newdrop->map>0)
-            {
-                //special case, map drops are to be sent as multiple drop.
-                DropsAnd[newdrop->map].push_back( newdrop );
-            }
-            else
-            {
-                DropsAnd[0].push_back( newdrop );
-            }
-
-        }
-        else if (nb_conditions>1)
-        {
-            DropsAnd[newdrop->map].push_back( newdrop );
-        }
-        else
-        {
-            Log(MSG_WARNING,"No condition for Drop Record %i",record_id);
-            delete newdrop;
-            continue;
-        }
-
-    }
-
-    DB->QFree( );
-    Log( MSG_LOAD, "PYDropsAnd Data loaded" );
-
-
-    return true;
-}
-
-*/
-
-/*
-//hidden
-bool CWorldServer::LoadSkillBookDropsData( )
-{
-    Log( MSG_INFO, "Loading Skillbook data" );
-    MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT id,itemtype,min,max,prob FROM list_skillbooks");
-    if(result==NULL)
-    {
-        DB->QFree( );
-        return false;
-    }
-    int c = 0;
-    while(row = mysql_fetch_row(result))
-    {
-
-        c++;
-        CMDrops* newdrop = new (nothrow) CMDrops;
-        assert(newdrop);
-        newdrop->itemnum = atoi(row[0]);
-        newdrop->itemtype = atoi(row[1]);
-        newdrop->level_min = atoi(row[2]);
-        newdrop->level_max = atoi(row[3]);
-        newdrop->prob = atoi(row[4]);
-        SkillbookList.push_back( newdrop );
-    }
-    DB->QFree( );
-    Log( MSG_INFO, "Skillbook Data loaded" );
-    return true;
-}
-*/
 
 // PY: Rewriting LoadMonsters to use MonsterSpawnList with new NMSpawn system
 bool CWorldServer::LoadMonsters( )
@@ -2421,7 +1707,7 @@ bool CWorldServer::LoadEquip( )
             newequip->craft_difficult= STB_ITEM[j].rows[i][15];
             newequip->defense = STB_ITEM[j].rows[i][31];
             newequip->magicresistence = STB_ITEM[j].rows[i][32];
-            newequip->attackdistance = STB_ITEM[j].rows[i][33];//Speed of travel/Range
+            newequip->attackdistance = STB_ITEM[j].rows[i][33];		//Speed of travel/Range
 
             //LMA: STL.
             if(j!=6)
@@ -2435,7 +1721,7 @@ bool CWorldServer::LoadEquip( )
                 newequip->STLPrefix=0;
             }
 
-            if(newequip->equiptype==SHOE)
+            if(newequip->equiptype == SHOE)
             {
                 newequip->movespeed = newequip->attackdistance;
             }
@@ -2715,15 +2001,23 @@ bool CWorldServer::LoadConsItem( )
         newuse->pricerate = STB_ITEM[9].rows[i][6];
         newuse->weight = STB_ITEM[9].rows[i][7];
         newuse->quality = STB_ITEM[9].rows[i][8];
-        newuse->craft=STB_ITEM[9].rows[i][12];
-        newuse->craftlevel=STB_ITEM[9].rows[i][13];
+        newuse->craft = STB_ITEM[9].rows[i][12];
+        newuse->craftlevel = STB_ITEM[9].rows[i][13];
         newuse->material= STB_ITEM[9].rows[i][14];
         newuse->craft_difficult= STB_ITEM[9].rows[i][15];
         newuse->pricevalue = STB_ITEM[9].rows[i][16];
         newuse->usecondition[0]= STB_ITEM[9].rows[i][17];
         newuse->usecondition[1]= STB_ITEM[9].rows[i][18];
         newuse->useeffect[0]= STB_ITEM[9].rows[i][19];
-        newuse->useeffect[1]= STB_ITEM[9].rows[i][20];
+        newuse->useeffect[1] = STB_ITEM[9].rows[i][20];
+		if( newuse->type == 322 && newuse->useeffect[1] == 1)	//breakable chests
+		{
+			newuse->breakid = STB_ITEM[9].rows[i][20];
+		}
+		else
+		{
+			newuse->breakid = 0;
+		}
 
         //LMA: adding cooldown.
         newuse->cooldown_type = STB_ITEM[9].rows[i][25];
@@ -3255,10 +2549,10 @@ bool CWorldServer::LoadBreakChestBlueList()
     int old_break=3;
 
 
-    if(BreakData.fieldcount>70)
+    if(BreakData.fieldcount > 70)
     {
        Log(MSG_INFO,"Loading new naRose Break file");
-       old_break=4;
+       old_break = 4;
     }
     else
     {
@@ -3268,24 +2562,32 @@ bool CWorldServer::LoadBreakChestBlueList()
     for(unsigned int i=0;i<BreakData.rowcount;i++)
     {
         //let's check if we have a break, a chest or a blue craft stuff...
-        if(BreakData.rows[i][1]==0)
-        {
-            continue;
-        }
+        //if(BreakData.rows[i][1] == 0)		//PY: NOT always true. Blue named items DO NOT have their item number in row 1
+        //{
+        //    continue;
+        //}
+		//PY: We will check if we have a first material instead
+		if(BreakData.rows[i][1] == 0)
+		{
+			continue;
+		}
 
-        choice=0;
-        itemtype= int(BreakData.rows[i][1]/1000);
-        if (itemtype>0&&itemtype<10)
+		//PY: This is all meaningless since we don't always have an item number
+        /*
+		choice = 0;
+
+        itemtype = int(BreakData.rows[i][1]/1000);
+        if (itemtype > 0 && itemtype < 10)
         {
             //break
             choice=1;
-            itemnum=BreakData.rows[i][1] % 1000;
+            itemnum = BreakData.rows[i][1] % 1000;
         }
 
-        if(choice==0&&itemtype==10)
+        if(choice == 0 && itemtype == 10)
         {
             //chest.
-            choice=2;
+            choice = 2;
             itemnum=BreakData.rows[i][1] % 1000;
         }
 
@@ -3302,8 +2604,9 @@ bool CWorldServer::LoadBreakChestBlueList()
             }
 
         }
+		
 
-        if (choice==0)
+        if (choice == 0)
         {
             //LMA: who wants to be a milionnaire? ^_^
             itemtype= int(BreakData.rows[i][1]/1000000);
@@ -3325,71 +2628,70 @@ bool CWorldServer::LoadBreakChestBlueList()
             }
 
         }
+		*/
 
         //LMA: for now a chest is also a break.
         CBreakList* newbreak = new (nothrow) CBreakList;
-        if(newbreak==NULL)
+        if(newbreak == NULL)
         {
             Log(MSG_WARNING, "Error allocing memory: break list\n" );
             return false;
         }
 
-        newbreak->itemnum=itemnum;
-        newbreak->itemtype=itemtype;
-        //We read the 20 items.
+		//PY: newbreak CANNOT ALWAYS have an item number or itemtype since multiple items can point at the same break row
+        //newbreak->itemnum=itemnum;
+        //newbreak->itemtype=itemtype;
+		//we will add the ones where it is possible though even if it's completely pointless
+		if(BreakData.rows[i][1] != 0)
+		{
+			itemtype= int(BreakData.rows[i][1]/1000000);
+			itemnum = BreakData.rows[i][1] % 1000000;
+		}
+		else
+		{
+			itemtype = 0;
+			itemnum = 0;
+		}
+
+		//We read the 20 items.
+		newbreak->TotalChance = 0;
         for(int j=0;j<20;j++)
         {
-            newbreak->product[j]=BreakData.rows[i][2+j*old_break];
-            newbreak->amount_min[j]=0;
-
-            if(old_break!=3)
-            {
-                newbreak->amount_min[j]=BreakData.rows[i][3+j*old_break];
-                newbreak->amount_max[j]=BreakData.rows[i][4+j*old_break];
-                newbreak->prob[j]=BreakData.rows[i][5+j*old_break];
-            }
-            else
-            {
-                newbreak->amount_max[j]=BreakData.rows[i][3+j*old_break];
-                newbreak->prob[j]=BreakData.rows[i][4+j*old_break];
-            }
-
-            if(newbreak->amount_min[j]==0)
-            {
-                newbreak->amount_min[j]=1;
-            }
-
+            newbreak->product[j] = BreakData.rows[i][2 + j * old_break];
+            newbreak->amount_min[j] = 1;
+            newbreak->amount_max[j] = BreakData.rows[i][3 + j * old_break];
+            newbreak->prob[j] = BreakData.rows[i][4 + j * old_break];
+			newbreak->minChance[j] = (long)newbreak->TotalChance;					//set min value for this reward item
+			newbreak->TotalChance += newbreak->prob[j];
+			newbreak->maxChance[j] = (long)newbreak->TotalChance;					//set max value for this reward item
         }
 
-        if(old_break!=3)
-        {
-            //newbreak->numToGive = BreakData.rows[i][83];
-            //newbreak->total = BreakData.rows[i][84];
-            newbreak->reward_min = BreakData.rows[i][82];
-            newbreak->reward_max = BreakData.rows[i][83];
-            newbreak->nb_reward = BreakData.rows[i][84];
-        }
-        else
-        {
-            //newbreak->numToGive = BreakData.rows[i][62];
-            //newbreak->total = BreakData.rows[i][63];
-            newbreak->reward_min = 1;
-            newbreak->reward_max = BreakData.rows[i][62];
-            newbreak->nb_reward = BreakData.rows[i][63];
-        }
+        newbreak->reward_min = 1;
+        newbreak->minDis = BreakData.rows[i][62];
+        newbreak->maxDis = BreakData.rows[i][63];
 
         nb_break++;
         //BreakList.push_back( newbreak );
-        BreakList[i]=newbreak;
+        BreakList[i] = newbreak;
+		if(i == 257)
+		{
+			Log(MSG_DEBUG,"Break List data for item 257 (Vibe Vest)");
+			Log(MSG_WARNING,"First potential reward %i count %i",newbreak->product[0], newbreak->amount_max[0]);
+		}
+
+	}
         //Log(MSG_INFO,"Break added: (%i:%i), numtogive %i, total %i",newbreak->itemtype,newbreak->itemnum,newbreak->numToGive,newbreak->total);
 
-        //time to make the right choice :)
+        //PY: The rest of this is all based on thsoe CHOICE things tat were made erroniously earlier so I'm scrapping the lot
+		/*
+		
+		//time to make the right choice :)
         switch (choice)
         {
                 case 1:
                 {
                     //LMA: Commented because we add all the chests as regular breaks now, so the code below is done beforehand.
-                    /*//Break, should be easy.
+                    ///Break, should be easy.
                     CBreakList* newbreak = new (nothrow) CBreakList;
                     if(newbreak==NULL)
                     {
@@ -3439,7 +2741,7 @@ bool CWorldServer::LoadBreakChestBlueList()
                     //BreakList.push_back( newbreak );
                     BreakList[i]=newbreak;
                     //Log(MSG_INFO,"Break added: (%i:%i), numtogive %i, total %i",newbreak->itemtype,newbreak->itemnum,newbreak->numToGive,newbreak->total);
-                    */
+                    //
                     break;
                 }
                 case 2:
@@ -3459,7 +2761,7 @@ bool CWorldServer::LoadBreakChestBlueList()
                     /*if (itemnum>=245&&itemnum<=247)
                     {
                         newchest->chestid+=2;
-                    }*/
+                    }//
 
                    //We read the 20 items.
                    int nb_rewards=0;
@@ -3586,11 +2888,11 @@ bool CWorldServer::LoadBreakChestBlueList()
         }
 
 
-    }
+    }*/
 
-    Log(MSG_INFO,"We parsed %i Breaks, %i chests, %i blue craft",nb_break,nb_chest,nb_craft);
-    Log( MSG_LOAD, "Break / Chest / Blue Craft - STB - Done" );
-
+    //Log(MSG_INFO,"We parsed %i Breaks, %i chests, %i blue craft",nb_break,nb_chest,nb_craft);
+    //Log( MSG_LOAD, "Break / Chest / Blue Craft - STB - Done" );
+	Log( MSG_LOAD, "Break List Loaded" );
 
     return true;
 }

@@ -138,7 +138,7 @@ int STBStoreDataChar( const char* filename, CSTBDataChar* data )
                 }
                 //LMA: end.
             }
-            else if(current_col>=22&&current_col<=24)
+            else if(current_col >= 22 && current_col <= 24)
             {
                 //qsd triggers.
                 if(fieldlen==0)
@@ -187,7 +187,9 @@ int STBStoreDataNPC( const char* filename, CSTBDataChar* data )
 	if (  fh== 0 ) {
 		Log( MSG_ERROR, "Could not load STB '%s'", filename );
 		return 1;
-	}else{
+	}
+	else
+	{
 		// Read the header
 		fseek( fh, 4, SEEK_SET );
 		fread( &dataoffset, 4, 1, fh );
@@ -213,14 +215,14 @@ int STBStoreDataNPC( const char* filename, CSTBDataChar* data )
             if(current_col==40)
             {
                 //STL.
-                if (fieldlen>3&&tmpfield[0]==76)
+                if (fieldlen > 3 && tmpfield[0] == 76)
                 {
 
                     for(int w=0;w<fieldlen;w++)
                     {
-                        if(tmpfield[w]>=48&&tmpfield[w]<=57)
+                        if(tmpfield[w] >= 48 && tmpfield[w] <= 57)
                             break;
-                        tmpfield[w]=48;
+                        tmpfield[w] = 48;
                     }
 
                 }
@@ -229,16 +231,14 @@ int STBStoreDataNPC( const char* filename, CSTBDataChar* data )
             else if(current_col==41)
             {
                 //qsd trigger.
-                if(fieldlen==0)
+                if(fieldlen == 0)
                 {
                     tmp[j]=0;
                     continue;
                 }
-
-                tmp[j]=MakeStrHash(tmpfield);
+                tmp[j] = MakeStrHash(tmpfield);
                 continue;
             }
-
 			tmp[j] = atol( tmpfield );
 		}
 

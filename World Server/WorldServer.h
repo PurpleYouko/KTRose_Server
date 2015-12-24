@@ -136,6 +136,7 @@ class CWorldServer : public CServerSocket
 
         //------------------ QUEST DATA (quest.cpp)
     	bool pakGiveQuest( CPlayer* thisclient, CPacket* P );
+		bool pakQuestTrigger( CPlayer* thisclient, CPacket* P );
 
     	//------------------ BUFFS (buff.cpp)
         CBValue GetBuffValue( CSkills* thisskill, CCharacter* character, UINT Evalue, UINT i, UINT up, UINT down, UINT CurrentValue, bool Buff=true, bool Status=false );

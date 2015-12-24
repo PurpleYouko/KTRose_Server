@@ -754,24 +754,26 @@ QUESTREWD(008)
 }
 
 //Execute Quest Trigger
-QUESTREWD(009){
+QUESTREWD(009)
+{
 	GETREWDDATA(009);
 	char* tempName = reinterpret_cast<char*>(&data->szNextTriggerSN) - 2;
 	dword hash = MakeStrHash(tempName);
-  if( client->questdebug )
-  {
-    server->SendPM(client, "Execute Quest Trigger %s[%d] [%08x]", tempName, data->shNameLen, hash);
-  }
+	if( client->questdebug )
+	{
+		server->SendPM(client, "Execute Quest Trigger %s[%d] [%08x]", tempName, data->shNameLen, hash);
+	}
 
     int tempval=client->quest.RefNPC;
-    int is_ok=client->ExecuteQuestTrigger(hash,true);
-    client->quest.RefNPC=tempval;
+    int is_ok = client->ExecuteQuestTrigger(hash,true);
+    client->quest.RefNPC = tempval;
 
     return is_ok;
 }
 
 //Reset Stats
-QUESTREWD(010){
+QUESTREWD(010)
+{
   if( client->questdebug )
     server->SendPM(client, "Reset Stats");
 	client->CharInfo->StatPoints = 0;
