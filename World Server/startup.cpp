@@ -564,7 +564,7 @@ bool CWorldServer::LoadNPCData( )
         newnpc->stance = mRUNNING;						//AIP
         newnpc->wspeed = STB_NPC.rows[i][2];
         newnpc->rspeed = STB_NPC.rows[i][3];
-        //newnpc->dspeed = STB_NPC.rows[i][4];			//row 4 is monster size ...
+        newnpc->size = STB_NPC.rows[i][4];			
         newnpc->weapon = STB_NPC.rows[i][5];
         newnpc->subweapon = STB_NPC.rows[i][6];
         newnpc->level = STB_NPC.rows[i][7];

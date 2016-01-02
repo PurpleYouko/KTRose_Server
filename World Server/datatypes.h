@@ -572,6 +572,7 @@ struct CQuestItemData {
 struct CNPCData {
     UINT id;
     UINT life;
+	UINT size;
     UINT wspeed;
     UINT rspeed;
     BYTE stance;    //LMA: AIP?

@@ -343,7 +343,7 @@ unsigned int CMonster::GetZulyDropRate( )
 bool CMonster::SetStats(bool all)
 {
     if(thisnpc == NULL) return false;
-    Stats->Level = thisnpc->level;					// PY: going to need to change this to allow for adjustable level monsters. thisnpc values are read directly from STB   
+    
     Stats->Attack_Power = GetAttackPower( );
     Stats->Defense = GetDefense( );
     Stats->xprate = GetXPRate( );

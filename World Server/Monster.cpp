@@ -34,9 +34,9 @@ bool CMonster::UpdateValues( )
 void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
 {
     BEGINPACKET( pak, 0x792 );
-	//struct gsv_MOB_CHAR
-	ADDWORD    ( pak, clientid );										//PY this is wrong. Shopuld be short clientid + short Quest id. i guess questid always goes through empty
+												
 	//struct tag_ADD_CHAR
+	ADDWORD    ( pak, clientid );
 	ADDFLOAT   ( pak, Position->current.x*100 );
 	ADDFLOAT   ( pak, Position->current.y*100 );						//current X and Y position
 
@@ -157,8 +157,16 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
 	//and finally DWORD StausFlag
     ADDDWORD( pak, GServer->BuildBuffs( this ) );
 	//End of client side structure the rest of this stuff will be ignored in the client
+	
+	//struct gsv_MOB_CHAR
 	ADDWORD   ( pak, montype );
 	ADDWORD   ( pak, 0x0000 );
+	ADDWORD	  ( pak, thismon->Stats->Level );
+	ADDWORD   ( pak, thismon->Stats->Size );
+
+
+
+	/*
 	if(IsSummon( ))
     {
         ADDWORD( pak, owner );
@@ -172,7 +180,7 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
            ADDWORD( pak, 0x0000 ); //id del skill (si es summon de skill)
         }
 
-    }
+    }*/
 	player->client->SendPacket( &pak );
 
     //LMA: supportive summons (lucky ghost)

@@ -29,6 +29,7 @@ CCharacter::CCharacter( )
     refnpc=NULL;
     assert(Stats);
     Stats->Level = 0;
+	Stats->Size = 0;
     Stats->HP = 0;
     Stats->MP = 0;
     Stats->MaxHP = 0;

@@ -39,7 +39,7 @@ class CMap
         bool RemovePlayer( CPlayer* player, bool clearobject=true );
 
     //CMonster* AddMonster( UINT montype, fPoint position,  UINT owner=0, UINT spawnid=0, bool GetDropData=false );
-    CMonster* AddMonster( UINT montype, fPoint position,  UINT owner=0, UINT spawnid=0, UINT aggro = 0, bool IsTD = false, UINT limit = 0, UINT AI = 0);
+    CMonster* AddMonster( UINT montype, fPoint position,  UINT owner=0, UINT spawnid=0, UINT aggro = 0, bool IsTD = false, UINT limit = 0, UINT AI = 0, int monLevel = 0, int monSize = 0);
     bool DeleteMonster( CMonster*, bool clearobject=false, UINT i=0 );
     bool AddDrop( CDrop* drop );
     bool DeleteDrop( CDrop* drop );

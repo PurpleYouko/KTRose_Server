@@ -106,7 +106,7 @@ bool CMap::RemovePlayer( CPlayer* player, bool clearobject )
 
 
 // add a new monster to this map
-CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spawnid , UINT aggro, bool IsTD, UINT limit, UINT AI)
+CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spawnid , UINT aggro, bool IsTD, UINT limit, UINT AI, int monLevel, int monSize)
 {
     //if(AI == 999) Log( MSG_WARNING, "AddMonster Spawning a TD mob" );
     // check if is a valid monster
@@ -135,6 +135,22 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     monster->Stats->stance = 0;             //mWalking
     monster->Status->spawnid = spawnid;     //this way we can easily find which spawn a mob belongs to
     monster->SetStats( );
+	if( monLevel != 0 )
+	{
+		monster->Stats->Level = monLevel;
+	}
+	else
+	{
+		monster->Stats->Level = thisnpc->level;					// PY: going to need to change this to allow for adjustable level monsters. thisnpc values are read directly from STB   
+	}
+	if( monSize != 0)
+	{
+		monster->Stats->Size = monSize;
+	}
+	else
+	{
+		monster->Stats->Size = thisnpc->size;
+	}
     //if(AI == 999) Log( MSG_WARNING, "AddMonster Stats set " );
 
 
@@ -244,7 +260,7 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
                             ADDWORD    ( pak, monster->clientid );
                             ADDWORD    ( pak, 0x8005 );
                             GServer->SendToVisible( &pak, monster);*/
-    MonsterList.push_back( monster );
+    
     if(AI == 999) Log( MSG_WARNING, "Added to monster list " );
     if(spawnid != 0)
     {
@@ -267,6 +283,7 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     monster->hitcount = 0xFF;
     //monster->OnSpawn( false );
     monster->hitcount = 0;
+	MonsterList.push_back( monster );
     return monster;
 }
 

@@ -1089,10 +1089,10 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         if(loc == 1) // Adventure Plains
         {
             map = 22;
-            x = 5800; //old map
-            y = 5200; // old map
-            //x = 5098; // new map
-            //y = 5322; // new map
+           // x = 5800; //old map
+           // y = 5200; // old map
+            x = 5098; // new map
+            y = 5322; // new map
         }
         else if(loc == 2) // Canyon City of Zant
         {
@@ -2344,9 +2344,14 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
 		//if ((tmp = strtok(NULL, " "))!=NULL) monteam=atoi(tmp);
 		int monaip = 0;
 		if ((tmp = strtok(NULL, " ")) != NULL) monaip = atoi(tmp);
+		int monlevel = 0;
+		if ((tmp = strtok(NULL, " ")) != NULL) monlevel = atoi(tmp);
+		int monsize = 0;
+		if ((tmp = strtok(NULL, " ")) != NULL) monsize = atoi(tmp);
+		
         if (moncount > Config.monmax) moncount = Config.monmax; //max monsters from config
-		Log( MSG_GMACTION, " %s : /mon %i,%i,%i,%i" , thisclient->CharInfo->charname, montype, moncount, monaip);
-		return pakGMMon( thisclient, montype, moncount, monaip);
+		Log( MSG_GMACTION, " %s : /mon %i,%i,%i,%i,%i" , thisclient->CharInfo->charname, montype, moncount, monaip, monlevel, monsize);
+		return pakGMMon( thisclient, montype, moncount, monaip, monlevel, monsize);
 	}
 	if (strcmp(command, "tdmon") == 0)
     {
@@ -3927,7 +3932,7 @@ bool CWorldServer::pakGMAnn( CPlayer* thisclient, CPacket *P )
 }
 
 // GM: Spawn x mobs
-bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int monAI)
+bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int monAI, int monLevel, int monSize)
 {
     CMap* map = MapList.Index[thisclient->Position->Map]; //find current map
     if(monAI == 999) //it's a TD mob
@@ -3952,7 +3957,7 @@ bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int
         for (int i=0; i<moncount; i++)
         {
             fPoint position = RandInCircle( thisclient->Position->current, 10 );
-            map->AddMonster( montype, position, 0, 0, 1, 0, 0, monAI );
+            map->AddMonster( montype, position, 0, 0, 1, 0, 0, monAI, monLevel, monSize );
         }
         SendPM(thisclient,"%i monsters of type %i summoned in Map: %i using AI %i",moncount,montype,map->id,monAI);
     }

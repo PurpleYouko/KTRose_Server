@@ -71,6 +71,7 @@ struct STATS
     long MaxHP;
     long MaxMP;
     int stance;
+	unsigned int Size;
 	int CheatMaxHP;
 	int CheatMaxMP;
 	unsigned int CheatMoveSpeed;

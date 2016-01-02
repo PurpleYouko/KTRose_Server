@@ -444,6 +444,10 @@ bool CPlayer::VisiblityList( )
 	VisibleDrops = newVisibleDrops;
 	VisibleMonsters = newVisibleMonsters;
 	VisibleNPCs = newVisibleNPCs;
+	newVisiblePlayers.clear();
+	newVisibleDrops.clear();
+	newVisibleMonsters.clear();
+	newVisibleNPCs.clear();
     return true;
 
 }
