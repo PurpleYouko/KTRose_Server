@@ -32,11 +32,6 @@ CMonster* CMap::ConverToMonster( CMonster* monster, UINT newmontype, bool heal )
     monster->SetStats( );
     if(heal)
         monster->Stats->HP = monster->Stats->MaxHP;
-    if(monster->owner==0)
-    {
-        monster->MonsterDrop->mobdrop = GServer->GetDropData( monster->thisnpc->dropid );
-        monster->MonsterDrop->mapdrop = GServer->GetDropData( id );
-    }
     BEGINPACKET( pak, 0x774 );
     ADDWORD    ( pak, monster->clientid );
     ADDWORD    ( pak, newmontype );
@@ -149,6 +144,7 @@ bool CMap::TeleportPlayer( CPlayer* player, fPoint coordold, bool TelePassenger 
     GServer->pakClearUser( player );
     GServer->ClearClientID( player->clientid );
     player->RestartPlayerVal( );
+	player->SetStats( );
     return true;
 }
 

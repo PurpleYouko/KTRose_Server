@@ -45,21 +45,21 @@ unsigned CWorldServer::BuildItemData( CItem thisitem )
 
 		//LMA: special lifespan for PAT, trying to fix a weird bug at loading.
 		unsigned part4 = 0;
-		if(thisitem.itemtype==14)
+		if(thisitem.itemtype == 14)
 		{
-		    if (thisitem.sp_value==0&&thisitem.lifespan>0)
+		    if (thisitem.sp_value == 0 && thisitem.lifespan > 0)
 		    {
-		        thisitem.sp_value=thisitem.lifespan*10;
+		        thisitem.sp_value = thisitem.lifespan * 10;
 		    }
 
-		    if(thisitem.sp_value<0||thisitem.sp_value>1000)
+		    if(thisitem.sp_value < 0 || thisitem.sp_value > 1000)
 		    {
-		        thisitem.sp_value=thisitem.lifespan*10;
+		        thisitem.sp_value = thisitem.lifespan * 10;
 		    }
 
-		    if(thisitem.sp_value%10==0&&thisitem.sp_value<1000)
+		    if(thisitem.sp_value % 10 == 0&& thisitem.sp_value < 1000)
 		    {
-		        part4 = (thisitem.sp_value+1) << 16;
+		        part4 = (thisitem.sp_value + 1) << 16;
 		    }
 		    else
 		    {
@@ -78,13 +78,84 @@ unsigned CWorldServer::BuildItemData( CItem thisitem )
 
 		//LMA: fix (we can't have gems and extra stats at the same time).
 		//blue stuff can have stats but they are in their STB, NOT as extra stats!
-		if(part7!=0)
+		if(part7 != 0)
 		{
-		    part6=0;
+		    part6 = 0;
 		}
 
 		return part1 | part2 | part3 | part4 | part5 | part6 | part7;
 	}
+}
+
+CPacket CWorldServer::AddItemData( CItem item, CPacket pak )
+{
+	item.isCreated = 0;							//PY this isn't ever used in the client but it does become a part of GetHEADER() function so it could seriously screw up the client if not defined here
+	if( item.itemtype < 10 || item.itemtype > 12 )
+	{
+		// it's an equip or cart part			 26 bytes
+		ADDBYTE    ( pak, item.itemtype );
+		ADDWORD	   ( pak, item.itemnum );
+		ADDBYTE	   ( pak, item.isCreated );
+		ADDWORD    ( pak, item.stats );
+		ADDBYTE    ( pak, item.durability );
+		ADDWORD    ( pak, item.lifespan );
+		ADDBYTE	   ( pak, item.socketed );
+		ADDBYTE    ( pak, item.appraised );
+		ADDBYTE    ( pak, item.refine );
+		ADDWORD	   ( pak, item.UStat[0] );		//PY new added stat system
+		ADDWORD	   ( pak, item.UStat[1] );
+		ADDWORD	   ( pak, item.UValue[0] );
+		ADDWORD	   ( pak, item.UValue[1] );
+        ADDDWORD   ( pak, 0x00000000 );
+        ADDWORD    ( pak, 0x0000 );
+	}
+	else
+	{
+		//it's stackable						26 bytes
+		ADDBYTE    ( pak, item.itemtype );
+		ADDWORD	   ( pak, item.itemnum );
+		ADDBYTE	   ( pak, item.isCreated );
+		ADDDWORD   ( pak, item.count );							//same memory space as stats, durability and half of lifespan
+		ADDDWORD   ( pak, 0x00000000 );	
+		ADDDWORD   ( pak, 0x00000000 );
+		ADDDWORD   ( pak, 0x00000000 );
+        ADDDWORD   ( pak, 0x00000000 );							//timer stuff
+        ADDWORD    ( pak, 0x0000 );		
+	}
+	return pak;
+}
+
+CPacket CWorldServer::AddItemHead( CItem item, CPacket pak )
+{
+	item.isCreated = 0;
+	ADDBYTE    ( pak, item.itemtype );
+	ADDWORD	   ( pak, item.itemnum );
+	ADDBYTE	   ( pak, item.isCreated );
+	return pak;
+}
+
+
+CPacket CWorldServer::AddItemBody( CItem item, CPacket pak )
+{
+	if( item.itemtype < 10 || item.itemtype > 12 )
+	{
+		ADDWORD    ( pak, item.stats );
+		ADDBYTE    ( pak, item.durability );
+		ADDWORD    ( pak, item.lifespan );
+		ADDBYTE	   ( pak, item.socketed );
+		ADDBYTE    ( pak, item.appraised );
+		ADDBYTE    ( pak, item.refine );
+        ADDDWORD   ( pak, 0x00000000 );
+        ADDWORD    ( pak, 0x0000 );
+	}
+	else
+	{
+		ADDDWORD   ( pak, item.count );							
+		ADDDWORD   ( pak, 0x00000000 );								
+        ADDDWORD   ( pak, 0x00000000 );							
+        ADDWORD    ( pak, 0x0000 );
+	}
+	return pak;
 }
 
 // Get Item By Head and Data (Coded by Caali)
@@ -212,13 +283,13 @@ void CWorldServer::SendToVisible( CPacket* pak, CMonster* thismon, CDrop* thisdr
     {
         CPlayer* otherclient = map->PlayerList.at(i);
         if(otherclient == NULL) continue;
-        if(otherclient->client==NULL) continue;
+        if(otherclient->client == NULL) continue;
         if(!otherclient->client->isActive) continue;
         if(!otherclient->Session->inGame) continue;
 
         if(IsVisible(otherclient,thismon))
             otherclient->client->SendPacket( pak );
-        if(thisdrop!=NULL)
+        if(thisdrop != NULL)
         {
             otherclient->VisibleDrops.push_back( thisdrop );
         }
@@ -362,9 +433,9 @@ void CWorldServer::SendToUnionInMap( CPacket* pak, int mapid, int union_player)
 // -- CLIENT --
 bool CWorldServer::IsVisible( CPlayer* thisclient, CPlayer* otherclient )
 {
-	for(unsigned j=0; j<thisclient->VisiblePlayers.size(); j++)
+	for(short j=0; j<thisclient->VisiblePlayers.size(); j++)
     {
-		if (otherclient==thisclient->VisiblePlayers.at(j))
+		if (otherclient->clientid == thisclient->VisiblePlayers.at(j))
             return true;
 	}
 	return false;
@@ -375,9 +446,8 @@ bool CWorldServer::IsVisible( CPlayer* thisclient, CMonster* thismon )
 {
 	for(unsigned j=0; j<thisclient->VisibleMonsters.size(); j++)
     {
-        //LMATEST
-		//if (thismon==thisclient->VisibleMonsters.at(j)) return true;
-		if (thismon->clientid==thisclient->VisibleMonsters.at(j)) return true;
+		if (thismon->clientid == thisclient->VisibleMonsters.at(j)) 
+			return true;
 	}
 	return false;
 }
@@ -385,8 +455,10 @@ bool CWorldServer::IsVisible( CPlayer* thisclient, CMonster* thismon )
 // -- DROP --
 bool CWorldServer::IsVisible( CPlayer* thisclient, CDrop* thisdrop )
 {
-	for(unsigned j=0; j<thisclient->VisibleDrops.size(); j++) {
-		if (thisdrop==thisclient->VisibleDrops.at(j)) return true;
+	for(unsigned j=0; j<thisclient->VisibleDrops.size(); j++) 
+	{
+		if (thisdrop == thisclient->VisibleDrops.at(j)) 
+			return true;
 	}
 	return false;
 }
@@ -394,8 +466,10 @@ bool CWorldServer::IsVisible( CPlayer* thisclient, CDrop* thisdrop )
 // -- NPC --
 bool CWorldServer::IsVisible( CPlayer* thisclient, CNPC* thisnpc )
 {
-	for(unsigned j=0; j<thisclient->VisibleNPCs.size(); j++) {
-		if (thisnpc==thisclient->VisibleNPCs.at(j)) return true;
+	for(short j=0; j<thisclient->VisibleNPCs.size(); j++) 
+	{
+		if (thisnpc->clientid == thisclient->VisibleNPCs.at(j)) 
+			return true;
 	}
 	return false;
 }
@@ -403,8 +477,11 @@ bool CWorldServer::IsVisible( CPlayer* thisclient, CNPC* thisnpc )
 //LMA: NPC Type (used for AIP)
 bool CWorldServer::IsVisibleNPCType( CPlayer* thisclient, UINT npc_type )
 {
-	for(unsigned j=0; j<thisclient->VisibleNPCs.size(); j++) {
-		if (npc_type==thisclient->VisibleNPCs.at(j)->npctype) return true;
+	for(unsigned j=0; j<thisclient->VisibleNPCs.size(); j++) 
+	{
+		CNPC* thisnpc = GetNPCByCID(thisclient->VisibleNPCs.at(j), thisclient->Position->Map);
+		if (npc_type == thisnpc->npctype) 
+			return true;
 	}
 	return false;
 }
@@ -415,22 +492,22 @@ bool CWorldServer::IsVisibleNPCType( CPlayer* thisclient, UINT npc_type )
 unsigned CWorldServer::GetNewClientID( )
 {
     //LMA: if the thread is already blocked, it should return EBUSY else 0
-    UINT res_blockP=pthread_mutex_trylock(&GServer->PlayerMutex);
-    UINT res_blockM=pthread_mutex_trylock(&GServer->MapMutex);
+    UINT res_blockP = pthread_mutex_trylock(&GServer->PlayerMutex);
+    UINT res_blockM = pthread_mutex_trylock(&GServer->MapMutex);
 
 	for (unsigned i=last_cid; i<0xffff; i++)
     {
-		if (ClientIDList[i]!=0 && time(NULL)-ClientIDList[i]>10)
+		if (ClientIDList[i] != 0 && time(NULL) - ClientIDList[i] > 10)
         {
 			ClientIDList[i] = 0;
 			//Log(MSG_INFO,"XCID NEW %u",i);
-			last_cid=i+1;
-            if (res_blockP==0)
+			last_cid = i + 1;
+            if (res_blockP == 0)
             {
                 pthread_mutex_unlock( &GServer->PlayerMutex );
             }
 
-            if(res_blockM==0)
+            if(res_blockM == 0)
             {
                 pthread_mutex_unlock( &GServer->MapMutex );
             }
@@ -443,17 +520,17 @@ unsigned CWorldServer::GetNewClientID( )
 	//Not found at the first pass, let's loop again.
 	for (unsigned i=1; i<=last_cid; i++)
     {
-		if (ClientIDList[i]!=0 && time(NULL)-ClientIDList[i]>10)
+		if (ClientIDList[i] != 0 && time(NULL) - ClientIDList[i] > 10)
         {
 			ClientIDList[i] = 0;
 			//Log(MSG_INFO,"XCID (2) NEW %u",i);
 			last_cid=i+1;
-            if (res_blockP==0)
+            if (res_blockP == 0)
             {
                 pthread_mutex_unlock( &GServer->PlayerMutex );
             }
 
-            if(res_blockM==0)
+            if(res_blockM == 0)
             {
                 pthread_mutex_unlock( &GServer->MapMutex );
             }
@@ -466,12 +543,12 @@ unsigned CWorldServer::GetNewClientID( )
     //TODO: cleaning function there?
     Log(MSG_INFO,"XCID ERR");
 
-    if (res_blockP==0)
+    if (res_blockP == 0)
     {
         pthread_mutex_unlock( &GServer->PlayerMutex );
     }
 
-    if(res_blockM==0)
+    if(res_blockM == 0)
     {
         pthread_mutex_unlock( &GServer->MapMutex );
     }
@@ -485,7 +562,7 @@ unsigned CWorldServer::GetNewClientID( )
 {
 	for (unsigned i=1; i<0xffff; i++)
     {
-		if (ClientIDList[i]!=0 && time(NULL)-ClientIDList[i]>10)
+		if (ClientIDList[i] != 0 && time(NULL) - ClientIDList[i] > 10)
         {
 			ClientIDList[i] = 0;
 			//Log(MSG_INFO,"XCID NEW %u",i);
@@ -642,8 +719,8 @@ void CWorldServer::ClearClientID( unsigned int id )
     //Log(MSG_INFO,"In clear CID %i",id);
     //LMA: if the thread is already blocked, it should return EBUSY
     //else 0
-    UINT res_blockP=pthread_mutex_trylock(&GServer->PlayerMutex);
-    UINT res_blockM=pthread_mutex_trylock(&GServer->MapMutex);
+    UINT res_blockP = pthread_mutex_trylock(&GServer->PlayerMutex);
+    UINT res_blockM = pthread_mutex_trylock(&GServer->MapMutex);
     #endif
 
     if(ClientIDList[id]>1)
@@ -689,17 +766,6 @@ CDrop* CWorldServer::GetDropByID( UINT id, UINT map )
 	return NULL;
 }
 
-// Search a Chest by ChestID
-CChest* CWorldServer::GetChestByID( UINT id )
-{
-    for(UINT i=0;i<ChestList.size();i++)
-    {
-        CChest* chest = (CChest*) ChestList.at(i);
-    if (chest->chestid == id)
-            return chest;
-    }
-    return NULL;
-}
 
 // Search a Monster by ID
 CMonster* CWorldServer::GetMonsterByID( UINT id, UINT map )
@@ -744,15 +810,15 @@ CPlayer* CWorldServer::GetClientByID( UINT id, UINT map )
 	return NULL;
 }
 
-// Search a Client by CharID
+// Search a Client by ClientID
 CPlayer* CWorldServer::GetClientByCID( DWORD id, UINT map )
 {
-    if(map!=0)
+    if(map != 0)
         return MapList.Index[map]->GetCharIDInMap( id );
     for(UINT i=0;i<ClientList.size();i++)
     {
         CPlayer* thisclient = (CPlayer*) ClientList.at(i)->player;
-		if (thisclient->CharInfo->charid==id)
+		if (thisclient->CharInfo->charid == id)
             return thisclient;
 	}
 	return NULL;
@@ -810,27 +876,6 @@ CSpawnArea* CWorldServer::GetSpawnArea( UINT id, UINT map )
 	return NULL;
 }
 
-#ifdef USEIFO
-CMobGroup* CWorldServer::GetMobGroup(UINT id, UINT map ) {
-  if (map != 0) {
-    for (unsigned j = 0; j < MapList.Index[map]->MobGroupList.size(); j++) {
-      CMobGroup* thisgroup = MapList.Index[map]->MobGroupList.at(j);
-      if (thisgroup->id == id)
-        return thisgroup;
-    }
-  } else {
-    for (map = 0; map < MapList.Map.size(); map++) {
-      for (unsigned j = 0; j < MapList.Index[map]->MobGroupList.size(); j++) {
-        CMobGroup* thisgroup = MapList.Index[map]->MobGroupList.at(j);
-        if (thisgroup->id == id)
-          return thisgroup;
-      }
-    }
-  }
-  return NULL;
-}
-#endif
-
 // delete a spawn
 bool CWorldServer::DeleteSpawn( CSpawnArea* spawn )
 {
@@ -868,9 +913,9 @@ CNPC* CWorldServer::GetNPCByType( UINT npctype )
 // Search NPC by ID
 CNPC* CWorldServer::GetNPCByID( UINT id, UINT map )
 {
-    if(map!=0)
+    if( map != 0 )
     {
-        if (map>=MapList.max)
+        if( map >= MapList.max )
         {
             Log(MSG_WARNING,"Incorrect map %i >= %u in GetNPCByID",map,MapList.max);
             return NULL;
@@ -882,7 +927,28 @@ CNPC* CWorldServer::GetNPCByID( UINT id, UINT map )
 	for(unsigned j=0; j<MapList.Map.size(); j++)
     {
 		CNPC* thisnpc = MapList.Map.at( j )->GetNPCInMap( id );
-		if (thisnpc!=0)
+		if (thisnpc != 0)
+            return thisnpc;
+	}
+	return NULL;
+}
+
+//Search NPC by client id
+CNPC* CWorldServer::GetNPCByCID( UINT cid, UINT map )
+{
+	if( map != 0 )
+    {
+        if( map >= MapList.max )
+        {
+            Log(MSG_WARNING,"Incorrect map %i >= %u in GetNPCByID",map,MapList.max);
+            return NULL;
+        }
+        return MapList.Index[map]->GetNPCInMap( cid );
+    }
+	for(unsigned j=0; j<MapList.Map.size(); j++)
+    {
+		CNPC* thisnpc = MapList.Map.at( j )->GetNPCInMap( cid );
+		if (thisnpc != 0)
             return thisnpc;
 	}
 	return NULL;
@@ -1422,11 +1488,8 @@ CNPCData* CWorldServer::GetNPCDataByID( unsigned int id )
 // Get Consumible Item Info
 CUseInfo* CWorldServer::GetUseItemInfo(CPlayer* thisclient, unsigned int slot )
 {
-    if(thisclient->items[slot].count<1)
-    {
+    if(thisclient->items[slot].count < 1)
         return NULL;
-    }
-
     CUseInfo* useitem = new (nothrow) CUseInfo;
     if(useitem==NULL)
     {
@@ -1440,24 +1503,16 @@ CUseInfo* CWorldServer::GetUseItemInfo(CPlayer* thisclient, unsigned int slot )
     useitem->usescript = 0;
     useitem->usetype = 0;
     useitem->usevalue = 0;
-    useitem->use_buff=0;
-    useitem->cooldown_type=0;   //LMA: cooldown handling for food.
-    useitem->cooldown=0;   //LMA: cooldown handling for food.
+    useitem->use_buff = 0;
+	useitem->skillid = 0;
+    useitem->cooldown_type = 0;   //LMA: cooldown handling for food.
+    useitem->cooldown = 0;   //LMA: cooldown handling for food.
     unsigned int type = 0;
     useitem->itemnum = thisclient->items[slot].itemnum;
     useitem->itemtype = thisclient->items[slot].itemtype;
     type = UseList.Index[useitem->itemnum]->type;
-
-    //LMA TEST
-    //forcing some values...
-    /*
-    useitem->itemnum = 894;
-    useitem->itemtype = 10;
-    type = 314;
-    */
-    //END LMA TEST
-
-    Log(MSG_INFO,"%s:: Using item (%i:%i), type %i",thisclient->CharInfo->charname,useitem->itemtype,useitem->itemnum,type);
+	
+    //Log(MSG_INFO,"%s:: Using item (%i:%i), type %i",thisclient->CharInfo->charname,useitem->itemtype,useitem->itemnum,type);
 
     switch(type)
     {
@@ -1465,17 +1520,27 @@ CUseInfo* CWorldServer::GetUseItemInfo(CPlayer* thisclient, unsigned int slot )
         case 312://Food
         {
             useitem->usescript = 1;
-            useitem->usetype = UseList.Index[useitem->itemnum]->useeffect[0];
+            useitem->usetype = UseList.Index[useitem->itemnum]->usecondition[1];
             useitem->usevalue = UseList.Index[useitem->itemnum]->useeffect[1];
-            useitem->cooldown_type=UseList.Index[useitem->itemnum]->cooldown_type;
-            useitem->cooldown=UseList.Index[useitem->itemnum]->cooldown;
+            useitem->cooldown_type = UseList.Index[useitem->itemnum]->cooldown_type;
+            useitem->cooldown = UseList.Index[useitem->itemnum]->cooldown;
         }
         break;
         case 313://Magic Item [scrolls/summons/fireworks/etc]
         {
-            // scrolls [maxhp,attackpower up, ... ]
+            //Magic items ALL use a skill id as a usevalue
+			useitem->skillid = UseList.Index[useitem->itemnum]->useeffect[1];
+			CSkills* thisskill = GetSkillByID( useitem->skillid );
+			//figure out what type of skill it is so we can set usescript
+			
+
+
+
+
+			
+			// scrolls [maxhp,attackpower up, ... ]
             //Arua Blessing added (944, thanks to PY)
-            if( (useitem->itemnum>79 && useitem->itemnum<93) ||
+            if( (useitem->itemnum > 79 && useitem->itemnum < 93) ||
                 (useitem->itemnum>300 && useitem->itemnum<320) ||
                 (useitem->itemnum>330 && useitem->itemnum<340) ||
                  useitem->itemnum == 944 ||
@@ -1730,11 +1795,11 @@ CUseInfo* CWorldServer::GetUseItemInfo(CPlayer* thisclient, unsigned int slot )
         }
         break;
         case 320://Automatic Consumption - HP, MP, Stamina, Clan Point
-            if ((useitem->itemnum>150 && useitem->itemnum<192)||(useitem->itemnum>61 && useitem->itemnum<70))
+            if ((useitem->itemnum > 150 && useitem->itemnum < 192) || (useitem->itemnum > 61 && useitem->itemnum < 70))
             {
                 useitem->usescript = 1;
                 //clan points
-                if(useitem->itemnum>180 && useitem->itemnum<192)
+                if(useitem->itemnum > 180 && useitem->itemnum < 192)
                      useitem->usescript = 13;
                 useitem->usetype = UseList.Index[useitem->itemnum]->useeffect[0];
                 useitem->usevalue = UseList.Index[useitem->itemnum]->useeffect[1];
@@ -1791,26 +1856,26 @@ CUseInfo* CWorldServer::GetUseItemInfo(CPlayer* thisclient, unsigned int slot )
                         {
                             //useitem->usescript = 1;
                             useitem->usescript = 18;
-                            useitem->usetype =0;
-                            useitem->usevalue =UseList.Index[useitem->itemnum]->quality/100;
-                            thisclient->bonusxp=1;
-                            thisclient->wait_validation=UseList.Index[useitem->itemnum]->quality/100;
+                            useitem->usetype = 0;
+                            useitem->usevalue = UseList.Index[useitem->itemnum]->quality/100;
+                            thisclient->bonusxp = 1;
+                            thisclient->wait_validation = UseList.Index[useitem->itemnum]->quality/100;
                             Log(MSG_INFO,"Wait validation %i",thisclient->wait_validation);
 
                             //Good version?
-                            if(useitem->itemnum==200||useitem->itemnum==948)
+                            if(useitem->itemnum == 200||useitem->itemnum == 948)
                             {
                                 //valid until logout (limit to one hour)
                                 thisclient->once=true;
                                 //thisclient->timerxp=clock()+60*60*1000;  //1 hour
-                                thisclient->timerxp=time(NULL)+60*60;  //1 hour
+                                thisclient->timerxp = time(NULL ) + 60 * 60;  //1 hour
                                 Log(MSG_INFO,"Bonus XP to %i",thisclient->bonusxp);
                                 BEGINPACKET( pak, 0x702 );
                                 ADDSTRING( pak, "The effect will hold until you log off or you play for one hour." );
                                 ADDBYTE( pak, 0 );
                                 thisclient->client->SendPacket(&pak);
                             }
-                            else if (useitem->itemnum==199)
+                            else if (useitem->itemnum == 199)
                             {
                                 //30 minutes.
                                 //valid until logout
@@ -2152,6 +2217,12 @@ bool CWorldServer::IsValidItem(UINT type, UINT id )
     return true;
 }
 
+byte CWorldServer::GetByteValue( const char* s , void* var )
+{
+    char *tmp = strtok( (char*)var, (const char*)s );
+    return atoi(tmp==NULL?0:tmp);
+}
+
 int CWorldServer::GetIntValue( const char* s , void* var )
 {
     char *tmp = strtok( (char*)var, (const char*)s );
@@ -2311,122 +2382,136 @@ UINT CWorldServer::GetGridNumber(int mapid, int posx, int posy,CMonster* thismon
    return res;
 }
 
-//LMA: saving all storage
-bool CWorldServer::SaveAllStorage( CPlayer* thisclient)
-{
-
-    if(!GServer->DB->QExecute("DELETE FROM storage WHERE owner=%i", thisclient->Session->userid)) return true;
-    for(UINT i=0;i<160;i++)
-    {
-    	if (thisclient->storageitems[i].count > 0)
-        {
-    		GServer->DB->QExecute("INSERT INTO storage (owner,itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem) VALUES(%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i)",
-    							thisclient->Session->userid, thisclient->storageitems[i].itemnum, thisclient->storageitems[i].itemtype,thisclient->storageitems[i].refine, thisclient->storageitems[i].durability,
-    							thisclient->storageitems[i].lifespan, i, thisclient->storageitems[i].count, thisclient->storageitems[i].stats, (thisclient->storageitems[i].socketed?1:0),
-                                (thisclient->storageitems[i].appraised?1:0), thisclient->storageitems[i].gem );//Gem Fix by Irulagain
-    	}
-    }
-
-    return true;
-}
-
-//LMA: getting all storage.
-bool CWorldServer::GetAllStorage( CPlayer* thisclient)
-{
-    //resetting array
-    for(int k=0;k<MAX_STORAGE;k++)
-    {
-        thisclient->storageitems[k].itemnum = 0;
-        thisclient->storageitems[k].itemtype = 0;
-        thisclient->storageitems[k].refine = 0;
-        thisclient->storageitems[k].durability = 0;
-        thisclient->storageitems[k].lifespan = 0;
-        thisclient->storageitems[k].count = 0;
-        thisclient->storageitems[k].stats = 0;
-        thisclient->storageitems[k].socketed = false;
-        thisclient->storageitems[k].appraised = false;
-        thisclient->storageitems[k].gem = 0;
-    }
-
-	MYSQL_ROW row;
-	MYSQL_RES *result = GServer->DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum,count,stats,socketed,appraised,gem FROM storage WHERE owner=%i", thisclient->Session->userid);
-    if(result==NULL) return false;
-    thisclient->nstorageitems = mysql_num_rows(result);
-    while(row = mysql_fetch_row(result))
-    {
-        if(!GServer->IsValidItem( atoi(row[1]), atoi(row[0]) ) || atoi(row[6])==0)
-        {
-            Log(MSG_WARNING, "char %s have a invalid or empty item in storage: %i%i [%i], this item will be deleted", thisclient->CharInfo->charname, atoi(row[1]), atoi(row[0]), atoi(row[6]) );
-            continue;
-        }
-
-        UINT itemnum = atoi(row[5]);
-
-        if(itemnum<0||itemnum>=MAX_STORAGE)
-        {
-            Log(MSG_WARNING,"%s:: Storage, wrong slot (%i)",thisclient->CharInfo->charname,itemnum);
-            continue;
-        }
-
-        thisclient->storageitems[itemnum].itemnum = atoi(row[0]);
-        thisclient->storageitems[itemnum].itemtype = atoi(row[1]);
-        thisclient->storageitems[itemnum].refine = atoi(row[2]);
-        thisclient->storageitems[itemnum].durability = atoi(row[3]);
-        thisclient->storageitems[itemnum].lifespan = atoi(row[4]);
-        thisclient->storageitems[itemnum].count = atoi(row[6]);
-        thisclient->storageitems[itemnum].stats = atoi(row[7]);
-        thisclient->storageitems[itemnum].socketed = (atoi(row[8])==1)?true:false;
-        thisclient->storageitems[itemnum].appraised = (atoi(row[9])==1)?true:false;
-        thisclient->storageitems[itemnum].gem = atoi(row[10]);
-    }
-    GServer->DB->QFree( );
 
 
-     return true;
-}
 
 
-//LMA: Loading Wishlist.
+
+//Loading Wishlist.
 bool CWorldServer::GetWishlist( CPlayer* thisclient)
 {
-    for (int k=0;k<MAX_WISHLIST;k++)
-    {
-        thisclient->wishlistitems[k].count=0;
-        thisclient->wishlistitems[k].data=0;
-        thisclient->wishlistitems[k].head=0;
-        thisclient->wishlistitems[k].price=0;
-        thisclient->wishlistitems[k].slot=0;
-    }
-
     MYSQL_ROW row;
-	MYSQL_RES *result = DB->QStore("SELECT slot,itemhead,itemdata FROM wishlist WHERE itemowner=%i ORDER BY slot DESC",thisclient->CharInfo->charid);
-    if(result==NULL)
+    MYSQL_RES *result = GServer->DB->QStore("SELECT itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,ustat1,ustat2,uvalue1,uvalue2,trans_action FROM wishlist WHERE owner=%i ORDER BY slot DESC", thisclient->CharInfo->charid);
+    if(result == NULL)
     {
+        GServer->DB->QFree( );
+		Log(MSG_WARNING, "Something a bit wrong with this query");
         return false;
     }
-
-    while(row = mysql_fetch_row(result))
+    const char *tmpid;
+    char *itmp = 0;
+    int itemid;
+    while( row = mysql_fetch_row(result) )
     {
-        int myslot=0;
-        myslot=atoi(row[0]);
-
-        if(myslot<0||myslot>=MAX_WISHLIST)
+        tmpid = strtok( row[0] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
         {
-            Log(MSG_WARNING,"%s:: Wishlist, wrong slot (%i)",thisclient->CharInfo->charname,myslot);
-            continue;
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].itemnum = GServer->GetSafeAtoi(itmp);
         }
+	    tmpid = strtok( row[1] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].itemtype = GServer->GetSafeAtoi(itmp);
+        }
+        tmpid = strtok( row[2] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].refine = GServer->GetSafeAtoi(itmp) / 16;
+        }
+        tmpid = strtok( row[3] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].durability = GServer->GetSafeAtoi(itmp);
+        }
+        tmpid = strtok( row[4] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].lifespan = GServer->GetSafeAtoi(itmp);
+        }
+        tmpid = strtok( row[5] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+            {
+                thisclient->wishlistitems[i].count = GServer->GetSafeAtoi(itmp);
+                //Log(MSG_INFO,"slot: %i itemid: %i type: %i count: %i",i, items[i].itemnum,items[i].itemtype,items[i].count); //PAT items seem to load ok here
+            }
+        }
+        tmpid = strtok( row[6] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+            {
+                thisclient->wishlistitems[i].stats = GServer->GetSafeAtoi(itmp);
+                if(thisclient->wishlistitems[i].stats > 300)
+                {
+                    thisclient->wishlistitems[i].gem = thisclient->wishlistitems[i].stats;
+                }
+                else
+                    thisclient->wishlistitems[i].gem = 0;
+            }
+        }
+        tmpid = strtok( row[7] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].socketed = (atoi(itmp)==1)?true:false;
+            //just in case there is a discrepency in the database this will fix sockets.
+            if(thisclient->wishlistitems[i].gem != 0)
+                thisclient->wishlistitems[i].socketed = true;
+        }
+        tmpid = strtok( row[8] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].appraised = (atoi(itmp)==1)?true:false;
+        }
+		tmpid = strtok( row[9] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].UStat[0] = GServer->GetSafeAtoi(itmp);
+        }
+		tmpid = strtok( row[10] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].UStat[1] = GServer->GetSafeAtoi(itmp);
+        }
+		tmpid = strtok( row[11] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].UValue[0] = GServer->GetSafeAtoi(itmp);
+        }
+		tmpid = strtok( row[12] , "|");
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            if((itmp = strtok( NULL , "|"))!= NULL)
+                thisclient->wishlistitems[i].UValue[1] = GServer->GetSafeAtoi(itmp);
+        }
+        for(unsigned int i=1;i<=MAX_WISHLIST; i++)
+        {
+            // delete bad items
+            if(thisclient->wishlistitems[i].itemnum > GServer->EquipList[thisclient->wishlistitems[i].itemtype].STBMax)
+            {
+                Log(MSG_INFO,"deleting item in slot: %i itemid: %i type: %i count: %i",i, thisclient->wishlistitems[i].itemnum,thisclient->wishlistitems[i].itemtype,thisclient->wishlistitems[i].count);
+                //Item number too high
+                thisclient->wishlistitems[i].itemnum = 0;
+                thisclient->wishlistitems[i].itemtype = 0;
+                thisclient->wishlistitems[i].count = 0;
+                thisclient->wishlistitems[i].durability = 0;
 
-        thisclient->wishlistitems[myslot].slot=myslot;
-        thisclient->wishlistitems[myslot].head=atoi(row[1]);
-        thisclient->wishlistitems[myslot].data=atoi(row[2]);
-        thisclient->wishlistitems[myslot].price=0;
-        thisclient->wishlistitems[myslot].count=0;
+            }
+        }
     }
-
-    GServer->DB->QFree( );
-
-
-    return true;
+	GServer->DB->QFree( );
+	return true;
 }
 
 //LMA: Get Zuly from Storage (from MySQL)
@@ -2644,13 +2729,7 @@ void CWorldServer::ReturnItemMallList(CPlayer* thisclient)
      //there's no void between two objects ;)
      for(int i=0;i<thisclient->nsitemmallitems;i++)
      {
-         ADDDWORD   ( pak, BuildItemHead( thisclient->itemmallitems[i] ) );
-         ADDDWORD   ( pak, BuildItemData( thisclient->itemmallitems[i] ) );
-         ADDWORD    ( pak, 0x0000 );
-         ADDWORD    ( pak, 0x0000 );
-         ADDWORD    ( pak, 0x0000 );
-         ADDBYTE    ( pak, 0x00);
-
+		 pak = AddItemData( thisclient->itemmallitems[i], pak );
          Log(MSG_INFO,"We send item in slot %i/%i: %i * %i:%i",i,thisclient->nsitemmallitems,thisclient->itemmallitems[i].count,thisclient->itemmallitems[i].itemtype,thisclient->itemmallitems[i].itemnum);
      }
 
@@ -2779,8 +2858,7 @@ void CWorldServer::TakeItemMallList(CPlayer* thisclient,int qty,int slot)
     ADDBYTE    ( pak, 0x04 );
     ADDBYTE    ( pak, slot );
     ADDBYTE    ( pak, newslot );
-   	ADDDWORD   ( pak, BuildItemHead( thisclient->items[newslot] ) );
-	ADDDWORD   ( pak, BuildItemData( thisclient->items[newslot] ) );
+	pak = AddItemData( thisclient->items[newslot], pak );
 	//signature
     ADDBYTE    (pak,0xbb);
     ADDBYTE    (pak,0xfb);
@@ -2789,8 +2867,7 @@ void CWorldServer::TakeItemMallList(CPlayer* thisclient,int qty,int slot)
     ADDWORD    (pak,0x0000);
     //End of item signature.
     ADDBYTE    ( pak, slot );
-    ADDDWORD   ( pak, BuildItemHead( thisclient->itemmallitems[slot] ) );
-    ADDDWORD   ( pak, BuildItemData( thisclient->itemmallitems[slot] ) );
+	pak = AddItemData( thisclient->itemmallitems[slot], pak );
 	//signature
     ADDBYTE    (pak,0x00);
     ADDBYTE    (pak,0x00);
@@ -2818,9 +2895,7 @@ void CWorldServer::TakeItemMallList(CPlayer* thisclient,int qty,int slot)
 
     //Saving :)
     SaveSlotMall(thisclient,slot);
-    thisclient->SaveSlot41(newslot);
-
-
+    thisclient->saveinventory();
     return;
 }
 
@@ -2844,103 +2919,37 @@ void CWorldServer::SendToAllInMap( CPacket* pak, int mapid)
 //LMA: return itemtype or itemnum
 //0 returns itemtype.
 //1 returns itemnum.
-UINT CWorldServer::gi(UINT itemvalue, short type)
+UINT CWorldServer::gi(DWORD itemvalue, short type)
 {
-    UINT itemtype=0;
-    UINT itemnum=0;
+    UINT itemtype = 0;
+    UINT itemnum = 0;
 
-
-    itemtype= itemvalue / 1000;
-    if (itemtype >= 1 && itemtype <= 14)
-    {
-        itemnum = itemvalue % 1000;
-        if(type == 0)
-        {
-            return itemtype;
-        }
-
-        return itemnum;
-    }
-
-    if(itemtype == 0)
-    {
-        itemtype = itemvalue / 100;
-        if (itemtype >= 1 && itemtype <= 14)
-        {
-            itemnum = itemvalue % 100;
-            if(type == 0)
-            {
-                return itemtype;
-            }
-
-            return itemnum;
-        }
-
-        if(itemtype == 0)
-        {
-            itemtype=itemvalue/10;
-            if (itemtype>=1&&itemtype<=14)
-            {
-                itemnum=itemvalue % 10;
-                if(type==0)
-                {
-                    return itemtype;
-                }
-
-                return itemnum;
-            }
-
-        }
-
-        if(itemtype==0)
-        {
-            Log(MSG_WARNING,"Impossible to get an item from %u", itemvalue);
-            return 0;
-        }
-
-    }
-
-    /*itemtype= itemvalue/10000;
-    if (itemtype>=1&&itemtype<=14)
-    {
-        itemnum=itemvalue % 10000;
-        if(type==0)
-        {
-            return itemtype;
-        }
-
-        return itemnum;
-    }*/
-
-    itemtype= itemvalue/100000;
-    if (itemtype>=1&&itemtype<=14)
-    {
-        itemnum=itemvalue % 100000;
-        if(type==0)
-        {
-            return itemtype;
-        }
-
-        return itemnum;
-    }
-
-
-    //LMA: who wants to be a milionnaire? ^_^
-    itemtype= itemvalue/1000000;
-    if (itemtype>=1&&itemtype<=14)
-    {
-        itemnum=itemvalue % 1000000;
-        if(type==0)
-        {
-            return itemtype;
-        }
-
-        return itemnum;
-    }
-
-    Log(MSG_WARNING,"Impossible to get an item from %u",itemvalue);
-
-
+	if(itemvalue < 99999 )
+	{
+		itemtype = itemvalue / 1000;
+		if (itemtype >= 1 && itemtype <= 14)
+		{
+			itemnum = itemvalue % 1000;
+			if(type == 0)
+			{
+				return itemtype;
+			}
+			return itemnum;
+		}
+	}
+	else
+	{
+		itemtype = itemvalue / 100000;
+		if (itemtype >= 1 && itemtype <= 14)
+		{
+			itemnum = itemvalue % 100000;
+			if(type == 0)
+			{
+				return itemtype;
+			}
+			return itemnum;
+		}
+	}
     return 0;
 }
 
@@ -3089,20 +3098,29 @@ UINT CWorldServer::GetTimerFromAIP(dword script_id, bool is_npc)
 //LMA: Sending the breakid from an itemnum and itemtype.
 UINT CWorldServer::GetBreakID(UINT itemnum,UINT itemtype)
 {
-    UINT breakid=0;
+    UINT breakid = 0;
 
     if(itemtype <= 0||itemtype == 7||itemtype >= 11) //PY: Type 10 can have break ids
     {
         return 0;
     }
 
-    if (itemnum >= EquipList[itemtype].max)
-    {
-        Log(MSG_WARNING,"Wrong itemnum %u > %u, (itemtype %u)",itemnum,EquipList[itemtype].max,itemtype);
-        return 0;
-    }
+    if( itemtype != 10)
+	{
+		if (itemnum >= EquipList[itemtype].max)
+		{
+			Log(MSG_WARNING,"Wrong itemnum %u > %u, (itemtype %u)",itemnum,EquipList[itemtype].max,itemtype);
+			return 0;
+		}
+		breakid = EquipList[itemtype].Index[itemnum]->breakid;
+	}
+	else	//it's type 10. probably a chest
+	{
 
-    breakid = EquipList[itemtype].Index[itemnum]->breakid;
+		breakid = UseList.Index[itemnum]->breakid;
+		Log(MSG_WARNING,"The breakid for item (%i::%i) is > %u",itemtype,itemnum, breakid);
+	}
+    
 
     //some checks.
    if (breakid != 0)

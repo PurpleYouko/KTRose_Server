@@ -22,12 +22,13 @@
 #define _ROSE_PLAYER_
 
 //LMA: new refine system
-#define REFINENEW
+//#define REFINENEW
+//PY using old system for client 137
 
 //LMA: test static client ID.
-#ifndef STATICID
-#define STATICID
-#endif
+//#ifndef STATICID
+//#define STATICID
+//#endif
 
 //LMA: TEST HACK QUEST
 #define QHACK
@@ -64,12 +65,6 @@ class CPlayer: public CCharacter
     //LMA: Warp flag
     int map_warp_zone;
     fPoint Warp_Zone;
-
-    //LMA: HP / MP regeneration by bonfires and others...
-    int sp_hp;
-    int sp_mp;
-    int nb_hp;
-    int nb_mp;
 
     //Fuel
     clock_t last_fuel;
@@ -115,6 +110,9 @@ class CPlayer: public CCharacter
     ATTRIBUTES* Attr;
     CRespawnPoints GMRespawnPoints;
 
+	//PY Test for delaying the initialization of visibility processes
+	UINT NewLogInCouter;
+
     //Medal xp
     int wait_validation;
     time_t timerxp;
@@ -153,22 +151,39 @@ class CPlayer: public CCharacter
     bool speaksLuna;
     bool canUseFlyingVessel;
 
+	//delayed quest trigger timer
+	// Quest Trigger delay timer
+	UINT TriggerDelay;
+	DWORD TriggerHash;
+	clock_t DelayStartTime;
+
     //LMA New Quests
     UINT QuestVariables[25];
+
+	// skills/quickbar
+    SKILLS cskills[MAX_ALL_SKILL];
+	//SKILLS cskills[MAX_SKILL];
+    UINT bskills[MAX_BASIC_SKILL];
+    UINT quickbar[MAX_QUICKBAR];
+   	unsigned short askill[30];
+	unsigned char  askilllvl[30];
+	unsigned short pskill[30];
+	unsigned char  pskilllvl[30];
+    int p_skills;
 
     // Inventory/storage
     CItem storageitems[MAX_STORAGE];
     CItem itemmallitems[MAX_ITEMMALL];
     unsigned int nstorageitems;
     unsigned int nsitemmallitems;
-    BSItem wishlistitems[MAX_WISHLIST];
+    //BSItem wishlistitems[MAX_WISHLIST];	//PY WTF??? what is this BSItem? Bull Shit? Client requires an item of TagBaseItem which is a standard CItem structure. OMFG!!!!
+	CItem wishlistitems[MAX_WISHLIST];		//Rewriting the whole thing so that it actually DOESN't crash the client when we send the packet
 
     CItem items[MAX_INVENTORY];
 
     float attack_fuel;   //LMA: conso fuel.
 
-    // skills/quickbar
-    SKILLS cskills[MAX_ALL_SKILL];
+    
 
     //LMA: % for dealer (when buying from NPC).
     int pc_rebate;
@@ -185,8 +200,6 @@ class CPlayer: public CCharacter
 
     int cur_max_skills[5];
 
-    UINT quickbar[MAX_QUICKBAR];
-    int p_skills;
     int dual_scratch_index; //LMA: trying to guess dual scratch skill index...
 
     // ExJam Quest Code - Info
@@ -194,6 +207,8 @@ class CPlayer: public CCharacter
     int CheckQuest; // The currently checked quest.
     strings TriggerName[10];
     SQuestData quest; // Character's quest information
+	int NPCvar;       // holds reference value for ObjVar global structure
+    int RefVar;       // holds reference value for second part of ObjVar structure
 
     //LMA: for no qsd zone
     bool skip_qsd_zone;
@@ -211,27 +226,21 @@ class CPlayer: public CCharacter
 	clock_t lastGG;
 
 	// Visible Lists
-    vector<CPlayer*>	        VisiblePlayers;	   // Visible players
+	//list<unsigned int>					VisiblePlayers;		//Visible players using client id
+    vector<DWORD>				VisiblePlayers;	   // Visible players
     vector<CDrop*>		        VisibleDrops;	   // Visible drops
 
     //LMATEST
     //vector<class CMonster*>		    VisibleMonsters;   // Visible monsters
     vector<unsigned int>            VisibleMonsters;   // Visible monsters
 
-    vector<CNPC*>			    VisibleNPCs;	   // Visible npcs
+    //vector<CNPC*>			    VisibleNPCs;	   // Visible npcs
+	vector<DWORD>				VisibleNPCs;
 
     // Functions
     bool CheckPlayerLevelUP( );
     bool CheckDoubleEquip( );  //LMA: Core fix for double weapon and shield
     bool CheckZulies( );
-
-    #ifdef PYCUSTOM
-    bool CheckPortal( );  //custom events
-    bool CheckEvents( );  //custom events
-    //bool CheckCustomQuest( );
-    bool PrizeExchange(CPlayer* thisclient, UINT prizeid );  //custom events
-    #endif
-
     bool CheckItems ( );
     void SetStats( );
     bool GetPlayerInfo( );
@@ -272,8 +281,6 @@ class CPlayer: public CCharacter
     void GiveCP(unsigned int points);    //LMA: Give Clan Points
     void UpdateInventory( unsigned int slot1, unsigned int slot2=0xffff, bool save=true);   //LMA: this one saves into database immediatly
     void UpdateInventoryNoSave( unsigned int slot1, unsigned int slot2=0xffff );   //LMA: This one doesn't immediatly save into database.
-    void SaveSlot( unsigned int slot); //LMA: Saving slot into MySQL database.
-    void SaveSlot41( unsigned int slot); //LMA: Saving slot into MySQL database (Mysql 4.1+ function).
     void reduceItemsLifeSpan( bool attacked);
     bool SaveQuest( QUESTS* myquest );       //LMA: Saving quests data (Mysql 4.1+ function).
     bool PlasticSurgeon(CQuest* thisquest);      //LMA: Plastic Surgery coupons

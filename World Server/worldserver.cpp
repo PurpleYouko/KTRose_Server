@@ -365,6 +365,7 @@ bool CWorldServer::OnServerReady( )
     InitDefaultValues();
     LoadZoneData( );
     LoadGrids( );   //resetting grids...
+	LoadMapCollisions( );
     LoadConsItem( );
     LoadSellData( );
     LoadProductItem( );
@@ -373,13 +374,14 @@ bool CWorldServer::OnServerReady( )
     LoadJemItem( );
     LoadEquip( );
     LoadItemStats( );
-    LoadGrades();   //LMA: loading refine (grades) bonuses.
+    LoadGrades();					//LMA: loading refine (grades) bonuses.
+	LoadRefineChances( );			//PY: load refine success rates
     LoadJobReq( );
     // PY new Stat Lookup table
     LoadStatLookup( );
     // PY end
-    //LoadBreakList( );     // geo edit for disassemble // 22 oct 07
-    LoadBreakChestBlueList();   //LMA: loading chests, breaks from STB...
+    //LoadBreakList( );				// geo edit for disassemble // 22 oct 07
+    LoadBreakChestBlueList();		//LMA: loading chests, breaks from STB...	
     LoadSkillData( );
 
     //LMA: Forcing Union Wars.
@@ -420,7 +422,7 @@ bool CWorldServer::OnServerReady( )
     LoadNPCsSpecial( );  //Special NPC load
     LoadNPCsEvents();   //LMA: loading pre defined events.
     LoadMonsters( );
-    LoadUpgrade( );
+    //LoadUpgrade( );
     LoadWayPoints( );               //PY load the waypoints list ready for Tower Defence
     //LoadLTB();  //LMA: Loading LTB for AIP.
     LoadQuestData( );
@@ -796,7 +798,6 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
     	case 0x07e0: return pakCreateClan       ( (CPlayer*)thisclient->player, P );
     	case 0x07e1: return pakClanManager      ( (CPlayer*)thisclient->player, P );
     	case 0x07eb: return pakPrintscreen      ( (CPlayer*)thisclient->player, P );
-    	//case 0x07ed: return pakChatTrade        ( (CPlayer*)thisclient->player, P );    //LMA: Trade Chat	 PY: This packet structure doesn't exist in 137 client
     	case 0x0808: return pakGameGuard        ( (CPlayer*)thisclient->player, P );
     	case 0x0821: return pakExpTC        ( (CPlayer*)thisclient->player, P );  //LMA: Bonus Time Coupon
     	case 0x0796: return pakPvp796        ( (CPlayer*)thisclient->player, P );  //LMA: PVP?

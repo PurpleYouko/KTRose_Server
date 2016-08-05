@@ -251,11 +251,6 @@ CPlayer::CPlayer( CClientSocket* CLIENT )
         //quest.quests[i]=NULL;
     }
 
-    for(int i=0;i<0x40;i++)
-    {
-        quest.flags[i]=0;
-    }
-
     ActiveQuest = 0;
     lastRegenTime = 0;
     lastSaveTime = clock( );

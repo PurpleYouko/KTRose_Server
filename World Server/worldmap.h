@@ -125,9 +125,6 @@ class CMap
 
     vector<CRespawnPoint*>	    RespawnList;	  // RespawnZones List
     vector<CSpawnArea*>	        MonsterSpawnList; // Monster spawn in this map
-#ifdef USEIFO
-    vector<CMobGroup*>          MobGroupList;     // Spawn "Zones"
-#endif
     vector<CMonster*>           MonsterList;      // Monster List in this map
   	vector<CDrop*>			    DropsList;		  // Droped Items
     vector<CPlayer*>            PlayerList;       // Client list in this map;

@@ -324,30 +324,30 @@ void CCharacter::UpdatePosition( bool monster_stay_still )
     if (IsPlayer( )&&((last_map==-1&&last_coords==-1)||(last_map!=Position->Map)))
     {
       	//updating player's grid
-    	int new_coords=0;
-    	int new_map=0;
-    	int grid_id=0;
+    	int new_coords = 0;
+    	int new_map = 0;
+    	int grid_id = 0;
 
       	//deleting previous presence...
-      	if (last_map!=-1&&last_coords!=-1)
+      	if (last_map != -1 && last_coords != -1)
       	{
-          	grid_id=GServer->allmaps[last_map].grid_id;
-            if (grid_id!=-1&&!GServer->allmaps[last_map].always_on&&GServer->gridmaps[grid_id].coords[last_coords]>0)
+          	grid_id = GServer->allmaps[last_map].grid_id;
+            if (grid_id != - 1&& !GServer->allmaps[last_map].always_on && GServer->gridmaps[grid_id].coords[last_coords] > 0)
                GServer->gridmaps[grid_id].coords[last_coords]--;
         }
 
         //New coordinates
-    	new_map=Position->Map;
-    	grid_id=GServer->allmaps[new_map].grid_id;
+    	new_map = Position->Map;
+    	grid_id = GServer->allmaps[new_map].grid_id;
 
         if (grid_id==-1)
         {
             Log(MSG_WARNING,"It seems you forgot to declare map %i in map_grid.csv",new_map);
         }
 
-        new_coords=GServer->GetGridNumber(new_map,(UINT) floor(Position->current.x),(UINT) floor(Position->current.y));
-    	last_map=new_map;
-    	last_coords=new_coords;
+        new_coords = GServer->GetGridNumber(new_map,(UINT) floor(Position->current.x),(UINT) floor(Position->current.y));
+    	last_map = new_map;
+    	last_coords = new_coords;
 
     	//if (grid_id!=-1||!GServer->allmaps[new_map].always_on)
     	if (grid_id!=-1&&!GServer->allmaps[new_map].always_on)
@@ -371,11 +371,11 @@ void CCharacter::UpdatePosition( bool monster_stay_still )
     clock_t etime = clock() - Position->lastMoveTime;
 
     //LMA: bad, that's bad...
-	//if (ntime<=etime || distance<1.0 )
-	if (ntime<=etime || distance<0.01 )
+	//if (ntime <= etime || distance < 1.0 )
+	if (ntime <= etime || distance < 0.01 )
     {
         // if (IsPlayer()) printf("Arrived! X: %i, Y: %i\n", (int)Position->current.x, (int)Position->current.y);
-        if(Position->Map==8&&IsMonster())
+        if(Position->Map == 8 && IsMonster())
         {
             Log(MSG_INFO," Monster Arrived, J (%.2f:%.2f)->(%.2f:%.2f)",Position->current.x,Position->current.y,Position->destiny.x,Position->destiny.y);
         }
@@ -392,38 +392,56 @@ void CCharacter::UpdatePosition( bool monster_stay_still )
 	Position->lastMoveTime = clock( );
 
 	//LMA: maps (for player)
-	if(!IsPlayer()||is_done)
+	if(!IsPlayer() || is_done)
 	   return;
 
+	
+
 	//updating player's grid
-	int new_coords=0;
-	int new_map=0;
-	int grid_id=0;
+	int new_coords = 0;
+	int new_map = 0;
+	int grid_id = 0;
 
-	new_map=Position->Map;
-	grid_id=GServer->allmaps[new_map].grid_id;
+	new_map = Position->Map;
+	//PY
+	//updating map positions for collisions
+	//translate absolute position into collisions grid position
+	//To be removed after all collision maps are set up
+	if( GServer->Config.MapCollsionMode > -1 )
+	{
+		int Xpos = (int)(Position->current.x) - GServer->Collisions[new_map].MinX;
+		int Ypos = (int)(Position->current.y) - GServer->Collisions[new_map].MinY;
+		GServer->Collisions[new_map].modified = true;
+		if( Xpos >= 0 && Xpos < GServer->Collisions[new_map].length & Ypos >= 0 && Ypos <  GServer->Collisions[new_map].width && GServer->Collisions[new_map].coords[Xpos][Ypos] != GServer->Config.MapCollsionMode)
+		{
+			GServer->Collisions[Position->Map].coords[Xpos][Ypos] = GServer->Config.MapCollsionMode;			//PY 0: blocked. 1: land. 2: Water. Set using GM command /setcollisionmode [mode]
+			Log(MSG_DEBUG,"Saving current location [%i] [%i] as %i  map %i in map collisions array",Xpos, Ypos, GServer->Config.MapCollsionMode, new_map);
+		}
+	}
+	//PY end
+	grid_id = GServer->allmaps[new_map].grid_id;
 
-	if (grid_id==-1)
+	if (grid_id == -1)
 	{
 	    Log(MSG_WARNING,"It seems you forgot to declare map %i in map_grid.csv",new_map);
 	}
 
-	new_coords=GServer->GetGridNumber(new_map,(UINT) floor(Position->current.x),(UINT) floor(Position->current.y));
+	new_coords = GServer->GetGridNumber(new_map,(UINT) floor(Position->current.x),(UINT) floor(Position->current.y));
 	//changed?
-    if (last_map==new_map&&new_coords==last_coords)
+    if (last_map == new_map && new_coords == last_coords)
          return;
 
      //Let's update.
 	//if (grid_id!=-1||!GServer->allmaps[new_map].always_on)
-	if (grid_id!=-1&&!GServer->allmaps[new_map].always_on)
+	if (grid_id != -1 && !GServer->allmaps[new_map].always_on)
 	   GServer->gridmaps[grid_id].coords[new_coords]++;
 
    //deleting player from his previous map
-   grid_id=GServer->allmaps[last_map].grid_id;
-   if (grid_id!=-1&&!GServer->allmaps[last_map].always_on&&GServer->gridmaps[grid_id].coords[last_coords]>0)
+   grid_id = GServer->allmaps[last_map].grid_id;
+   if (grid_id != -1 && !GServer->allmaps[last_map].always_on && GServer->gridmaps[grid_id].coords[last_coords] > 0)
       GServer->gridmaps[grid_id].coords[last_coords]--;
 
     //Log(MSG_INFO,"Now[%i,%i],Was[%i,%i]",new_map,new_coords,last_map,last_coords);
-	last_map=new_map;
-	last_coords=new_coords;
+	last_map = new_map;
+	last_coords = new_coords;
 }

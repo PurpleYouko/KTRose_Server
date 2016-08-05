@@ -74,24 +74,37 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
     BEGINPACKET( pak, 0 );
     if (restart)
     {
-       Target=GetCharTarget( );
-       action=Battle->atktype;
-       skillid=Battle->skillid;
+       Target = GetCharTarget( );
+       action = Battle->atktype;
+       skillid = Battle->skillid;
     }
 
     //Drakia: If the target is NULL, we should only do something that doesn't require a target.
-    if (Target == NULL && (action != SKILL_AOE &&action != BUFF_SELF &&action != BUFF_AOE &&action != MONSTER_BUFF_SELF &&action != AOE_TARGET))
+    if ( Target == NULL )		
     {
-        Log(MSG_WARNING,"We tried to start attack %i without a target",action);
-        return;
+        switch(action)			//py will build on this list as needed
+		{
+			case sCRAFT_SKILL:
+			case sAOE_DAMAGE_SELF:
+			case sBUFF_SELF1:
+			case sBUFF_SELF2:
+			case sMAGIC_RECOVERY_SELF:
+			case sPASSIVE:
+				//all ok
+			break;
+			default:		//only gets here if the skill requires a target and we didn't provide one.
+				Log(MSG_WARNING,"We tried to start attack %i without a target",action);
+				return;
+			break;
+		}
     }
 
     //LMA: don't attack a dead or an offline player... It's stupid...
-    if(Target!=NULL)
+    if(Target != NULL)
     {
         if(Target->IsPlayer())
         {
-            CPlayer* thisplayer=reinterpret_cast<CPlayer*>(Target);
+            CPlayer* thisplayer = reinterpret_cast<CPlayer*>(Target);
             if(!thisplayer->Session->inGame)
             {
                 //Log(MSG_INFO,"We don't attack a player not in game yet...");
@@ -103,7 +116,7 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
         if(Target->IsDead())
         {
             //but we can if it's a friendly (restore...).
-            if(action!=SKILL_BUFF)
+            if(action != SKILL_BUFF)
             {
                 ClearBattle(Battle);
                 return;
@@ -115,7 +128,7 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
 
     switch(action)
     {
-        case NORMAL_ATTACK:
+		case sBASIC_ACTION:
         {
             RESETPACKET( pak, 0x798 );
             ADDWORD    ( pak, clientid );
@@ -134,6 +147,15 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
             Position->lastMoveTime = clock( );
         }
         break;
+		case sMAGIC_RECOVERY_SELF:		
+		{
+			RESETPACKET( pak, 0x7b2);
+            ADDWORD    ( pak, clientid );
+            ADDWORD    ( pak, skillid );
+            Battle->atktype = action;
+            Battle->skillid = skillid;
+		}
+		break;
         case SKILL_ATTACK:
         case SKILL_BUFF:
         {
@@ -146,7 +168,7 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
             ADDFLOAT   ( pak, Target->Position->current.y*100 );
             Battle->target = Target->clientid;
 
-            if(action==SKILL_ATTACK) Battle->skilltarget = Target->clientid;
+            if(action == SKILL_ATTACK) Battle->skilltarget = Target->clientid;
             else Battle->bufftarget = Target->clientid;
 
             Battle->atktype = action;
@@ -169,7 +191,7 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
             ADDBYTE    ( pak, 0x06);
             Battle->target = Target->clientid;
 
-            if(action==MONSTER_SKILL_ATTACK) Battle->skilltarget = Target->clientid;
+            if(action == MONSTER_SKILL_ATTACK) Battle->skilltarget = Target->clientid;
             else Battle->bufftarget = Target->clientid;
 
             Battle->atktype = action;
@@ -264,38 +286,38 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid, boo
 bool CCharacter::IsOnBattle( )
 {
     //Bonfire don't attack...
-    if(Battle->atktype==0) return false;
+    if(Battle->atktype == 0) return false;
     switch(Battle->atktype)
     {
         case NORMAL_ATTACK:
         {
-            if(Battle->atktarget!=0) return true;
+            if(Battle->atktarget != 0) return true;
         }
         break;
         case SKILL_ATTACK:
         case AOE_TARGET:
         {
-            if(Battle->skilltarget!=0 && Battle->skillid!=0) return true;
+            if(Battle->skilltarget != 0 && Battle->skillid != 0) return true;
         }
         break;
         case SKILL_BUFF:
         {
-            if(Battle->bufftarget!=0 && Battle->skillid!=0) return true;
+            if(Battle->bufftarget != 0 && Battle->skillid != 0) return true;
         }
         break;
         case SUMMON_BUFF:
         {
-             if(Battle->bufftarget!=0&&Battle->skillid!=0) return true;
+             if(Battle->bufftarget != 0 && Battle->skillid != 0) return true;
         }
         break;
         case MONSTER_SKILL_BUFF:
         {
-             if(Battle->bufftarget!=0 && Battle->skillid!=0) return true;
+             if(Battle->bufftarget !=0 && Battle->skillid != 0) return true;
         }
         break;
         case MONSTER_SKILL_ATTACK:
         {
-             if(Battle->skilltarget!=0 && Battle->skillid!=0) return true;
+             if(Battle->skilltarget != 0 && Battle->skillid != 0) return true;
         }
         break;
         case MONSTER_BUFF_SELF:
@@ -304,7 +326,7 @@ bool CCharacter::IsOnBattle( )
         case BUFF_SELF:
         case BUFF_AOE:
         {
-            if(Battle->skillid!=0) return true;
+            if(Battle->skillid != 0) return true;
         }
         break;
         case STAY_STILL_ATTACK:

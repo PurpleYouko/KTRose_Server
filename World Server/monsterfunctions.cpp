@@ -27,7 +27,7 @@ bool CMonster::PlayerInRange()
     for(int i=0; i<map->PlayerList.size(); i++)
     {
         CPlayer* thisclient = map->PlayerList.at(i);
-        if(GServer->IsVisible(thisclient, this)) return true;
+        if( GServer->IsVisible(thisclient, this)) return true;
     }
     return false;
 }

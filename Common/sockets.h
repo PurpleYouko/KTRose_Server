@@ -21,7 +21,13 @@
 
 #ifndef __ROSE_SOCKETS__
 #define __ROSE_SOCKETS__
-// Comment the below to use the normal spawns instead of the IFO spawns
+
+//Raven's osirose code. PY: Didn't fix my problems so commenting it for now
+//#ifdef _WIN32
+//	#define PACK(...) __pragma(pack(push, 1)) __VA_ARGS__ __pragma(pack(pop))
+//#else
+//	#define PACK(...) __VA_ARGS__ __attribute__((__packed__))
+//#endif
 
 #ifdef _WIN32
     #include <windows.h>
@@ -53,6 +59,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <list>
 #include <vector>
 #include <string>
 #include <cstdio>
@@ -61,7 +68,6 @@
 #include <assert.h>
 #include <math.h>
 #include <pthread.h>
-//#include <vector>
 #include <map>  //LMA: special for Drakia ^_^ (testing)
 #include <csignal>
 #include "log.h"
@@ -192,6 +198,7 @@ struct CROSEServerConfig
 	UINT DeathDelay;                 //Set a timer delay so that we don't have a problem with monster death
 	float MaxOverkill;				//PY: Maximum overkill Exp rate allowed
     UINT AIWatch;                    //LMA: AIP, Set an AI script number to watch for. Debug only
+	int MapCollsionMode;
     char* WELCOME_MSG;
     UINT DROP_TYPE;
     int MaxStat;

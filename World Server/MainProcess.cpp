@@ -40,15 +40,17 @@ PVOID MapProcess( PVOID TS )
     while(GServer->ServerOnline)
     {
         loopcount++;            //geobot: refresh only every 100 cycles
-        if (loopcount<100)
+        if (loopcount < 100)
         {
             continue;
         }
 
-        loopcount=0;
+        loopcount = 0;
 
         pthread_mutex_lock( &GServer->PlayerMutex );
         pthread_mutex_lock( &GServer->MapMutex );
+
+		
 
         for(UINT i=0;i<GServer->MapList.Map.size();i++)
         {
@@ -60,12 +62,12 @@ PVOID MapProcess( PVOID TS )
             nb_summons_map=0;
             if( map->PlayerList.size()<1 )
             {
-                only_npc=true;    //LMA: AIP is done by NPC even when no player in map.
+                only_npc = true;    //LMA: AIP is done by NPC even when no player in map.
 
                 //LMA: doing summons too if there are any in map.
-                if(map->nb_summons>0)
+                if(map->nb_summons > 0)
                 {
-                    only_summon=true;
+                    only_summon = true;
                 }
                 //continue;
             }
@@ -76,12 +78,23 @@ PVOID MapProcess( PVOID TS )
                 for(UINT j=0;j<map->PlayerList.size();j++)
                 {
                     CPlayer* player = map->PlayerList.at(j);
+					//check for delayed trigger
+					if(player->TriggerDelay != 0 )	//only one problem. If the player logs out before the delayed action trigger is executed than it never will be. Oh Dear! The missing children will really be missing. lol. It's fine though because they never truly despawn. they just disappear from the player's visibility list.
+					{
+						clock_t etime = clock() - player->DelayStartTime;
+						if( etime >= player->TriggerDelay )
+						{
+							player->ExecuteQuestTrigger(player->TriggerHash,true);
+							player->TriggerDelay = 0;	//reset delays and stuff
+							player->TriggerHash = 0;
+						}
+					}
                     if(!player->Session->inGame) continue;
 
                     if(player->IsDead( ))
                     {
-                          player->lastRegenTime=0;
-                          player->lastShowTime=0;
+                          player->lastRegenTime = 0;
+                          player->lastShowTime = 0;
                           continue;
                      }
                     player->RefreshHPMP();         //LMA HP / MP Jumping
@@ -99,7 +112,7 @@ PVOID MapProcess( PVOID TS )
                     player->CheckZulies( );
 
                     //Fuel handling.
-                    if (player->Status->Stance==DRIVING&&(player->last_fuel>0)&&(clock()-player->last_fuel>60000))
+                    if (player->Status->Stance == DRIVING && (player->last_fuel>0) && (clock()-player->last_fuel > 60000))
                     {
                       //We kill some fuel every now and then :)
                       player->TakeFuel();
@@ -601,6 +614,11 @@ PVOID VisibilityProcess(PVOID TS)
                 {
                     continue;
                 }
+				if(player->NewLogInCouter < 10)
+				{
+					player->NewLogInCouter ++;
+					continue;
+				}
                 if(!player->VisiblityList()) Log(MSG_WARNING, "Visibility False: %u", player->clientid );
                 if( GServer->Config.AUTOSAVE == 1 )
                 {

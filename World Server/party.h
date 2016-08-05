@@ -49,6 +49,11 @@ class CParty
         UINT Capacity;
         vector<CPlayer*> Members;
         CPartyExp* PartyExp;
+		struct	// Setting up a bitfield version that we can use with the 0x07d4 packet. The packet requires the data to be sent this way
+		{
+			unsigned int	m_iEXP		 : 31;
+			unsigned int	m_bitLevelUP : 1;
+		} ;
 };
 
 #endif

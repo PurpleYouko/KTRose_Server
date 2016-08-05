@@ -27,9 +27,9 @@
 #endif
 
 //LMA: test static client ID.
-#ifndef STATICID
-#define STATICID
-#endif
+//#ifndef STATICID
+//#define STATICID
+//#endif
 
 //LMA: TEST HACK QUEST
 #ifndef QHACK
@@ -42,39 +42,39 @@
 
 //*upgraded status
 //#define NULL 2
-//#define STRENGTH 10
-//#define DEXTERY 11
-//#define INTELIGENCE 12
-//#define CONCENTRATION 13
-//#define CHARM 14
-//#define SENSE 15
-//#define C_HP 16
-//#define C_MP 17
-//#define ATTACK_POWER 18
-//#define DEFENCE 19
-//#define ACCURY 20
-//#define MAGIC_RESISTENCE 21
-//#define DODGE 22
-//#define MOVE_SPEED 23
-//#define ATTACK_SPEED 24
-//#define INV_CAPACITY 25
-//#define CRITICAL 26
-//#define HP_REC_RATE 27         //HP Recovery Rate
-//#define MP_REC_RATE 28         //MP Recovery Rate
+#define STRENGTH 10
+#define DEXTERY 11
+#define INTELIGENCE 12
+#define CONCENTRATION 13
+#define CHARM 14
+#define SENSE 15
+#define C_HP 16
+#define C_MP 17
+#define ATTACK_POWER 18
+#define DEFENCE 19
+#define ACCURACY 20
+#define MAGIC_RESISTENCE 21
+#define A_DODGE 22
+#define MOVE_SPEED 23
+#define ATTACK_SPEED 24
+#define INV_CAPACITY 25
+#define A_CRITICAL 26
+#define HP_REC_RATE 27         //HP Recovery Rate
+#define MP_REC_RATE 28         //MP Recovery Rate
 #define MP_CONSUME 29          //MP MP Consumption
-#define XP_RATE 30            //Experience Rate
-//#define LEVEL 31               //Level
-//#define POINT 32               //Point
-//#define TENDENCY 33            //Tendency
-//#define PK_LVL 34              //PK Level
-//#define HEAD_SIZE 35           //Head Size
-//#define BODY_SIZE 36           //Body Size TAKE CARE 36 is ATM, EXTRA_DAMAGE
-//#define SP 37                  //SP
-//#define MAX_HP 38              //Max HP
-//#define MAX_MP 39              //Max MP
-//#define MONEY 40               //Money
-//#define UNARMED_AP 41          //Unarmed AP
-//#define EXTRA_DAMAGE 36
+#define XP_RATE 30             //Experience Rate
+#define LEVEL 31               //Level
+//#define POINT 32               //Point When we use this value need to rename it. Defining POINT causes thousands of errors in Wingdi.h
+#define TENDENCY 33            //Tendency
+#define PK_LVL 34              //PK Level
+#define HEAD_SIZE 35           //Head Size
+#define BODY_SIZE 36           //Body Size TAKE CARE 36 is ATM, EXTRA_DAMAGE
+#define SP 37                  //SP
+#define MAX_HP 38              //Max HP
+#define MAX_MP 39              //Max MP
+#define MONEY 40               //Money
+#define UNARMED_AP 41          //Unarmed AP
+#define EXTRA_DAMAGE 36
 #define ONE_HAND_WEAP_AP 42
 #define TWO_HAND_WEAP_AP 43
 #define BOW_WEAP_AP 44         //Bow AP
@@ -87,28 +87,28 @@
 #define COMBAT_WEAP_ASPD 51    //Combat Weapon Atk Speed
 #define MOV_SPEED 52
 #define DEFENSE 53
-#define MAX_HP 54
-#define MAX_MP 55
+#define MAX_HP2 54
+#define MAX_MP2 55
 #define HP_REC_AMONT 56
-#define MP_REC_RATE 57
+#define MP_REC_RATE2 57
 #define BAGPACK_CAPACITY 58
-//#define SALES_DISCOUNT 59      //Sales Discount
-//#define SALES_PREMIUM 60       //Sales Premium
+#define SALES_DISCOUNT 59      //Sales Discount
+#define SALES_PREMIUM 60       //Sales Premium
 #define MP_COST_RED 61
 #define SUMMON_GAUGE 62
-//#define ITEM_DROP_RATE_INC 63  //Item Drop Rate Increase
-//#define PLANET_REQ 75          //Planet Requirements
-//#define STAMINA 76             //Stamina
-//#define STORAGE_FREE 94        //No Storage Charge
-//#define STORAGE_EXP 95         //Storage Expansion
-//#define SHOP_REMOD 96          //Personl Shop Remodeling
-//#define CART_GAUGE 97          //Cart Gauge
+#define ITEM_DROP_RATE_INC 63  //Item Drop Rate Increase
+#define PLANET_REQ 75          //Planet Requirements
+#define STAMINA 76             //Stamina
+#define STORAGE_FREE 94        //No Storage Charge
+#define STORAGE_EXP 95         //Storage Expansion
+#define SHOP_REMOD 96          //Personl Shop Remodeling
+#define CART_GAUGE 97          //Cart Gauge
 #define MAGIC_RESISTENCE_2 98    //Magic Resistance
 #define ATK_ACCURACY 99
 #define CRITICAL 100           //Critical
 #define DODGE 101              //Dodge
 #define SHIELD_DEFENSE 102
-//#define IMMUNITY 103          //Immunity
+#define IMMUNITY 103			//Immunity
 #define ONE_HAND_SWORD_AP 104
 #define ONE_HAND_MELEE_AP 105
 #define TWO_HAND_SWORD_AP 106
@@ -136,7 +136,7 @@
 #define KATAR_ATK_SPD 129
 #define DUALSWORD_ATK_SPD 130
 #define CBOW_ATK_SPD 131            //Crossbow Atk Speed
-//#define EXP_ITEM 133                //EXP Item
+#define EXP_ITEM 133                //EXP Item (one time use)
 //#define ITEM_DROP_RATE_INC 134      //Item Drop Rate Increase
 //#define ITEM_DROP_IMPROV 135        //Improved Monster Dropped Equipment
 //#define ITEM_DROP_GREY 136          //Item Drop from Grey Monsters
@@ -227,6 +227,7 @@
 #define WALKING 2
 #define RUNNING 3
 #define DRIVING 4
+#define SITTING 5
 
 //Target Type
 #define T_MONSTER 1
@@ -252,10 +253,46 @@
 #define MONSTER_SKILL_ATTACK 18
 #define MONSTER_SKILL_BUFF 19
 
+// PY Skilltypes because all that stuff above makes no sense with these STBs
+#define sBASIC_ACTION			1
+#define sCRAFT_SKILL			2
+#define sDAMAGE_ACTION			3
+#define sWEAPON_POWER_UP1		4
+#define sWEAPON_POWER_UP2		5
+#define sMAGIC_SPELL			6
+#define sAOE_DAMAGE_TARGET		7
+#define sBUFF_SELF1				8
+#define sBUFF1					9
+#define sMAGIC_RECOVERY_SELF	10
+#define sMAGIC_RECOVERY			11
+#define sBUFF_SELF2				12
+#define sBUFF2					13
+#define sSUMMONINING			14
+#define sPASSIVE				15
+#define sEMOTION				16
+#define sAOE_DAMAGE_SELF		17
+#define sWARP					18
+#define sDAMAGE_ABSORBTION		19
+#define sRESSURECTION			20
+
+//PY Target types see note above
+#define sSELF					0
+#define sPARTY_MEMBER			1
+#define sCLAN_MEMBER			2
+#define sALLY					3
+#define sMONSTER				4
+#define sHOSTILE_CHARACTER		5	
+#define sHOSTILE_TEAM_MEMBER	6
+#define sALL_CHARACTERS			7
+#define sALL_MEMBERS			8
+#define sFAINTED_ALLY			9
+#define sHOSTILE_MONSTER		10
+
 // other constants
 #define MAX_CLASS_SKILL 60
 //LMA: driving, unique, mileage...
 #define MAX_ALL_SKILL 362
+#define MAX_SKILL 90
 #define MAX_DRIVING_SKILL 30
 #define MAX_UNIQUE_SKILL 30
 #define MAX_MILEAGE_SKILL 200
@@ -395,13 +432,21 @@
 #define sFlame7 80
 #define sAddDmg3 83
 
+//PY Quest flag count
+#define QUEST_SWITCH_CNT  512
+
 
 //LMA: Max hp mob
 #define MAXHPMOB 0xFFFFFFFF
 #define MAX_NPC 4000    //max npc amount in Objvar.
 #define MAX_EXTRA_STATS 302   //max stats (for Py's code).
 
+
 #include "../common/sockets.h"
+#include <fstream>
+#include <sstream>
+
+const BYTE g_btSwitchBitMask[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80	};
 
 // Hold party experience when kill a moster
 struct CPartyExp
@@ -431,7 +476,7 @@ struct CEquip
     UINT weight;
     UINT quality;
     UINT craft;
-    UINT craft_level;
+    UINT craftlevel;
     UINT level;
     UINT material;
     UINT craft_difficult;
@@ -465,7 +510,7 @@ struct CJemData
     UINT pricerate;
     UINT weight;
     UINT craft;
-    UINT craft_level;
+    UINT craftlevel;
     UINT quality;
     UINT material;
     UINT craft_difficult;
@@ -482,6 +527,9 @@ struct CNaturalData
     UINT price;
     UINT pricerate;
     UINT weight;
+	UINT craft;
+    UINT craftlevel;
+	UINT material;
     UINT quality;
     UINT pricevalue;
     UINT STLId;
@@ -498,7 +546,7 @@ struct CPatData
     UINT weight;
     UINT quality;
     UINT craft;
-    UINT craft_level;
+    UINT craftlevel;
     UINT material;
     UINT craft_difficult;
     UINT parttype;
@@ -523,6 +571,7 @@ struct CPatData
 struct CProductData
 {
     UINT id;
+	UINT family;
     UINT item_0_family;
     UINT item_1_family;
     UINT item_2_family;
@@ -530,6 +579,8 @@ struct CProductData
     /*UINT item[50];
     UINT amount[50];*/
     UINT item[4];
+	UINT itemtype[4];  // item type
+    UINT itemid[4];    // item number
     UINT amount[4];
 };
 
@@ -569,14 +620,14 @@ struct CQuestItemData {
 };
 
 // List Mob Data
-struct CNPCData {
+struct CNPCData 
+{
     UINT id;
     UINT life;
 	UINT size;
     UINT wspeed;
     UINT rspeed;
     BYTE stance;    //LMA: AIP?
-    //UINT dspeed; //dspeed is monster size at startup.cpp...
     UINT weapon;
     UINT subweapon;
     UINT level;
@@ -601,9 +652,9 @@ struct CNPCData {
   	UINT tab2;
   	UINT tab3;
   	UINT specialtab;
+	UINT chartype;
     float atkdistance;
     UINT aggresive;
-    UINT helpless;		//LMA: doesn't fight back when attacked.
     UINT shp;
 	UINT boss;			//Is the monster a boss or not? used in drops, boss fights and Exp rewards
     UINT dialogid;
@@ -614,15 +665,9 @@ struct CNPCData {
     UINT sigskill;		//signature
     clock_t lastskill;	//last skill time
     UINT delayskill;	//delay between two skills
-    UINT side;			//hidden
-    UINT sidechance;	//hidden
     UINT refNPC;		//LMA: AIP?
     UINT STLId;			//LMA: STL ID
-
-    //LMA: test for quest hack (stackable).
-    //#ifdef QHACK
     dword die_quest;
-    //#endif
     dword _EntityType;
 };
 
@@ -635,50 +680,16 @@ struct MonsterDamage
     long damage;
 };
 
-struct CDropInfo
-{
-    BYTE type;
-    DWORD item;
-    QWORD prob;
-};
-
-//LMA: Drop info And system.
-struct CDropInfoAnd
-{
-    int type;
-    int item;
-    int prob;
-    int alternate[8];
-    int nb_alternate;
-};
 
 // For store the drops info
 struct CMDrops
 {
     UINT id;
-    UINT zuly;
-    UINT zulyprob;
-    vector<CDropInfo*> Drops;
-    UINT level_min;//for map drops
-    UINT level_max;//for map drops
-    UINT level_boss;//for map drops
-    UINT probmax;
-    UINT prob;  //hidden
-    UINT map;   //hidden
-    UINT mob;   //hidden
-    UINT itemtype;   //hidden
-    UINT itemnum;   //hidden
-    UINT alt[8];   //hidden
-	//experimental structure for New Drops
     UINT Dropid;
     UINT item[100];
     UINT chance[100];
     dword RunningTotal[100];
     dword TotalChance;
-    float a_x;   //LMA: defining an area.
-    float a_y;
-    float b_x;
-    float b_y;
 };
 
 // For store the Buff info
@@ -763,32 +774,62 @@ public:
     unsigned GetVisInfo( );
     void Clear( );
 
-    inline bool IsStackable(){
+    inline bool IsStackable()
+	{
         return (itemtype >= 10) && (itemtype <= 13);
     };
-
-    UINT    itemnum;
-    UINT    itemtype;
-    UINT    refine;
-    UINT    lifespan;
+	BYTE    itemtype;
+	WORD    itemnum;
+	BYTE	isCreated;
+	unsigned short    gem;
+    BYTE    refine;
+    short    lifespan;
     UINT    durability;
     bool    socketed;
     bool    appraised;
-    UINT    count;
-    UINT    stats;
-    UINT    gem;
+    unsigned short    count;
+    short    stats;
     UINT    durabLeft;
-    long int sig_head;
-    long int sig_data;
-    int sig_gem;
     int sp_value;
     int last_sp_value;
 	UINT    type;
 	UINT    raretype;
+	
+	short	UStat[2];		//PY Unique stats that each item can have
+	short   UValue[2];		//PY The value in the unique stats
+	
+	CItem()//constructor
+	{
+		itemtype = 0;
+		itemnum = 0;
+		isCreated = 0;
+		//HEADER = 0;
+		gem = 0;
+		durability = 0;
+		lifespan = 0;
+		socketed = 0;
+		appraised = 0;
+		count = 0;
+		stats = 0;
+		UStat[0] = 0;
+		UStat[1] = 0;
+		UValue[0] = 0;
+		UValue[1] = 0;
+		refine = 0;
+		durabLeft = 0;
+		sp_value = 0;
+		last_sp_value = 0;
+		type = 0;
+		raretype = 0;
+	};
 };
 
+
+
+
 //LMA: Used for boxes and chests
-struct CItemChests {
+struct CItemChests 
+{
     CItem item;
 	unsigned int slot;
 	bool is_ok;
@@ -809,11 +850,11 @@ struct BSItem {
 // -----------------------------------------------------------------------------------------
 // A typical npc
 // -----------------------------------------------------------------------------------------
-struct CNPC {
+struct CNPC 
+{
 	unsigned short clientid;
 	fPoint pos;
 	float dir;
-	//unsigned char posMap; //LMA: problem
 	unsigned short posMap;
 	unsigned npctype;
 	CNPCData* thisnpc;
@@ -870,37 +911,40 @@ struct CSkills
     UINT level;
     UINT type;
     UINT skill_tab;
-    UINT skilltype; // New
+    UINT skilltype;			// New
     UINT range;
     UINT target;
-    UINT status[3]; // New LMA: 3 for osRose...
-    UINT aoerange; // New
+    UINT status[3];			// New LMA: 3 for osRose...
+    UINT aoerange;			// New
     UINT hostilitycheck;    //PY New and possibly not used
-    UINT successrate; // New
-    UINT costtype[2]; // New
-    UINT costamount[2]; // New
+    UINT successrate;		// New
+    UINT costtype[2];		// New
+    UINT costamount[2];		// New
     UINT duration;
-    UINT formula;//skill type magical or weapon
+    UINT formula;			//skill type magical or weapon
     UINT atkpower;
     UINT mp;
-    UINT costtype2; // New
-    UINT costamount2; // New
-    UINT cooldown; // New
+    UINT costtype2;			// New
+    UINT costamount2;		// New
+    UINT cooldown;			// New
     // zone warp data
-    UINT WarpZone;  //applies to Return Scrolls
+    UINT WarpZone;			//applies to Return Scrolls
     UINT WarpX;
     UINT WarpY;
     //end
-
+	UINT ProcType;
+	UINT ProcChance;
+	UINT ProcSkill;
+	UINT CooldownGroup;
     UINT SummonMobID;
     UINT ProgressType;
     UINT weapon[5];
     UINT rskill[3];
     UINT lskill[3];
     UINT c_class;
-    UINT req[2]; // New
-    UINT reqam[2]; // New
-    UINT zuly;   // New
+    UINT req[2];			// New
+    UINT reqam[2];			// New
+    UINT zuly;				// New
     UINT clevel;
     UINT success;
     UINT sp;
@@ -919,10 +963,93 @@ struct CSkills
     UINT gm_aoe;
     UINT STLId;
 	UINT ZulyLevelupCost;
+	//constructorr
+	CSkills()
+	{
+		id = 0;
+		skillnumber = 0;
+		level = 0;
+		type = 0;
+		skill_tab = 0;
+		skilltype = 0; 
+		range = 0;
+		target = 0;
+		status[0] = 0;
+		status[1] = 0;
+		status[2] = 0; 
+		aoerange = 0; 
+		hostilitycheck = 0;    
+		successrate = 0; 
+		costtype[0] = 0; 
+		costtype[1] = 0; 
+		costamount[0] = 0;
+		costamount[1] = 0; 
+		duration = 0;
+		formula = 0;
+		atkpower = 0;
+		mp = 0;
+		costtype2 = 0; 
+		costamount2 = 0; 
+		cooldown = 0; 
+		WarpZone = 0;  
+		WarpX = 0;
+		WarpY = 0;
+		SummonMobID = 0;
+		ProgressType = 0;
+		weapon[0] = 0;
+		weapon[1] = 0;
+		weapon[2] = 0;
+		weapon[3] = 0;
+		weapon[4] = 0;
+		rskill[0] = 0;
+		rskill[1] = 0;
+		rskill[2] = 0;
+		lskill[0] = 0;
+		lskill[1] = 0;
+		lskill[2] = 0;
+		c_class = 0;
+		req[0] = 0;
+		req[1] = 0; 
+		reqam[0] = 0; 
+		reqam[1] = 0; 
+		zuly = 0;   
+		clevel = 0;
+		success = 0;
+		sp = 0;
+		buff[0] = 0;
+		buff[1] = 0;
+		buff[2] = 0;
+		value1[0] = 0;
+		value1[1] = 0;
+		value1[2] = 0;
+		value2[0] = 0;
+		value2[1] = 0;
+		value2[2] = 0;
+		nbuffs = 0;
+		BlockSkill = 0;
+		Unlocks[0] = 0;
+		Unlocks[1] = 0;
+		Unlocks[2] = 0;
+		Unlocks[3] = 0;
+		UnlockLevel[0] = 0;
+		UnlockLevel[1] = 0;
+		UnlockLevel[2] = 0;
+		UnlockLevel[3] = 0;
+		SkillBook = 0;
+		aoe = 0;
+		aoeradius = 0;
+		script = 0;
+		svalue1 = 0;
+		gm_aoe = 0;
+		STLId = 0;
+		ZulyLevelupCost = 0;
+
+	};
 };
 
 //LMA: Grade structure.
-struct CGrade {
+struct CGrade 
+{
     UINT atk_percent;
     UINT atk_addbonus;
     UINT acc_percent;
@@ -933,6 +1060,14 @@ struct CGrade {
     UINT mdef_addbonus;
     UINT dodge_percent;
     UINT dodge_addbonus;
+};
+
+struct CUPGrade
+{
+	UINT BindLevel;
+	UINT BindSuccess;
+	UINT TaliLevel;
+	UINT TaliSuccess;
 };
 
 
@@ -958,15 +1093,15 @@ struct IfoObject
 // -----------------------------------------------------------------------------------------
 struct CStatus
 {
-  UINT id; //
-  UINT type; // Unk [1]
-  //UINT duplication; // Unk [2]  wrong and not used
-  UINT stackable;   //can we stack it? 0 = NO. 1 = YES
-  UINT dir; // 0: Up 1: Down 2: ? [3]
-  UINT repeat; // 1: Repeat 2: Once 3: Special [4]
-  UINT ability[2]; // Status # to call? [5][7]
-  UINT amount[2]; // # to increase/decrease by? [6][8]
-  UINT decrease; // 1: decrease 0: increase [17]
+	UINT id; //
+	UINT type; // Unk [1]
+	//UINT duplication; // Unk [2]  wrong and not used
+	UINT stackable;   //can we stack it? 0 = NO. 1 = YES
+	UINT dir; // 0: Up 1: Down 2: ? [3]
+	UINT repeat; // 1: Repeat 2: Once 3: Special [4]
+	UINT ability[2]; // Status # to call? [5][7]
+	UINT amount[2]; // # to increase/decrease by? [6][8]
+	UINT decrease; // 1: decrease 0: increase [17]
 };
 
 // -----------------------------------------------------------------------------------------
@@ -1169,36 +1304,40 @@ struct CSpawnArea
     UINT RefVar;
     UINT RefVal;
 };
-struct CMob {
-  UINT id;
-  UINT mobId;
-  bool tactical;
-  UINT amount;
-  UINT real_amount; //LMA: real amount (amount is the max amount).
-  CNPCData* thisnpc;
+struct CMob 
+{
+	UINT id;
+	UINT mobId;
+	bool tactical;
+	UINT amount;
+	UINT real_amount; //LMA: real amount (amount is the max amount).
+	CNPCData* thisnpc;
     CMDrops* mobdrop;
     CMDrops* mapdrop;
 };
 
-struct CMobGroup {
-  UINT id;
-  UINT map;
-  UINT limit;
-  UINT active;
-  UINT tacticalpoints;
-  UINT daynight;    //LMA: day, night or both?
-  UINT respawntime;
-  UINT basicKills;
-  UINT lastKills;   //LMA: last kills
-  bool group_ready; //LMA: ready to spawn?
-  UINT curTac;
-  UINT curBasic;
-  fPoint point;
-  UINT range;
-  clock_t lastRespawnTime;
-  vector<CMob*> basicMobs;
-  vector<CMob*> tacMobs;
+/*
+struct CMobGroup 
+{
+	UINT id;
+	UINT map;
+	UINT limit;
+	UINT active;
+	UINT tacticalpoints;
+	UINT daynight;    //LMA: day, night or both?
+	UINT respawntime;
+	UINT basicKills;
+	UINT lastKills;   //LMA: last kills
+	bool group_ready; //LMA: ready to spawn?
+	UINT curTac;
+	UINT curBasic;
+	fPoint point;
+	UINT range;
+	clock_t lastRespawnTime;
+	vector<CMob*> basicMobs;
+	vector<CMob*> tacMobs;
 };
+*/
 
 struct CUseInfo
 {
@@ -1210,6 +1349,7 @@ struct CUseInfo
     int use_buff;
     int cooldown_type;  //LMA: cooldown.
     int cooldown;   //LMA: cooldown.
+	int skillid;
 };
 
 struct CItemType
@@ -1259,8 +1399,8 @@ struct MDrop    // monster drops
     //unsigned int firsthit;
     DWORD firsthit;
     unsigned int firstlevel;
-	CMDrops* mobdrop;
-	CMDrops* mapdrop;
+	//CMDrops* mobdrop;
+	//CMDrops* mapdrop;
 };
 
 struct CReward
@@ -1273,6 +1413,7 @@ struct CReward
     unsigned int rewardposs;
 };
 
+/*
 struct CChest
 {
     unsigned int chestid;
@@ -1285,6 +1426,7 @@ struct CChest
     UINT breakid;
     //unsigned int rewardposs;    //LMA: TODO: strip, left for compatibility for now
 };
+*/
 
 struct CBValue
 {
@@ -1298,7 +1440,7 @@ struct CBValue
 struct CEquipList
 {
     CEquip **Index;
-    int max;
+    UINT max;
     //vector<CEquip*> Data;
     CEquip* nullequip;
 	UINT STBMax;
@@ -1307,7 +1449,7 @@ struct CEquipList
 struct CJemList
 {
     CJemData **Index;
-    int max;
+    UINT max;
     //vector<CJemData*> Data;
     //std::map<int,CJemData*> DataMap; //LMA: testing map.
     CJemData* nulljem;
@@ -1316,7 +1458,7 @@ struct CJemList
 struct CNaturalList
 {
     CNaturalData **Index;
-    int max;
+    UINT max;
     //vector<CNaturalData*> Data;
     CNaturalData* nullnatural;
 };
@@ -1325,7 +1467,7 @@ struct CPatList
 {
 
     CPatData **Index;
-    int max;
+    UINT max;
     //vector<CPatData*> Data;
     CPatData* nullpat;
 };
@@ -1333,7 +1475,7 @@ struct CPatList
 struct CProductList
 {
     CProductData **Index;  //LMA: Sometimes 2000 wasn't enough, constant based now.
-    int max;
+    UINT max;
     //vector<CProductData*> Data;
     CProductData* nullproduct;
 };
@@ -1342,7 +1484,7 @@ struct CSellList
 {
 
     CCSellData **Index;
-    int max;
+    UINT max;
     //vector<CCSellData*> Data;
     CCSellData* nullsell;
 };
@@ -1350,7 +1492,7 @@ struct CSellList
 struct CUseList
 {
     CUseData **Index;
-    int max;
+    UINT max;
     //vector<CUseData*> Data;
     CUseData* nulluse;
 };
@@ -1358,7 +1500,7 @@ struct CUseList
 struct CMapList
 {
     class CMap **Index;
-    int max;
+    UINT max;
 
     vector<class CMap*> Map;
     class CMap* nullzone;
@@ -1366,16 +1508,16 @@ struct CMapList
 
 struct CItemStas
 {
-  UINT stat[2];
-  UINT value[2];
+	UINT stat[2];
+	UINT value[2];
 };
 
 //PY stat lookup table
 struct CExtraStats
 {
- UINT id;
- UINT statnumber;
- };
+	UINT id;
+	UINT statnumber;
+};
  //PY end
 
 
@@ -1396,17 +1538,30 @@ struct CGridMap
     int length;       //length of the map
     int width;       //Width of the map
     bool always_on;              //always display or not? (default 0).
-    int org_x;                   //point of Origine (never 0,0 and sometimes not the same)...
+    int org_x;                   //point of Origin (never 0,0 and sometimes not the same)...
     int org_y;
     UINT nb_cells;
+	short MapID;
 };
 
 struct CListMap
 {
-    int grid_id;      //Grid ID
+    short grid_id;      //Grid ID
     bool always_on;              //always display or not? (default 0).
-    int nb_col;                //nb col (according to MINVISUALRANGE)
-    int nb_row;                //nb row (according to MINVISUALRANGE)
+    short nb_col;                //nb col (according to MINVISUALRANGE)
+    short nb_row;                //nb row (according to MINVISUALRANGE)
+	short MapID;
+	bool useGrids;				//should we apply this data to the grids
+};
+struct CMapPermission	//used to determine where monsters are allowed to move. no more cliff climbing or walking through walls
+{
+	short length;
+	short width;
+	short MinX;
+	short MinY;
+	byte **coords;
+	bool modified;
+	byte mode;
 };
 
 //LMA End
@@ -1423,6 +1578,7 @@ struct CBreakList
     UINT prob[20];
 	long minChance[20];
 	long maxChance[20];
+	dword RunningTotal[20];
     //UINT numToGive;
     //UINT total;
     UINT reward_min;
@@ -1457,20 +1613,29 @@ struct SQuest
         Switches[byteId] = Switches[byteId] | ((value?1:0) << bitId);
     };
 
-    //LMA: Let's cheat ;)
-    /*void AddItem(CItem* item, byte btOp = 2)
+    void AddItem(CItem* item, byte btOp = 2)
     {
-        for(dword i = 0; i < 6; i++){
-            if(Items[i].GetPakHeader() == item->GetPakHeader()) {
-                if(btOp == 1){
+        for(dword i = 0; i < 6; i++)
+		{
+            if(Items[i].GetPakHeader() == item->GetPakHeader()) 
+			{
+                if(btOp == 1)
+				{
                     Items[i].count += item->count;
                     return;
-                }else if(btOp == 0){
+                }
+				else if(btOp == 0)
+				{
                     if(Items[i].count <= item->count)
+                    {
                         Items[i].Clear();
+                        return;
+                    }
                     else
+                    {
                         Items[i].count -= item->count;
-                    return;
+                        return;
+                    }
                 }
             }
             if(btOp == 0) continue;
@@ -1481,37 +1646,6 @@ struct SQuest
             return;
         }
     };
-    */
-
-    UINT AddItem(CItem* item, byte btOp = 2)
-    {
-        for(dword i = 0; i < 6; i++){
-            if(Items[i].GetPakHeader() == item->GetPakHeader()) {
-                if(btOp == 1){
-                    Items[i].count += item->count;
-                    return Items[i].count;
-                }else if(btOp == 0){
-                    if(Items[i].count <= item->count)
-                    {
-                        Items[i].Clear();
-                        return 0;
-                    }
-                    else
-                    {
-                        Items[i].count -= item->count;
-                        return Items[i].count;
-                    }
-
-                }
-            }
-            if(btOp == 0) continue;
-            if(Items[i].GetPakHeader() != 0) continue;
-            Items[i].itemnum = item->itemnum;
-            Items[i].itemtype = item->itemtype;
-            Items[i].count = item->count;
-            return Items[i].count;
-        }
-    };
 
 
     void Clear(){
@@ -1520,46 +1654,77 @@ struct SQuest
 
 };
 
+
 struct SQuestData
 {
     word EpisodeVar[5];
     word JobVar[3];
     word PlanetVar[7];
     word UnionVar[10];
-
     SQuest quests[10];
-    byte flags[0x40];
-    //CNPC* selectedNpc;    //LMA: outdated.
+
+    //byte flags[0x40];
+	//byte Qflags[512];
+	union
+	{
+		byte  Qflags	[QUEST_SWITCH_CNT / 8];		//64
+		DWORD dwFlags	[QUEST_SWITCH_CNT / 32];	//16
+	};
     word ClanVar[5];   //LMA: Clan Var (at the end to preserve the existing records...)
     int RefNPC;
+	
+	enum {	BIT_SHIFT=3, WHICH_BIT=0x07 };
+	BYTE GetBit (int iIndex)
+	{
+		return ( Qflags[ iIndex >> BIT_SHIFT ] & g_btSwitchBitMask[ iIndex & WHICH_BIT ] ) ? 1 : 0;
+	}
+	void SetBit (int iIndex)
+	{
+		Qflags[ iIndex >> BIT_SHIFT ] |= g_btSwitchBitMask[ iIndex & WHICH_BIT ];
+	}
+	void ClearBit (int iIndex)
+	{
+		Qflags[ iIndex >> BIT_SHIFT ] &= ~(g_btSwitchBitMask[ iIndex & WHICH_BIT ]);
+	}
+	BYTE FlipBit (int iIndex)
+	{
+		if ( this->GetBit( iIndex ) )
+			this->ClearBit( iIndex );
+		else
+			this->SetBit ( iIndex );
 
-    void SetFlag( dword flagid, bool value ){
+		return this->GetBit( iIndex );
+	}
+
+    /*void SetFlag( dword flagid, bool value )
+	{
         dword byteid = flagid / 8;
         dword bitid = flagid % 8;
 
         //LMA: buggy, doesn't comes back to 0
-        //flags[byteid] = flags[byteid] | ((value?1:0) << bitid);
+        Qflags[byteid] = Qflags[byteid] | ((value?1:0) << bitid);
 
         if(value)
         {
-            flags[byteid] = flags[byteid] | (1 << bitid);
+            Qflags[byteid] = Qflags[byteid] | (1 << bitid);
         }
         else
         {
             if (GetFlag(flagid))
             {
-                flags[byteid] = flags[byteid] ^ (1 << bitid);
+                Qflags[byteid] = Qflags[byteid] ^ (1 << bitid);
             }
-
         }
+		//Qflags[flagid] = value;
+    }*/
 
-    }
-
-    bool GetFlag( dword flagid ){
+    /*bool GetFlag( dword flagid )
+	{
         dword byteid = flagid / 8;
         dword bitid = flagid % 8;
-        return ((flags[byteid] >> bitid) & 1);
-    }
+        return ((Qflags[byteid] >> bitid) & 1);
+		//return (Qflags[flagid] == 1);
+    }*/
 };
 
 //QSD End

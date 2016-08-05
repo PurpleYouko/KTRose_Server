@@ -51,8 +51,8 @@ CMonster::CMonster( fPoint MonsterPosition, UINT MonsterType, UINT MonsterMap, U
     MonsterDrop->drop = false; 
     MonsterDrop->firsthit = 0;
     MonsterDrop->firstlevel = 0;
-    MonsterDrop->mobdrop = NULL;
-    MonsterDrop->mapdrop = NULL;
+    //MonsterDrop->mobdrop = NULL;
+    //MonsterDrop->mapdrop = NULL;
     clientid = GServer->GetNewClientID();
     aip_npctype=0;
     aip_clientid=0;

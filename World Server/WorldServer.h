@@ -53,7 +53,7 @@
 #define SHUTDOWN_THREAD 2
 
 //LMA: Grids
-#define NB_MAPS 124        //Nb maps (122 maps, including bad and non existant).
+#define NB_MAPS 120        //Nb maps (120 maps, including bad and non existant).
 #define NB_GRIDS 96        //nb active grids (active maps)
 
 //LMA: LTB.
@@ -119,6 +119,7 @@ class CWorldServer : public CServerSocket
         CListMap allmaps[NB_MAPS];   //all maps (even those not used)
         CGridMap gridmaps[NB_GRIDS];  //only active maps
         //LMA End
+		CMapPermission Collisions[NB_MAPS];
 
       	//------------------ WORLD PROCESS (worldprocess.cpp)
       	//bool GiveExp( CMonster* thismon );
@@ -154,6 +155,7 @@ class CWorldServer : public CServerSocket
     	//------------------ SERVER EXTRAS (extrafunctions.cpp)
         bool IsValidItem(UINT type, UINT id );
         unsigned BuildItemShow(CItem thisitem);
+		byte GetByteValue( const char* s , void* var=NULL );
         UINT GetUIntValue( const char* s , void* var=NULL );
         int GetIntValue( const char* s , void* var=NULL );
         char* GetStrValue( const char* s , void* var=NULL );
@@ -197,11 +199,14 @@ class CWorldServer : public CServerSocket
     	CTeleGate* GetTeleGateByID( UINT id, UINT offset=0);  //LMA: Telegates, with extra gate.
     	UINT BuildItemHead( CItem thisitem );
     	UINT BuildItemData( CItem thisitem );
+		CPacket AddItemData( CItem thisitem, CPacket pak );
+		CPacket AddItemHead( CItem thisitem, CPacket pak );
+		CPacket AddItemBody( CItem thisitem, CPacket pak );
     	CMonster* GetMonsterByID( UINT id, UINT map );
     	//CSpawnArea* GetSpawnArea( UINT id, UINT map=0 );
     	//CNMSpawns* GetSpawnArea( UINT id, UINT map=0 );
     	CSpawnArea* GetSpawnArea( UINT id, UINT map );
-        CMobGroup* GetMobGroup( UINT id, UINT map=0 );
+        //CMobGroup* GetMobGroup( UINT id, UINT map=0 );
         bool DeleteSpawn( CSpawnArea* spawn );
         //bool DeleteSpawn( CNMSpawns* spawn );
         CNPCData* GetNPCDataByID( UINT id );
@@ -215,8 +220,9 @@ class CWorldServer : public CServerSocket
         CStatus* GetStatusByID( unsigned int id );  //getting status.
     	void ClearClientID( UINT id );
     	CDrop* GetDropByID( UINT id, UINT map=0 );
-        CChest* GetChestByID( UINT id );
-    	CNPC* GetNPCByID( UINT id, UINT map=0 );
+        //CChest* GetChestByID( UINT id );
+    	CNPC* GetNPCByID( UINT id, UINT map = 0 );
+		CNPC* GetNPCByCID( UINT cid, UINT map = 0 );
     	char* GetNPCNameByType(UINT id);    //LMA: getting the npc name.
     	char* GetSTLObjNameByID(UINT family, UINT idorg,bool comment=false);   //LMA: getting the STL name for objects (1-14)
     	char* GetSTLMonsterNameByID(UINT idorg); //LMA: getting the STL name of a monster / NPC by ID.
@@ -231,7 +237,7 @@ class CWorldServer : public CServerSocket
 		CDrop* GetNewDrop( CMonster* thismon );						//KT drop system
     	void SendToAll( CPacket* pak );
     	void SendToAllInMap( CPacket* pak, int mapid);     //LMA: Send a message to all people in a given map
-        UINT gi(UINT itemvalue, short type);    //LMA: to get a clean itemtype and itemnum.
+        UINT gi(DWORD itemvalue, short type);    //LMA: to get a clean itemtype and itemnum.
         UINT getClanPoints(int clanid);   //LMA: We get the exact Clan Points amount through mysql database
         UINT getClanGrade(int clanid);    //LMA: We get the exact Clan Grade through mysql database
         UINT SummonFormula(CPlayer* thisclient,CMonster* thismonster);    //LMA: Formulas for summons.
@@ -268,7 +274,12 @@ class CWorldServer : public CServerSocket
 
         // PY extra stats lookup
         UINT GetExtraStats( UINT modifier );
+		UINT GetUStat( short modifier );
+		UINT GetUValue( short modifier, short stat );
         // PY end
+
+		//atoi modifier (ServerFunctions.cpp )
+		UINT GetSafeAtoi( char *itmp );
 
         //------------------ Fairies ---------------------
         void DoFairyStuff( CPlayer* targetclient, int action );
@@ -355,8 +366,7 @@ class CWorldServer : public CServerSocket
         bool LearnSkill( CPlayer* thisclient, UINT skill, bool takeSP = true );
         bool CheckCompatibleClass(UINT rclass, UINT player_job);
    		bool pakAddWishList( CPlayer* , CPacket* );
-        bool GiveChestItems( CPlayer* thisclient,UINT chest_slot,CChest* thischest); //LMA: used for chests and slots.
-        bool GiveDasmItems( CPlayer* thisclient,UINT src);    //LMA: Used for disassemble.
+        bool GiveDisassembledItems( CPlayer* thisclient,UINT src, BYTE CraftRslt);    //PY used for disassembling (including chests)
         bool GiveDefaultDasm( CPlayer* thisclient,UINT src, bool not_found, bool is_failed);
 
         //-------------------------- Clan functions
@@ -408,7 +418,7 @@ class CWorldServer : public CServerSocket
         bool pakGMReborn( CPlayer* thisclient); //Reborn by Core
         bool pakGMLevel( CPlayer* thisclient, int level , char* name);
         bool pakGMTeleToPlayer( CPlayer* thisclient, char* name );
-        bool pakGMDoEmote( CPlayer* thisclient, int emotionid );
+        bool pakGMStartAni( CPlayer* thisclient, int animationid );
     	bool pakGMCommand( CPlayer* thisclient, CPacket* P );
         bool ReloadMobSpawn( CPlayer* thisclient, int id );
         bool pakGMKick( CPlayer* thisclient, char* name );
@@ -450,6 +460,7 @@ class CWorldServer : public CServerSocket
         bool LoadLTB( );            //LMA: LTB.
     	bool LoadZoneData( );
     	bool LoadGrids( );          //LMA: maps
+		bool LoadMapCollisions( );
     	bool LoadConsItem( );
     	bool LoadSellData( );
     	bool LoadProductItem( );
@@ -459,6 +470,7 @@ class CWorldServer : public CServerSocket
     	bool LoadEquip( );
     	bool LoadItemStats( );
     	bool LoadGrades();          //LMA: loading refines (grades) bonuses.
+		bool LoadRefineChances( );	//PY: load refine chances
     	bool LoadJobReq( );         //LMA: Job requirements.
     	bool LoadStatLookup( );
         bool LoadTeleGateData( );
@@ -500,6 +512,7 @@ class CWorldServer : public CServerSocket
         //PY spawning stuff
         UINT maxSpawnId;
         TowerDef WPList[100][100];                      //Way point list for tower def. [mapid][wp id]
+		
 
         //LMA: AIP:
         inline int round(double x) {return int(x > 0.0 ? x + 0.5 : x - 0.5);};
@@ -613,6 +626,7 @@ class CWorldServer : public CServerSocket
         int                     maxSkills;              //Nb Skills
 
         CGrade                 **GradeList;
+		CUPGrade				UpGradeList[20];
         int                     maxGrades;              //Nb grades (refines)
 
         vector<CMDrops*>        MDropList;              // Drops List
@@ -627,7 +641,7 @@ class CWorldServer : public CServerSocket
 
         vector<CParty*>         PartyList;              // Party List
         vector<CFairy*>         FairyList;              // Fairy List
-        vector<CChest*>         ChestList;              // Chest List
+        //vector<CChest*>         ChestList;              // Chest List
 
         map<int,vector<int> >    ListAllNpc;             //LMA: we store all the NPC in a single map.
 
@@ -639,13 +653,10 @@ class CWorldServer : public CServerSocket
 
         //UINT                    upgrade[2][10];
 
-        #ifdef REFINENEW
-            UINT                    upgrade[16];         //LMA: new way (after 2010/05)
-            UINT                    refine_grade[NB_REF_RULES];    //lma: refining rules.
-        #else
-            UINT                    upgrade[10][2];         //LMA: new way (before 2010/05)
-            UINT                    refine_grade[NB_REF_RULES][2];    //lma: refining rules.
-        #endif
+       
+        UINT                    upgrade[10][2];         
+        //UINT                    refine_grade[NB_REF_RULES][2]; 
+		UINT					upgradeChance[9];
 
         //UINT                    refine_grade[15][2];    //lma: refining rules.
         CEquipList              EquipList[10];
@@ -685,6 +696,7 @@ class CWorldServer : public CServerSocket
         CSTBDataChar            ZoneData;               // LMA: zone Data.
         CSTBData                ListClass;              // LMA: used to store the class list, actually to check equip requirements.
         CSTBData                ListGrade;              // LMA: used to store the refine bonuses (% and +).
+		CSTBData				ListUpGrade;			// PY: stores the upgrade chances
 
     	clock_t				   lastServerStep;			// Last Update
     	clock_t                LastUpdateTime;          // Store the last update World Time

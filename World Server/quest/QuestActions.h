@@ -246,7 +246,8 @@ struct STR_REWD_028 {
 
 // use LUA function
 //LMA: used now.
-struct STR_REWD_029 {
+struct STR_REWD_029 
+{
     word unk1;
     word unk2;
     string LuaName;
@@ -257,18 +258,38 @@ struct STR_REWD_030 {
 };
 
 // unknown start
-struct STR_REWD_031 {
+struct STR_REWD_031 
+{
+	int		iMonsterSN;		
+	int		iCompareValue;	
+	STR_QUEST_DATA	Var;			
 };
 
-struct STR_REWD_032 {
+struct STR_REWD_032 
+{
+	unsigned int	uiItemSN;
+	int				iCompareValue;
+	BYTE			btPartyOpt;		
 };
 
-struct STR_REWD_033 {
+struct STR_REWD_033 
+{
+	short			nNextRewardSplitter;	
 };
 // unknown end
 
 // unspawn NPC
-struct STR_REWD_034 {
+struct STR_REWD_034 
+{
     byte btOP;
+};
+
+struct STR_REWD_035
+{
+	unsigned int	uiSize;
+	int				iType;
+
+	BYTE			specType;	
+	int				specTeam;	
 };
 

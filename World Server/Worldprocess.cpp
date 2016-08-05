@@ -31,7 +31,7 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
 
     //LMA TEST
     bool lma_debug=false;
-   if(thismon->Position->respawn==4589)
+   if(thismon->Position->respawn == 4589)
    {
        lma_debug=true;
        Log(MSG_INFO,"GiveExp Spawn %u CID %u",thismon->Position->respawn,thismon->clientid);
@@ -45,7 +45,7 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
 		CPlayer* thisclient = GetClientByCID( thisplayer->charid, thismon->Position->Map );
 
         //LMA: Player mustn't be dead.
-		if( thisplayer->damage>0 && thisclient!=NULL && !thisclient->IsDead())
+		if( thisplayer->damage > 0 && thisclient != NULL && !thisclient->IsDead())
         {
     		if( thisclient->Battle->target == thismon->clientid )
             {
@@ -57,7 +57,7 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
                 for( int q=0;q<10;q++)
                 {
                     // Give Quest Item
-                    if( thisclient->quest.quests[q].QuestID!=0 )
+                    if( thisclient->quest.quests[q].QuestID != 0 )
                     {
                         BEGINPACKET( pak, 0x731 )
                         ADDWORD    ( pak, thismon->montype );
@@ -390,7 +390,7 @@ bool CWorldServer::GiveExp( CMonster* thismon )
                         //ADDWORD    ( pak, thismon->montype );
                         //thisclient->client->SendPacket( &pak );
 						
-						//PY: If I'm right thismon->thisnpc->die_quest contains the hash needed to complete the trigger and just bypass the initial part of this process
+						//PY: thismon->thisnpc->die_quest contains the hash needed to complete the trigger so we can just bypass the initial part of this process
 						int success = thisclient->ExecuteQuestTrigger(thismon->thisnpc->die_quest);
 						if(success == 5) // quest success
 						{
@@ -408,7 +408,7 @@ bool CWorldServer::GiveExp( CMonster* thismon )
             //assign my own exp for monsters that I personally damaged
             unsigned int exp = (unsigned int)floor(thismon->thisnpc->exp * MyPercent);
             //unsigned int exp = (unsigned int)ceil((double)((thismon->thisnpc->exp * thisplayer->damage) / (thismon->thisnpc->hp*thismon->thisnpc->level)));
-            exp = exp * Config.EXP_RATE * map->mapXPRate *   MyPercent;      //calculate base exp for this client. No medals or stuff accounted for yet
+            exp = exp * Config.EXP_RATE * map->mapXPRate;      //calculate base exp for this client. No medals or stuff accounted for yet
 			
             Log(MSG_DEBUG,"MonXP: %i config rate: %i Map rate : %i My percent: %f Total XP: %i", thismon->thisnpc->exp, Config.EXP_RATE, map->mapXPRate, MyPercent, exp);
             thisclient->CharInfo->Pending_Exp += (exp * thisclient->Stats->xprate);    //store exp into thisclient's pending_exp using personal xprate adjustments
@@ -500,15 +500,17 @@ bool CWorldServer::GiveExp( CMonster* thismon )
         }
         thisparty->Exp += thisparty->Pending_Exp;
         thisparty->Pending_Exp = 0;
-		unsigned int m_bitlevelup = 0;
+		thisparty->m_bitLevelUP = 0;
         if( thisparty->Exp > GetMaxPartyExp(thisparty->PartyLevel)) //level up the party
         {
             thisparty->PartyLevel++;
             thisparty->Exp -= GetMaxPartyExp(thisparty->PartyLevel-1);
-			m_bitlevelup = 1;	//set levelup bit. See client structure below
+			thisparty->m_iEXP = thisparty->Exp;
+			thisparty->m_bitLevelUP = 1;	//set levelup bit. See client structure below
         }
 		//PY: structure of 0x7d4
-		/*BYTE				m_btLEVEL;
+		/*
+		BYTE				m_btLEVEL;
 		struct 
 		{
 			unsigned int	m_iEXP		 : 31;
@@ -517,8 +519,8 @@ bool CWorldServer::GiveExp( CMonster* thismon )
 		*/
         BEGINPACKET	( pak, 0x7d4 );
         ADDBYTE		( pak, thisparty->PartyLevel );
-        ADDWORD		( pak, thisparty->Exp );
-		ADDWORD		( pak, m_bitlevelup );
+        ADDWORD		( pak, thisparty->m_iEXP );			// defined as 31 bits
+		ADDWORD		( pak, thisparty->m_bitLevelUP );	// defined as 1 bit
         thisparty->SendToMembers( &pak );
     }
     return true;

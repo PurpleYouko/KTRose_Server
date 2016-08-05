@@ -322,7 +322,7 @@ AIACT(006)
 
     monster->thisnpc->stance = 1;
     monster->SetStats(false);
-    monster->StartAction( Target, NORMAL_ATTACK, 0 );
+    monster->StartAction( Target, sBASIC_ACTION, 0 );
 
     //	int searchDistance = data->iDistance * 100;
 
@@ -494,7 +494,7 @@ AIACT(011)
 		if(iDistance > searchDistance) continue;
 		chrCount++;
 		other->Battle->target = entity->Battle->target;
-		other->StartAction( (CCharacter*) target, NORMAL_ATTACK, 0 );
+		other->StartAction( (CCharacter*) target, sBASIC_ACTION, 0 );
 
         //		other->Attack(target);
 
@@ -525,7 +525,7 @@ AIACT(012)
 
     monster->thisnpc->stance=1;
     monster->SetStats();
-    monster->StartAction( (CCharacter*) entity->nearChar, NORMAL_ATTACK, 0 );
+    monster->StartAction( (CCharacter*) entity->nearChar, sBASIC_ACTION, 0 );
     //LogDebug( "AIACT(012)%i",entity->nearChar->clientid);
 
 	if(entity->Position->Map==8)
@@ -558,7 +558,7 @@ AIACT(013)
     monster->thisnpc->stance = 1;
     monster->SetStats();
     monster->Battle->target = entity->findChar->clientid;
-    monster->StartAction( (CCharacter*) entity->findChar, NORMAL_ATTACK, 0 );
+    monster->StartAction( (CCharacter*) entity->findChar, sBASIC_ACTION, 0 );
     //    LogDebug( "AIACT(013)%i",entity->findChar->clientid);
 
 	/*if(entity->Position->Map==8||entity->Position->Map==59)
@@ -625,7 +625,7 @@ AIACT(015)
     monster->SetStats();
     monster->Battle->target = monster->Battle->hitby;
     CCharacter* target = entity->GetCharTarget( );
-    monster->StartAction( target, NORMAL_ATTACK, 0 );
+    monster->StartAction( target, sBASIC_ACTION, 0 );
 
 	if(entity->Position->Map==8)
         Log(MSG_INFO,"AIACT(015) monster retaliates");
@@ -679,7 +679,7 @@ AIACT(015)
         return AI_FAILURE;
     }
     LogDebug( "Starting normal attack against opponent %i",target->clientid);
-    monster->StartAction( target, NORMAL_ATTACK, 0 );
+    monster->StartAction( target, sBASIC_ACTION, 0 );
 
 	if(entity->Position->Map==8)
 	{
@@ -824,7 +824,7 @@ AIACT(018)
             continue;
         if(GServer->IsMonInCircle( monster->Position->current, othermon->Position->current, data->iDistance))
         {
-            othermon->StartAction( target, NORMAL_ATTACK, 0);
+            othermon->StartAction( target, sBASIC_ACTION, 0);
             monstercount++;
             if(monstercount >= data->wHowMany)
             return AI_SUCCESS;
@@ -1423,10 +1423,11 @@ AIACT(034)
     BEGINPACKET( pak, 0x71f);
     ADDBYTE(pak, 0x01);
     ADDBYTE(pak, thisslot);
-    ADDDWORD(pak, GServer->BuildItemHead ( caller->items[thisslot]) );
-    ADDDWORD(pak, GServer->BuildItemData ( caller->items[thisslot]) );
-    ADDDWORD( pak, 0x00000000 );
-    ADDWORD ( pak, 0x0000 );
+	pak = GServer->AddItemData(caller->items[thisslot], pak);
+    //ADDDWORD(pak, GServer->BuildItemHead ( caller->items[thisslot]) );
+    //ADDDWORD(pak, GServer->BuildItemData ( caller->items[thisslot]) );
+    //ADDDWORD( pak, 0x00000000 );
+    //ADDWORD ( pak, 0x0000 );
     caller->client->SendPacket(&pak);
 
 

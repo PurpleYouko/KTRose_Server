@@ -259,6 +259,11 @@ struct INFO
     int union03;              //LMA: Union
     int union04;              //LMA: Union
     int union05;              //LMA: Union
+	int union06;
+	int union07;
+	int union08;
+	int union09;
+	int union10;
     int nb_kills;             //LMA: Union
 	UINT unionvar[11];		//PY: new array to hold all the union points and stuff
     BYTE Sex;
@@ -344,6 +349,14 @@ struct SKILLS
 	unsigned level;
 	time_t cooldown_skill;   //LMA: cooldown for skills.
 	CSkills* thisskill;
+	//constructor
+	SKILLS()
+	{
+		id = 0;
+		level = 0;
+		cooldown_skill = 0;
+		thisskill = new CSkills;
+	};
 };
 
 struct QUESTS

@@ -626,11 +626,11 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
     ReduceABC( );
 
     //LMA: We take fuel.
-    if(IsPlayer()&&Status->Stance==DRIVING)
+    if(IsPlayer()&&Status->Stance == DRIVING)
     {
-        CPlayer* plkiller=(CPlayer*) this;
+        CPlayer* plkiller = (CPlayer*) this;
 
-        if(plkiller->items[136].itemnum==0||plkiller->items[139].itemnum==0)
+        if(plkiller->items[136].itemnum == 0 || plkiller->items[139].itemnum == 0)
         {
             Log(MSG_WARNING,"%s should be riding but doesn't have a motor %i or weapon %i (normal_attack)?",plkiller->CharInfo->charname,plkiller->items[136].itemnum,plkiller->items[139].itemnum);
             return;
@@ -638,17 +638,17 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
 
         //We take the fuel amount.
         //Log(MSG_INFO,"lifespan before %i, sp_value %i",plkiller->items[136].lifespan,plkiller->items[136].sp_value);
-        plkiller->items[136].sp_value-=(int)plkiller->attack_fuel;
-        if(plkiller->items[136].sp_value<0)
+        plkiller->items[136].sp_value -= (int)plkiller->attack_fuel;
+        if(plkiller->items[136].sp_value < 0)
         {
-            plkiller->items[136].sp_value=0;
+            plkiller->items[136].sp_value = 0;
         }
 
-        plkiller->items[136].lifespan=(int)(plkiller->items[136].sp_value/10);
+        plkiller->items[136].lifespan = (int)(plkiller->items[136].sp_value / 10);
 
-        if(plkiller->items[136].lifespan<0)
+        if(plkiller->items[136].lifespan < 0)
         {
-            plkiller->items[136].sp_value=0;
+            plkiller->items[136].sp_value = 0;
         }
 
         //Log(MSG_INFO,"lifespan after %i, sp_value %i, attack fuel %.2f",plkiller->items[136].lifespan,plkiller->items[136].sp_value,plkiller->attack_fuel);

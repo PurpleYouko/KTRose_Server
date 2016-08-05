@@ -269,112 +269,113 @@ bool CPlayer::ForceRefreshMonster(bool refresh_all, UINT monster_id)
 // update visibility list
 bool CPlayer::VisiblityList( )
 {
-	std::vector<CPlayer*>	newVisiblePlayers;
+	//std::vector<CPlayer*>	newVisiblePlayers;
 	std::vector<CDrop*>			newVisibleDrops;
 
 	//LMATEST
 	//std::vector<CMonster*>		newVisibleMonsters;
-	std::vector<unsigned int>        newVisibleMonsters;
+	//std::vector<unsigned int>        newVisibleMonsters;
 
 
-
-	std::vector<CNPC*>			newVisibleNPCs;
-	// Clients
+	//std::vector<DWORD>			newVisibleNPCs;
+	bool is_visible = false;
+	unsigned j;
 	CMap* map = GServer->MapList.Index[Position->Map];
-    for(UINT i=0;i<map->PlayerList.size();i++)
+	//Log(MSG_DEBUG, "VisibilityList:: map id %i ",Position->Map );
+	for(UINT i=0;i<map->MonsterList.size();i++)
     {
-        CPlayer* otherclient = map->PlayerList.at(i);
-		if ( this==otherclient || !otherclient->Session->inGame)
+        //Log(MSG_DEBUG, "VisibilityList:: Checking monster %i of %i",i, map->MonsterList.size() );
+		CMonster* thismon = map->MonsterList.at( i );
+		is_visible = false;
+		float distance = GServer->distance ( this->Position->current, thismon->Position->current );
+		for( j=0; j<VisibleMonsters.size(); j++)		//PY easier to run the code from GServer->IsVisible here, otherwise we need it to return an unsigned integer for use in the deletion
 		{
-            continue;
-        }
-		float distance = GServer->distance( this->Position->current, otherclient->Position->current );
-		if ( GServer->IsVisible( this, otherclient ) )
-        {
-            //LMA: now invisible players are just usual users.
-			//if ( distance < MAXVISUALRANGE && !otherclient->isInvisibleMode )
-			if ( distance < MAXVISUALRANGE)
+			if (thismon->clientid == VisibleMonsters.at(j)) 
 			{
-				newVisiblePlayers.push_back( otherclient );
+				is_visible = true;
+				break;
+			}
+		}
+		if( is_visible )
+        {
+			
+			if (distance <= MAXVISUALRANGE )
+			{
+				//Log(MSG_DEBUG, "VisibilityList:: Monster of type %i IS in the list and still in range ",thismon->montype );
+			}
+			else
+			{
+				//Log(MSG_DEBUG, "VisibilityList:: Monster of type %i IS in the list but too far away. Deleting ",thismon->montype );
+				ClearObject( thismon->clientid );
+				VisibleMonsters.erase(VisibleMonsters.begin() + j);
+            }
+		}
+        else
+        {
+			
+			if ( distance <= MAXVISUALRANGE )
+            {
+				//Log(MSG_DEBUG, "VisibilityList:: Monster is of type %i is NOT in the list but is in range. Spawning ",thismon->montype );
+				//newVisibleMonsters.push_back( thismon->clientid );
+				VisibleMonsters.push_back( thismon->clientid );
+				thismon->SpawnMonster(this, thismon );
             }
 			else
 			{
+				//Log(MSG_DEBUG, "VisibilityList:: Monster is of type %i is NOT in the list and NOT in range. Ignoring ",thismon->montype );
+			}
+		}
+	}
+
+	//Log(MSG_DEBUG, "VisibilityList:: Finished the monster list ");
+    for(UINT i=0;i<map->PlayerList.size();i++)
+    {
+        //Log(MSG_DEBUG, "VisibilityList:: Checking player %i of %i",i, map->PlayerList.size() );
+		CPlayer* otherclient = map->PlayerList.at(i);
+		is_visible = false;
+		if ( this == otherclient || !otherclient->Session->inGame)
+		{
+            //Log(MSG_DEBUG, "VisibilityList:: Found myself");
+			continue;
+        }
+		for( j=0; j<VisiblePlayers.size(); j++)		//PY easier to run the code from GServer->IsVisible here, otherwise we need it to return an unsigned integer for use in the deletion
+		{
+			if (otherclient->clientid == VisiblePlayers.at(j)) 
+			{
+				is_visible = true;
+				break;
+			}
+		}
+		float distance = GServer->distance( this->Position->current, otherclient->Position->current );
+		//short IsVisible( this, otherclient );		//found client id in the list
+		if(is_visible)
+        {
+			if ( distance <= MAXVISUALRANGE)						//otherclient is in the list and is NOT in visible range so remove
+			{
+				//Log(MSG_DEBUG, "VisibilityList:: Player is in the list and still in range");
+			}
+			else
+			{
+				//Log(MSG_DEBUG, "VisibilityList:: Player is in the list and out of range. Deleting");
+				VisiblePlayers.erase( VisiblePlayers.begin() + j );
 				ClearObject( otherclient->clientid );
             }
 		}
-        else
+        else													//otherclient NOT in the list
         {
-            //LMA: now invisible players are just usual users.
-			//if ( distance < MINVISUALRANGE && !otherclient->isInvisibleMode )
-			if ( distance < MINVISUALRANGE)
+			if ( distance <= MAXVISUALRANGE)					//in range so add it
             {
-			    newVisiblePlayers.push_back( otherclient );
+			    //Log(MSG_DEBUG, "VisibilityList:: Player is NOT in the list but in range. Adding");
+				VisiblePlayers.push_back( otherclient->clientid );
 				otherclient->SpawnToPlayer(this, otherclient);
+			}
+			else
+			{
+				//Log(MSG_DEBUG, "VisibilityList:: Player is NOT in the list and Not in range.  Ignoring");
 			}
         }
 	}
-    // Monsters
-    bool monster_seen=false;
-    int bon_sp_mp=0;
-    int bon_sp_hp=0;
-    int bon_nb_mp=0;
-    int bon_nb_hp=0;
-
-    for(UINT i=0;i<map->MonsterList.size();i++)
-    {
-        CMonster* thismon = map->MonsterList.at( i );
-		float distance = GServer->distance ( this->Position->current, thismon->Position->current );
-		monster_seen=false;
-		if ( GServer->IsVisible( this, thismon ) )
-        {
-			if (distance < MAXVISUALRANGE )
-			{
-                //LMATEST
-                //newVisibleMonsters.push_back( thismon );
-                newVisibleMonsters.push_back( thismon->clientid );
-                monster_seen=true;
-            }
-			else
-			{
-				ClearObject( thismon->clientid );
-            }
-		}
-        else
-        {
-			if ( distance< MINVISUALRANGE )
-            {
-                 //LMATEST
-				//newVisibleMonsters.push_back( thismon );
-				newVisibleMonsters.push_back( thismon->clientid );
-				thismon->SpawnMonster(this, thismon );
-				monster_seen=true;
-            }
-		}
-
-		//LMA: bonfire, salamender handle (all done by AIP now)
-		/*
-		if((monster_seen)&&(thismon->IsBonfire())&&(distance<=thismon->range))
-		{
-            if(thismon->bonusmp>0)
-                bon_sp_mp+=GServer->RandNumber(thismon->minvalue,thismon->maxvalue);
-            if(thismon->bonushp>0)
-                bon_sp_hp+=GServer->RandNumber(thismon->minvalue,thismon->maxvalue);
-            bon_nb_mp+=thismon->bonusmp;
-            bon_nb_hp+=thismon->bonushp;
-        }
-        */
-
-	}
-
-	//LMA: bonus from bonfires / salamender.  (all done by AIP now)
-	//One update so we divide if several bonuses
-	//regen will be updated faster, that's all.
-    nb_mp=bon_nb_mp;
-    nb_hp=bon_nb_hp;
-	sp_hp=bon_sp_hp;
-    sp_mp=bon_sp_mp;
-    //Log(MSG_INFO,"SIP %i,%i,%i,%i",nb_mp,nb_hp,sp_hp,sp_mp);
-
+	//Log(MSG_DEBUG, "VisibilityList:: Finished Players");
 
 	// Drops
 	for(unsigned i=0; i<map->DropsList.size(); i++)
@@ -401,7 +402,45 @@ bool CPlayer::VisiblityList( )
 			}
 		}
 	}
-	// Npcs
+	//Log(MSG_DEBUG, "VisibilityList:: Finished Drops");
+
+	// Npcs New way
+	for(unsigned i=0; i<map->NPCList.size(); i++)
+    {
+		//Log(MSG_DEBUG, "VisibilityList:: Checking NPCs %i of %i",i, map->NPCList.size() );
+		CNPC* thisnpc = map->NPCList.at(i);
+		is_visible = false;
+		float distance = GServer->distance( this->Position->current, thisnpc->pos );
+		for( j=0; j<VisibleNPCs.size(); j++)			//PY easier to run the code from GServer->IsVisible here, otherwise we need it to return an unsigned integer for use in the deletion
+		{
+			if (thisnpc->clientid == VisibleNPCs.at(j)) 
+			{
+				is_visible = true;
+				break;
+			}
+		}
+		//if ( GServer->IsVisible( this, thisnpc ) )		//NPC is currently in the list
+		if( is_visible )
+        {
+			if( distance > MAXVISUALRANGE )					//Not in visual range
+			{
+				VisibleNPCs.erase(VisibleNPCs.begin() + j); //Not visible any more so delete the NPC from the list
+				this->ClearObject( thisnpc->clientid );		//clear it in the client
+			}
+		}
+		else	//not currently in the list
+		{
+			if ( distance <= MAXVISUALRANGE )				//Is now in visual range
+            {
+				VisibleNPCs.push_back( thisnpc->clientid );	//Add it to the list
+				GServer->pakSpawnNPC( this, thisnpc );		//Spawn it in the client
+            }
+		}
+	}
+	
+	
+
+	/*
 	for(unsigned i=0; i<map->NPCList.size(); i++)
     {
 		CNPC* thisnpc = map->NPCList.at(i);
@@ -410,21 +449,22 @@ bool CPlayer::VisiblityList( )
         {
 			if ( distance < MAXVISUALRANGE )
             {
-				newVisibleNPCs.push_back( thisnpc );
+				newVisibleNPCs.push_back( thisnpc->clientid );
             }
 			else
 			{
-        		this->ClearObject( thisnpc->clientid );
+        		
+				this->ClearObject( thisnpc->clientid );
             }
 		}
         else
         {
 			if ( distance < MINVISUALRANGE )
             {
-				newVisibleNPCs.push_back( thisnpc );
+				newVisibleNPCs.push_back( thisnpc->clientid );
 
 				//LMA: WarpGate.
-				if(thisnpc->npctype>10000&&(thisnpc->npctype==GServer->WarpGate.virtualNpctypeID))
+				if(thisnpc->npctype > 10000 && (thisnpc->npctype == GServer->WarpGate.virtualNpctypeID))
 				{
 				    GServer->pakSpawnIfoObject( this, GServer->WarpGate.virtualNpctypeID );
 				}
@@ -436,18 +476,25 @@ bool CPlayer::VisiblityList( )
 			}
 		}
 	}
-	VisiblePlayers.clear();
+	*/
+	//Log(MSG_DEBUG, "Current size of newVisibleNPCs %i ",newVisibleNPCs.size() );
+	//Log(MSG_DEBUG, "Current size of VisibleNPCs %i ",VisibleNPCs.size() );
+
+	//VisiblePlayers.clear();
 	VisibleDrops.clear();
-	VisibleMonsters.clear();
-	VisibleNPCs.clear();
-	VisiblePlayers = newVisiblePlayers;
+	//VisibleMonsters.clear();					//don't clear this for now
+	//VisibleNPCs.clear();
+	//VisiblePlayers = newVisiblePlayers;
 	VisibleDrops = newVisibleDrops;
-	VisibleMonsters = newVisibleMonsters;
-	VisibleNPCs = newVisibleNPCs;
-	newVisiblePlayers.clear();
+	//Log(MSG_DEBUG, "Copied new drops ");
+	//VisibleMonsters = newVisibleMonsters;		//don't copy here for now
+	//Log(MSG_DEBUG, "Copied new monsters ");
+	//VisibleNPCs = newVisibleNPCs;
+	//Log(MSG_DEBUG, "Copied new NPCs ");
+	//newVisiblePlayers.clear();
 	newVisibleDrops.clear();
-	newVisibleMonsters.clear();
-	newVisibleNPCs.clear();
+	//newVisibleMonsters.clear();
+	//newVisibleNPCs.clear();
     return true;
 
 }
@@ -951,34 +998,35 @@ void CPlayer::ReduceABC( int amount, bool do_packet )
 	        BEGINPACKET( pak, 0x718 );
 	        ADDBYTE( pak, 1 );
 	        ADDBYTE    ( pak, slot);
-	        ADDDWORD   ( pak, GServer->BuildItemHead( items[slot] ) );
-	        ADDDWORD   ( pak, GServer->BuildItemData( items[slot] ) );
-	        ADDDWORD( pak, 0x00000000 );
-	        ADDWORD ( pak, 0x0000 );
+			pak = GServer->AddItemData(items[slot], pak);
+	        //ADDDWORD   ( pak, GServer->BuildItemHead( items[slot] ) );
+	        //ADDDWORD   ( pak, GServer->BuildItemData( items[slot] ) );
+	        //ADDDWORD( pak, 0x00000000 );
+	        //ADDWORD ( pak, 0x0000 );
 	        client->SendPacket( &pak );
 
-    	 		if(items[slot].count==0)
+    	 		if(items[slot].count == 0)
   	 			{
                     BEGINPACKET( pak, 0x7ab );
                     ADDWORD( pak, clientid );
                     ADDWORD ( pak, 0x0000 );
                     client->SendPacket( &pak );
 
-                    if(reload!=0)
+                    if(reload != 0)
                     {
                        //let's try to reload.
-                       items[slot].itemnum=items[reload].itemnum;
-                       items[slot].itemtype=items[reload].itemtype;
-                       items[slot].count=items[reload].count;
-                       items[slot].appraised=items[reload].appraised;
-                       items[slot].durability=items[reload].durability;
-                       items[slot].gem=items[reload].gem;
-                       items[slot].last_sp_value=items[reload].last_sp_value;
-                       items[slot].lifespan=items[reload].lifespan;
-                       items[slot].refine=items[reload].refine;
-                       items[slot].socketed=items[reload].socketed;
-                       items[slot].sp_value=items[reload].sp_value;
-                       items[slot].stats=items[reload].stats;
+                       items[slot].itemnum = items[reload].itemnum;
+                       items[slot].itemtype = items[reload].itemtype;
+                       items[slot].count = items[reload].count;
+                       items[slot].appraised = items[reload].appraised;
+                       items[slot].durability = items[reload].durability;
+                       items[slot].gem = items[reload].gem;
+                       items[slot].last_sp_value = items[reload].last_sp_value;
+                       items[slot].lifespan = items[reload].lifespan;
+                       items[slot].refine = items[reload].refine;
+                       items[slot].socketed = items[reload].socketed;
+                       items[slot].sp_value = items[reload].sp_value;
+                       items[slot].stats = items[reload].stats;
                        ClearItem(items[reload]);
 
                        UpdateInventory(slot,reload);
@@ -1092,10 +1140,13 @@ unsigned int CPlayer::AddItem( CItem item )
     return newslot;
 }
 
+/*
 //LMA: Saving slot with a MySQL 4.1+ function for Inventory
 void CPlayer::SaveSlot41( unsigned int slot)
 {
-   //Update or add a slot (kinky way).
+	// PY: don't want this function so return immediately. Remove all references to it later
+	return;
+	//Update or add a slot (kinky way).
     //Log(MSG_INFO,"[Slot41] Trying to alter slot %i for player %i",slot,CharInfo->charid);
     CalculateSignature(slot);
     int res_mysql=0;
@@ -1105,7 +1156,7 @@ void CPlayer::SaveSlot41( unsigned int slot)
 	if (items[slot].itemtype > 0)
     {
         //insert/update
-        if (items[slot].itemtype ==14)
+        if (items[slot].itemtype == 14)
            sp_item_value=items[slot].sp_value;
         res_mysql=GServer->DB->QExecuteUpdate("INSERT INTO items (owner,slotnum,itemnum,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,gem,sp_value) VALUES(%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i) ON DUPLICATE KEY UPDATE owner=VALUES(owner),itemnum=VALUES(itemnum),itemtype=VALUES(itemtype),refine=VALUES(refine),durability=VALUES(durability),lifespan=VALUES(lifespan),slotnum=VALUES(slotnum),count=VALUES(count),stats=VALUES(stats),socketed=VALUES(socketed),appraised=VALUES(appraised),gem=VALUES(gem),sp_value=VALUES(sp_value)",
     								CharInfo->charid, slot, items[slot].itemnum, items[slot].itemtype,items[slot].refine, items[slot].durability,
@@ -1127,7 +1178,8 @@ void CPlayer::SaveSlot41( unsigned int slot)
 
    return;
 }
-
+*/
+/*
 //LMA: saving slot in database (outdated)
 void CPlayer::SaveSlot( unsigned int slot)
 {
@@ -1187,7 +1239,7 @@ void CPlayer::SaveSlot( unsigned int slot)
 
 
    return;
-}
+}*/
 
 //LMA: Gives Clan Points
 void CPlayer::GiveCP(unsigned int points)
@@ -1344,42 +1396,24 @@ void CPlayer::TakeFuel(int add_fuel)
 void CPlayer::UpdateInventory( unsigned int slot1, unsigned int slot2, bool save)
 {
      //Log(MSG_INFO,"In Update Inventory");
-    if(slot1==0xffff && slot2==0xffff) return;
+    if( slot1 == 0xffff && slot2 == 0xffff ) return;
     BEGINPACKET( pak, 0x718 );
     //if(slot2!=0xffff && slot2!=0xffff) {ADDBYTE( pak, 2 );}
-    if(slot1!=0xffff && slot2!=0xffff) {ADDBYTE( pak, 2 );}
+    if(slot1 != 0xffff && slot2 != 0xffff) {ADDBYTE( pak, 2 );}
     else {ADDBYTE( pak, 1 );}
-    if(slot1!=0xffff)
+    if(slot1 != 0xffff)
     {
         ADDBYTE    ( pak, slot1);
-        ADDDWORD   ( pak, GServer->BuildItemHead( items[slot1] ) );
-        ADDDWORD   ( pak, GServer->BuildItemData( items[slot1] ) );
-        ADDDWORD( pak, 0x00000000 );
-        ADDWORD ( pak, 0x0000 );
+		pak = GServer->AddItemData(items[slot1], pak);
     }
-    if(slot2!=0xffff)
+    if(slot2 != 0xffff)
     {
         ADDBYTE    ( pak, slot2 );
-        ADDDWORD   ( pak, GServer->BuildItemHead( items[slot2] ) );
-        ADDDWORD   ( pak, GServer->BuildItemData( items[slot2] ) );
-        ADDDWORD( pak, 0x00000000 );
-        ADDWORD ( pak, 0x0000 );
+		pak = GServer->AddItemData(items[slot2], pak);
     }
     client->SendPacket( &pak );
 
-    //LMA: debug.
-    //Log(MSG_INFO,"Slot %i, H%i, D%i, Slot %i, H%i, D%i",slot1,GServer->BuildItemHead( items[slot1] ),GServer->BuildItemData( items[slot1] ),slot2,GServer->BuildItemHead( items[slot2] ),GServer->BuildItemData( items[slot2] ));
-
-    //LMA: MySQL Save slot
-    if(!save)
-        return;
-
-    if(slot1!=0xffff)
-         SaveSlot41(slot1);
-    if(slot2!=0xffff)
-         SaveSlot41(slot2);
-
-
+	saveinventory();
     return;
 }
 
@@ -1395,50 +1429,54 @@ void CPlayer::UpdateInventoryNoSave( unsigned int slot1, unsigned int slot2 )
     if(slot1!=0xffff)
     {
         ADDBYTE    ( pak, slot1);
-        ADDDWORD   ( pak, GServer->BuildItemHead( items[slot1] ) );
-        ADDDWORD   ( pak, GServer->BuildItemData( items[slot1] ) );
-        ADDDWORD( pak, 0x00000000 );
-        ADDWORD ( pak, 0x0000 );
+		pak = GServer->AddItemData(items[slot1], pak);
+        //ADDDWORD   ( pak, GServer->BuildItemHead( items[slot1] ) );
+        //ADDDWORD   ( pak, GServer->BuildItemData( items[slot1] ) );
+        //ADDDWORD( pak, 0x00000000 );
+        //ADDWORD ( pak, 0x0000 );
     }
     if(slot2!=0xffff)
     {
         ADDBYTE    ( pak, slot2 );
-        ADDDWORD   ( pak, GServer->BuildItemHead( items[slot2] ) );
-        ADDDWORD   ( pak, GServer->BuildItemData( items[slot2] ) );
-        ADDDWORD( pak, 0x00000000 );
-        ADDWORD ( pak, 0x0000 );
+		pak = GServer->AddItemData(items[slot2], pak);
+        //ADDDWORD   ( pak, GServer->BuildItemHead( items[slot2] ) );
+        //ADDDWORD   ( pak, GServer->BuildItemData( items[slot2] ) );
+        //ADDDWORD( pak, 0x00000000 );
+        //ADDWORD ( pak, 0x0000 );
     }
     client->SendPacket( &pak );
 }
 
 void CPlayer::reduceItemsLifeSpan( bool attacked)
 {
-        hits=0;
+        hits = 0;
         for (int i=1; i< 9; i++) //Find check all equip slots for equiped items
         {
-            if ( (i!=7 && attacked) || ( i==7 && (!attacked) ) )
+            if ( ( i != 7 && attacked ) || ( i == 7 && ( !attacked ) ) )
             {
-             items[i].durabLeft = (items[i].durabLeft<=0 ? items[i].durability*5:items[i].durabLeft-1);
-             //Log(MSG_INFO, "DurabLeft: %i", items[i].durabLeft);
-             if (items[i].durabLeft < 1)
-             if (items[i].itemnum != 0 && items[i].appraised )
-             {
-                //Log( MSG_INFO, "Reducing item's life span!\nItemId: %i type: %i", items[i].itemnum, items[i].itemtype);
-                items[i].lifespan--;
-                if (items[i].lifespan < 1)
-                {
-                   ClearItem( items[i] );
-                   BEGINPACKET( pak, 0x7a5);
-                   ADDWORD( pak, clientid );
-	               ADDWORD( pak, i);
-	               ADDWORD( pak, 0);
-	               ADDWORD( pak, 0);
-	               ADDWORD( pak, Stats->Move_Speed );
-                   GServer->SendToVisible( &pak,this );
-                }
-                   //UpdateInventory(i);
-                   UpdateInventoryNoSave(i);         //LMA: will be saved in database at auto save.
-             }
+				items[i].durabLeft = (items[i].durabLeft <= 0 ? items[i].durability * 5:items[i].durabLeft - 1);
+				//Log(MSG_INFO, "DurabLeft: %i", items[i].durabLeft);
+				if (items[i].durabLeft < 1)
+				{
+					if (items[i].itemnum != 0 && items[i].appraised )
+					{
+						//Log( MSG_INFO, "Reducing item's life span!\nItemId: %i type: %i", items[i].itemnum, items[i].itemtype);
+						items[i].lifespan--;
+						if (items[i].lifespan < 1)
+						{
+							ClearItem( items[i] );
+							BEGINPACKET( pak, 0x7a5);
+							ADDWORD( pak, clientid );
+							ADDWORD( pak, i);
+							ADDWORD( pak, 0);
+							ADDWORD( pak, 0);
+							ADDWORD( pak, Stats->Move_Speed );
+							GServer->SendToVisible( &pak,this );
+						}
+						//UpdateInventory(i);
+						UpdateInventoryNoSave(i);         //LMA: will be saved in database at auto save.
+					}
+				}
             }
         }
 }
@@ -2061,118 +2099,46 @@ bool CPlayer::PrizeExchange(CPlayer* thisclient, UINT prizeid)
 //QSD Quests
 int CPlayer::ExecuteQuestTrigger(dword hash,bool send_packet, UINT index)
 {
-    Log(MSG_WARNING,"EXTP BEGIN %u for %s, index %u",hash,CharInfo->charname,index);
-    CQuestTrigger* trigger = NULL;
+	//Code that actually works. Taken from KTRose
+	CQuestTrigger* trigger = NULL;
     CQuestTrigger* nexttrigger = NULL;
     CheckQuest = -1;
-
-    //LMA: To counter some very weird cases where the hashes exist several times...
-    UINT my_index=0;
-    //for(unsigned j=0; j < GServer->TriggerList.size(); j++)
-    for(unsigned j=index; j < GServer->TriggerList.size(); j++)
+    for(unsigned j=0; j < GServer->TriggerList.size(); j++)
     {
-      if (GServer->TriggerList.at(j)->TriggerHash == hash)
-      {
-        trigger = GServer->TriggerList.at(j);
-
-        //LMA: bug on next trigger.
-        if(j+1<GServer->TriggerList.size())
+        if (GServer->TriggerList.at(j)->TriggerHash == hash)
         {
-            my_index=j+1;
+            trigger = GServer->TriggerList.at(j);
             nexttrigger = GServer->TriggerList.at(j + 1);
-            Log(MSG_WARNING,"EXTP %u for %s:: next trigger %u, %s FORCED",hash,CharInfo->charname,nexttrigger->TriggerHash,nexttrigger->TriggerName);
+            break;
         }
-        else
-        {
-            Log(MSG_WARNING,"EXTP %u for %s:: next trigger is NULL!",hash,CharInfo->charname);
-        }
-
-        break;
-      }
-
     }
-
-    if (trigger == NULL)
-    {
-        Log(MSG_WARNING,"EXTP, questid %u not found",hash);
-        return QUEST_FAILURE;
-    }
+    if (trigger == NULL) return QUEST_FAILURE;
 
     int success = QUEST_SUCCESS;
-    //LogDebug( "EXTP::Trigger Executed: %s[%i]", trigger->TriggerName, trigger->CheckNext);
-    Log(MSG_WARNING,"EXTP::Trigger Executed: %s[next? %i]", trigger->TriggerName, trigger->CheckNext);
-
+    if(Session->codedebug)GServer->SendPM(this, "Trigger executed %s[%i]", trigger->TriggerName, trigger->CheckNext);
     for (dword i = 0; i < trigger->ConditionCount; i++)
     {
-      int command = trigger->Conditions[i]->opcode;
-      if (command > 30 || command < 0) continue;
-      success = (*GServer->qstCondFunc[command])(GServer, this, trigger->Conditions[i]->data);
-      //LogDebug( "EXTP::Condition %03u returned %d", command, success);
-      Log(MSG_WARNING,"EXTP::Condition %03u returned %d", command, success);
+        int command = trigger->Conditions[i]->opcode;
 
-      if (success == QUEST_FAILURE)
-      {
-        if (!trigger->CheckNext)
-        {
-            //LogDebug("EXTP::No checknext (FAILURE)");
-            Log(MSG_WARNING,"EXTP::No checknext (FAILURE)");
-            return success;
+        if (command > 30 || command < 0) continue;
+        success = (*GServer->qstCondFunc[command])(GServer, this, trigger->Conditions[i]->data);
+        if(Session->codedebug)GServer->SendPM(this, "Condition %03u returned %d", command, success);
+        if (success == QUEST_FAILURE)
+	    {
+            if (!trigger->CheckNext)
+		        return success;
+            else return ExecuteQuestTrigger(nexttrigger->TriggerHash);
         }
-        else
-        {
-            //LogDebug("EXTP::checknext because FAILURE");
-            Log(MSG_WARNING,"EXTP::checknext because FAILURE, will do %u",nexttrigger->TriggerHash);
-
-            if(nexttrigger==NULL)
-            {
-                Log(MSG_WARNING,"CPLAYER::ExecuteQuestTrigger, Next trigger but NULL! %u",hash);
-                return QUEST_SUCCESS;
-            }
-
-            return ExecuteQuestTrigger(nexttrigger->TriggerHash,send_packet,my_index);
-        }
-
-      }
-
-      //LogDebug("EXTP::Quest cdt success");
-      Log(MSG_WARNING,"EXTP::Quest cdt %i / %i success",i+1,trigger->ConditionCount);
     }
-
-    Log(MSG_WARNING,"EXTP:: OUT of CDT");
-
     for (dword i = 0; i < trigger->ActionCount; i++)
     {
-      int command = trigger->Actions[i]->opcode;
-
-      //LMA: command 29 is ok.
-      //if ((command > 28 || command < 0) && command != 34)
-      if ((command > 29 || command < 0) && command != 34)
-      {
-          //LogDebug( "unknown Action command %i", command);
-          Log(MSG_WARNING,"unknown Action command %i", command);
-          continue;
-      }
-
-      //LogDebug("EXTP::QSD ACT %03u BEGIN",command);
-
-      //Don't delete that LOG!!!
-      //(*GServer->qstRewdFunc[command])(GServer, this, trigger->Actions[i]->data);
-      //LogDebug( "EXTP::Reward %03u returned %d, %i / %i", command, (*GServer->qstRewdFunc[command])(GServer, this, trigger->Actions[i]->data),i+1,trigger->ActionCount);
+        int command = trigger->Actions[i]->opcode;
+        if(Session->codedebug)GServer->SendPM(this, "command %03u", command);
+        if (command > 35 || command < 0) continue;
+        if(Session->codedebug)GServer->SendPM(this, "Still good after command value check");
+        success = (*GServer->qstRewdFunc[command])(GServer, this, trigger->Actions[i]->data);
+        if(Session->codedebug)GServer->SendPM(this, "reward %03u returned %d", command, success);
     }
-
-    //LMA: In some case we have to send a quest packet.
-    if(send_packet && success == QUEST_SUCCESS)
-    {
-        //Log(MSG_WARNING,"P::Sending quest ok for questid %u",hash);
-        BEGINPACKET ( pak, 0x730);
-        ADDBYTE ( pak, success);
-        ADDBYTE ( pak, 0);
-        ADDDWORD( pak, hash);
-        client->SendPacket(&pak);
-    }
-
-    Log(MSG_WARNING,"EXTP END %u for %s",hash,CharInfo->charname);
-
     return success;
 }
 

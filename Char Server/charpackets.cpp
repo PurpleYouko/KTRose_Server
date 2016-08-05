@@ -129,65 +129,53 @@ bool CCharServer::pakGetCharacters( CCharClient* thisclient, CPacket* P )
 	DB->QFree( );
 	BEGINPACKET( pak, 0x0712 );
 	ADDBYTE    ( pak, charnum );
+	const char *tmpid;
+    char *itmp = 0;
+    int itemid;
 	for (unsigned k=0;k<charnum;k++)
     {
 		for(unsigned j=0; j<10; j++)
             ClearItem( items[j] );
                     //       0       1      2         3         4        5
-		result = DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum FROM items WHERE owner=%i AND slotnum<10", chars[k].id);
-		if(result==NULL) return false;
+		//result = DB->QStore("SELECT itemnum,itemtype,refine,durability,lifespan,slotnum FROM items WHERE owner=%i AND slotnum<10", chars[k].id);
+		result = DB->QStore("SELECT itemid,itemtype,refine,durability,lifespan FROM charitems WHERE owner=%i", chars[k].id);		//using new type inventory
+		if(result == NULL) return false;
 		while(row = mysql_fetch_row(result))
         {
-			unsigned itemnum = atoi(row[5]);
-			items[itemnum].itemnum = atoi(row[0]);
-			items[itemnum].itemtype = atoi(row[1]);
-			items[itemnum].refine = atoi(row[2]);
-			items[itemnum].durability = atoi(row[3]);
-			items[itemnum].lifespan = atoi(row[4]);
-
-            //LMA: now with 2010/05, naRose handles until refine 15
-            //LMA: little check, refine from 1 to 15 are not valid since it's refine*16 that's we're supposed to store now...
-            if(items[itemnum].refine>0&&items[itemnum].refine<=15)
-            {
-                Log(MSG_WARNING,"Invalid refine %i for item (%i:%i) for %s",items[itemnum].refine,items[itemnum].itemtype,items[itemnum].itemnum,thisclient->username);
-                items[itemnum].refine*=16;
-            }
-
-            //Another check, just to be sure.
-            //LMA: up to refine 15 now (2010/05)...
-            switch (items[itemnum].refine)
-            {
-                case 0:
-                case 16:
-                case 32:
-                case 48:
-                case 64:
-                case 80:
-                case 96:
-                case 112:
-                case 128:
-                case 144:
-                case 160:
-                case 176:
-                case 192:
-                case 208:
-                case 224:
-                case 240:
-                {
-                    //Ok.
-                }
-                break;
-                default:
-                {
-                    Log(MSG_WARNING,"Invalid refine %i for item (%i:%i) for %s",items[itemnum].refine,items[itemnum].itemtype,items[itemnum].itemnum,thisclient->username);
-                    items[itemnum].refine=0;
-                }
-                break;
-
-            }
-
+			tmpid = strtok( row[0] , "|");
+			for(unsigned int i=1;i<10; i++)
+			{
+				if((itmp = strtok( NULL , "|"))!= NULL)
+					items[i].itemnum = atoi(itmp);
+			}
+			tmpid = strtok( row[1] , "|");
+			for(unsigned int i=1;i<10; i++)
+			{
+				if((itmp = strtok( NULL , "|"))!= NULL)
+					items[i].itemtype = atoi(itmp);
+			}
+			tmpid = strtok( row[2] , "|");
+			for(unsigned int i=1;i<10; i++)
+			{
+				if((itmp = strtok( NULL , "|"))!= NULL)
+					items[i].refine = atoi(itmp) / 16;
+				if(items[i].refine % 16 != 0)	//it has a remainder so refine is NOT a multiple of 16 as it should be
+					items[i].refine = 0;		//remove the refine
+			}
+			tmpid = strtok( row[3] , "|");
+			for(unsigned int i=1;i<10; i++)
+			{
+				if((itmp = strtok( NULL , "|"))!= NULL)
+					items[i].durability = atoi(itmp);
+			}
+			tmpid = strtok( row[4] , "|");
+			for(unsigned int i=1;i<10; i++)
+			{
+				if((itmp = strtok( NULL , "|"))!= NULL)
+					items[i].lifespan = atoi(itmp);
+			}
+			DB->QFree( );
 		}
-		DB->QFree( );
 
 		ADDSTRING ( pak, chars[k].char_name );
 		ADDBYTE   ( pak, 0x00 );
@@ -378,28 +366,38 @@ bool CCharServer::pakCreateChar( CCharClient* thisclient, CPacket* P )
 		return true;
 	}
 	DB->QFree( );
+	//Give the new char some default gear
+	char tmp1[1024];
+	if(sex == 0)
+    {
+		sprintf(&tmp1[strlen(tmp1)], "0|0|222|29|0|0|29|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
+	}
+	else
+	{
+		sprintf(&tmp1[strlen(tmp1)], "0|0|221|29|0|0|29|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
+	}
+	char tmp2[1024] = "0|0|2|3|0|0|5|8|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp3[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp4[1024] = "0|0|100|100|0|0|100|100|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp5[1024] = "0|0|100|100|0|0|100|100|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp6[1024] = "0|0|1|1|0|0|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp7[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp8[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char tmp9[1024] = "0|0|1|1|0|0|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+	char tmp10[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+	char tmp11[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+	char tmp12[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+	char tmp13[1024] = "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+    char slot[1024] = "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127|128|129|130|131|132|133|134|135|136|137|138|139|140";
+	int tran = 100;
 
 	if(!DB->QExecute("INSERT INTO characters (account_name, char_name, face, hairStyle, sex) VALUES('%s','%s',%i,%i,%i)", thisclient->username, newname.c_str(), face, hairstyle, sex))
 	   return false;
 	unsigned int mid = (unsigned)mysql_insert_id( DB->Mysql );
-    MYSQL_ROW row;
-	if(!DB->QExecute("INSERT INTO items VALUES(%i,29,3,0,40,100,3,1,0,0,0,0,0)", mid))
-		return false;
-	if(!DB->QExecute("INSERT INTO items VALUES(%i,29,5,0,40,100,6,1,0,0,0,0,0)", mid))
-		return false;
-	if(!DB->QExecute("INSERT INTO items VALUES(%i,1,8,0,40,100,7,1,0,0,0,0,0)", mid))
+	if(!DB->QExecute("INSERT INTO charitems (owner,itemid,itemtype,refine,durability,lifespan,count,stats,socketed,appraised,ustat1,ustat2,uvalue1,uvalue2,slot,trans_action) VALUES('%i','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%i')", mid,tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,tmp10,tmp11,tmp12,tmp13,slot,tran))
 		return false;
 
-    if(sex==0)
-    {
-        if(!DB->QExecute("INSERT INTO items VALUES(%i,222,2,0,40,100,12,1,0,0,0,0,0)", mid))
-            return false;
-     }
-    else
-    {
-        if(!DB->QExecute("INSERT INTO items VALUES(%i,221,2,0,40,100,12,1,0,0,0,0,0)", mid))
-            return false;
-    }
+    MYSQL_ROW row;
 
 	BEGINPACKET( pak, 0x713 );
 	ADDWORD    ( pak,  0 );

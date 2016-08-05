@@ -35,17 +35,6 @@ class CCharacter
         clock_t lastAiUpdate;   //LMA: AIP
 		clock_t SpawnTime;		//PY: Needed for monitoring how old a summon is
 
-        #ifdef LMA_SPAWNM
-            clock_t lastSpawnUpdate;   //LMA: AIP
-            unsigned int last_monster;
-            unsigned int mdeb;
-            unsigned int mend;
-            unsigned int last_monstercid;
-            unsigned int playertime;
-            unsigned int xx;
-            unsigned int yy;
-        #endif
-
         unsigned int clientid;
         unsigned int char_montype;  //LMA: montype ID for CCharacter
         unsigned int char_owner;    //LMA: owner for CCharacter.
@@ -99,11 +88,8 @@ class CCharacter
         bool TakeExp( CCharacter *Target ); //taking exp from a dead player.
         void UWKill(CCharacter* Enemy); //LMA: Union War kill.
 
-        //LMA: test for quest hack (stackable).
-        #ifdef QHACK
+        
         void QuestKill(dword die_quest); //LMA: Adding a kill to the special quest kill list for a player.
-        #endif
-        //LMA END
 
         //functions
         bool IsMonster( );

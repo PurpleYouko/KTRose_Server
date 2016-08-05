@@ -40,7 +40,7 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
 	ADDFLOAT   ( pak, Position->current.x*100 );
 	ADDFLOAT   ( pak, Position->current.y*100 );						//current X and Y position
 
-	if((thismon->bonushp>0||thismon->bonusmp>0)&&(thismon->skillid>0))	//What is this? It seems to be sending this in place of destination if the monster is not able to move. Bonfires and so on
+	if((thismon->bonushp > 0 || thismon->bonusmp > 0) && (thismon->skillid > 0))	//What is this? It seems to be sending this in place of destination if the monster is not able to move. Bonfires and so on
 	{
     	ADDFLOAT   ( pak, 0xcdcdcdcd );
     	ADDFLOAT   ( pak, 0xcdcdcdcd );
@@ -69,7 +69,6 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
     	   ADDWORD    ( pak, 0x0002 );
     	   ADDWORD    ( pak, Battle->target );
        }
-
     }
 	else if(IsMoving( ))
 	{
@@ -81,34 +80,9 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
     	ADDWORD    ( pak, 0x0000 );
     	ADDWORD    ( pak, 0x0000 );
     }
-	//end command and battle_target
-	//PY. According to the receiving structure in the client this shold be stance
-    
-	/*if(IsSummon( ) )											
-    {
-        ADDBYTE    ( pak, 0x01 );
-    }
-    else
-    {
-        ADDBYTE    ( pak, 0x00 );
-    }*/
-	
 	ADDBYTE		( pak, thisnpc->stance );
-	//next it's HP which is received as a 32 bit int
-
-    //LMA: Little check, for now we "only" have a WORD for monster's HP so there is a limit
-    //broken by some monsters (Turak boss)
-	//PY: Another special case.... Goodbye
-    /*
-	if(Stats->HP>MAXHPMOB)
-    {
-        LogDebugPriority(3);
-        LogDebug("Too much HP for monster %i (%i->%i)",thismon->montype,Stats->HP,MAXHPMOB);
-        LogDebugPriority(4);
-        Stats->HP=(long long) MAXHPMOB;
-    }*/
-
-    ADDDWORD   ( pak, Stats->HP );
+    ADDWORD   ( pak, Stats->HP );
+	ADDWORD	  ( pak, 0x0000 );
 	// now Team Number
 	if(thismon->owner != player->clientid)
     {
@@ -117,70 +91,42 @@ void CMonster::SpawnMonster( CPlayer* player, CMonster* thismon )
         //LMA: adding team...
         if (thismon->team!=0)
         {
-            ADDDWORD( pak,thismon->team);
+            ADDWORD( pak,thismon->team);
         }
         else
         {
             if(IsSummon( ) && map->allowpvp!=0)
             {
                 //Hostil
-                ADDDWORD( pak, 0x00000064 );
+                ADDWORD( pak, 0x0064 );
             }
             else if (IsSummon( ) && map->allowpvp==0)
             {
                 //Friendly
-                ADDDWORD ( pak, 0x00000000 );
+                ADDWORD ( pak, 0x0000 );
             }
             else
             {
                 //Hostil
-                ADDDWORD( pak, 0x00000064 );
+                ADDWORD( pak, 0x0064 );
             }
-
-            //LMA: test if necessary or not anymore... (AIP should handle it).
-            /*
-            else if(thismon->montype>=1474&&thismon->montype<=1489)
-            {
-                //LMA: Xmas trees are friendly.
-                ADDDWORD ( pak, 0x00000000 );
-            }
-            */
-
         }
-
     }
     else
     {
         //Friendly
-        ADDDWORD( pak, 0x00000000 );
+        ADDWORD( pak, 0x0000 );
     }
-	//and finally DWORD StausFlag
+	ADDWORD ( pak, 0x0000 );
+	//and finally DWORD StatusFlag
     ADDDWORD( pak, GServer->BuildBuffs( this ) );
-	//End of client side structure the rest of this stuff will be ignored in the client
-	
+		
 	//struct gsv_MOB_CHAR
 	ADDWORD   ( pak, montype );
 	ADDWORD   ( pak, 0x0000 );
 	ADDWORD	  ( pak, thismon->Stats->Level );
 	ADDWORD   ( pak, thismon->Stats->Size );
 
-
-
-	/*
-	if(IsSummon( ))
-    {
-        ADDWORD( pak, owner );
-
-        if (thismon->skillid>0)
-        {
-           ADDWORD( pak, thismon->skillid ); //id del skill (si es summon de skill)
-        }
-        else
-        {
-           ADDWORD( pak, 0x0000 ); //id del skill (si es summon de skill)
-        }
-
-    }*/
 	player->client->SendPacket( &pak );
 
     //LMA: supportive summons (lucky ghost)

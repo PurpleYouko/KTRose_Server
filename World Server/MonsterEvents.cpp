@@ -29,16 +29,16 @@ bool CMonster::OnBeAttacked( CCharacter* Enemy )
     {
 
         //LMA: yeah hurt me (used for Santa Rudolph).
-        if(thisnpc->helpless==1)
-        {
-            StartAction( Enemy, STAY_STILL_ATTACK, 0 );
-            return true;
-        }
+        //if(thisnpc->helpless==1)
+        //{
+        //    StartAction( Enemy, STAY_STILL_ATTACK, 0 );
+        //    return true;
+        //}
 
         //Some monsters do not attack and stay still (mc)
         if(!stay_still)
         {
-            StartAction( Enemy, NORMAL_ATTACK, 0 );
+            StartAction( Enemy, sBASIC_ACTION, 0 );
         }
         else
         {
@@ -78,7 +78,7 @@ bool CMonster::OnSpawn( bool Attack )
         CPlayer* player = GetNearPlayer( );
         if(player==NULL) // no players or too far
             return true;
-        StartAction( (CCharacter*)player, NORMAL_ATTACK, 0 );
+        StartAction( (CCharacter*)player, sBASIC_ACTION, 0 );
     }
 
     return true;
@@ -107,7 +107,7 @@ bool CMonster::OnEnemyOnSight( CPlayer* Enemy )
                 Enemy->ClearObject( this->clientid );
 				SpawnMonster(Enemy, this );
 				*/
-                StartAction( (CCharacter*) Enemy, NORMAL_ATTACK, 0 );
+                StartAction( (CCharacter*) Enemy, sBASIC_ACTION, 0 );
             }
             else
             if(IsGhostSeed( ) || thisnpc->aggresive>5)
