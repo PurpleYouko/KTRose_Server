@@ -46,12 +46,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=82 ;
 
--- 
--- Dumping data for table `accounts`
--- 
 
-INSERT INTO `accounts` (`id`, `username`, `password`, `accesslevel`, `lastip`, `lasttime`, `lastsvr`, `lastchar`, `email`, `nb_donation`, `donation`, `active`, `active_key`, `zulystorage`, `platinum`, `online`, `login_count`, `isSiteLogged`, `ktpoints`, `newpoints`, `logtime`, `totlogtime`) VALUES 
-(78, 'purpleyouko', '80f2ef8d121d9b6dcb5019a5a375db92', 900, '173.26.216.173', 1455489904, 1, 'PurpleYouko', NULL, 0, '0', 1, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(79, 'Katy', '0571749e2ac330a7455809c6b0e7af90', 900, '65.188.225.108', 1455510537, 1, 'KatysMule', NULL, 0, '0', 1, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(81, 'crystalkuwin', '0ecb88c066fa4cdae8b800f9f217b5c9', 100, '76.4.160.61', 1455506086, 1, 'Saphira', NULL, 0, '0', 1, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(80, 'silveryouko', 'c91cf770bfef6d1160215934427f26d5', 900, '76.4.160.61', 1455489896, 1, 'SilverYouko', NULL, 0, '0', 1, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+

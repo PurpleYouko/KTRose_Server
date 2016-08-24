@@ -28,11 +28,4 @@ CREATE TABLE IF NOT EXISTS `qvars` (
   `unionvar` varchar(64) collate latin1_general_ci NOT NULL default '0,0,0,0,0,0,0,0,0,0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
--- 
--- Dumping data for table `qvars`
--- 
 
-INSERT INTO `qvars` (`owner`, `episode`, `job`, `planet`, `unionvar`) VALUES 
-(0, '0,1,0,0,0', '0,0,0', '0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0'),
-(482, '0,1,0,0,0', '0,0,0', '0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0'),
-(485, '0,1,0,0,0', '0,0,0', '0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0');
