@@ -1050,7 +1050,8 @@ void CPlayer::savedata( )
 		//save the skills
         saveskills();
 
-    	if(!GServer->DB->QExecute("DELETE FROM storage WHERE owner=%i", Session->userid)) return;
+    	/*
+		if(!GServer->DB->QExecute("DELETE FROM storage WHERE owner=%i", Session->userid)) return;
     	for(UINT i=0;i<160;i++)
         {
     		if (storageitems[i].count > 0)
@@ -1061,8 +1062,9 @@ void CPlayer::savedata( )
     								(storageitems[i].appraised?1:0), storageitems[i].gem );
     		}
     	}
-		
+		*/
         savequests( this );
+		
 		GServer->DB->QExecute("UPDATE accounts SET zulystorage = %I64i, logtime = %i,ktpoints=%i WHERE id = %i", CharInfo->Storage_Zulies, Session->logtime,Session->KTPoints, Session->userid);
 		Log(MSG_INFO, "Data Saved for char '%s' ", CharInfo->charname );
     }
