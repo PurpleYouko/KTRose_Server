@@ -4089,8 +4089,8 @@ bool CWorldServer::pakUseItem ( CPlayer* thisclient, CPacket* P )
             ADDBYTE    ( pak,slot );
             thisclient->client->SendPacket( &pak );
             fPoint thispoint;
-            thispoint.x = thisskill->WarpX;
-			thispoint.y = thisskill->WarpY;			
+            thispoint.x = thisskill->WarpX * 10;
+			thispoint.y = thisskill->WarpY * 10;			
             TeleportTo ( thisclient, thisskill->WarpZone, thispoint );
 			thisuse->usescript = 999;
 		}
