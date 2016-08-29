@@ -4081,7 +4081,7 @@ bool CWorldServer::pakUseItem ( CPlayer* thisclient, CPacket* P )
 		//This one line of code should replace almost the entire switch below
 		thisclient->StartAction( NULL, thisskill->skilltype, thisskill->id );
 
-		if( thisskill->WarpZone != 0 ) //return scrolls or any other item that runs a warp in the skill. this is NOT handled in skill handling for some reason
+		if( thisskill->WarpZone != 0 && thisskill->target == 0) //return scrolls or any other item that runs a warp in the skill. this is NOT handled in skill handling for some reason
 		{
 			BEGINPACKET( pak,0x7a3 );
             ADDWORD    ( pak,thisclient->clientid );
