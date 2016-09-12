@@ -6519,22 +6519,24 @@ bool CWorldServer::pakModifiedItem( CPlayer* thisclient, CPacket* P )
                 thisclient->client->SendPacket( &pak );
                 return true;
             }
-            thisclient->items[destslot].gem = thisclient->items[srcslot].itemnum;
+            thisclient->items[destslot].stats = thisclient->items[srcslot].itemnum;
 			thisclient->UpdateInventory(destslot);
 
-            thisclient->items[srcslot].count -= 1;
+            thisclient->items[srcslot].count -= 1;		//reduce gem count by 1
             if( thisclient->items[srcslot].count < 1 )
                 ClearItem( thisclient->items[srcslot] );
 			thisclient->UpdateInventory(srcslot);
-			Log(MSG_INFO,"Gemming success. Item %i::%i refine: %i gem id: %i",thisclient->items[destslot].itemtype, thisclient->items[destslot].itemnum, thisclient->items[destslot].refine, thisclient->items[destslot].gem );
+			Log(MSG_INFO,"Gemming success. Item %i::%i IsCreated %i refine: %i gem id: %i lifespan: %i",thisclient->items[destslot].itemtype, thisclient->items[destslot].itemnum, thisclient->items[destslot].isCreated, thisclient->items[destslot].refine, thisclient->items[destslot].stats, thisclient->items[destslot].lifespan );
 
             BEGINPACKET( pak, 0x7bc );
             ADDBYTE    ( pak, 0x01 );//gemming success
             ADDBYTE    ( pak, 0x02 );
-            ADDBYTE    ( pak, destslot );
-			pak = AddItemData(thisclient->items[destslot], pak);
-            ADDBYTE    ( pak, srcslot );
+            //ADDBYTE    ( pak, destslot );
+			//pak = AddItemData(thisclient->items[destslot], pak);
+			ADDBYTE    ( pak, srcslot );
 			pak = AddItemData(thisclient->items[srcslot], pak);
+			ADDBYTE    ( pak, destslot );
+			pak = AddItemData(thisclient->items[destslot], pak);
             thisclient->client->SendPacket( &pak );
             thisclient->SetStats( );
         }

@@ -2713,7 +2713,7 @@ bool CWorldServer::LoadBreakChestBlueList()
 	}
         //Log(MSG_INFO,"Break added: (%i:%i), numtogive %i, total %i",newbreak->itemtype,newbreak->itemnum,newbreak->numToGive,newbreak->total);
 
-        //PY: The rest of this is all based on thsoe CHOICE things tat were made erroniously earlier so I'm scrapping the lot
+        //PY: The rest of this is all based on thsoe CHOICE things that were made erroniously earlier so I'm scrapping the lot
 		/*
 		
 		//time to make the right choice :)

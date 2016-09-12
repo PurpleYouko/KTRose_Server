@@ -1355,81 +1355,44 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff )
     }
 
     reduceItemsLifeSpan( false );
-    Enemy->reduceItemsLifeSpan(true);
+    Enemy->reduceItemsLifeSpan( true );
 
-    //Skill power calculations LMA/Tomiz : New Way
+    
     long int skillpower = 0;
     long int level_diff = Stats->Level - Enemy->Stats->Level;
-
-    //LMA: fix by will1023631
-    /*if(Enemy->IsMonster() && skill->formula !=0)
+    
+    switch(skill->formula) //Magical Or Weapon Type Skill?
     {
-        if(level_diff >= 1)
+		case 1: case 4: //Weapon type dmg
         {
-            skillpower += Stats->Attack_Power * (level_diff / 5) + (level_diff*2);
-        }
-        else
-        {
-            skillpower += Stats->Attack_Power - (level_diff / 2);
-        }
-
-    }*/
-
-    if(Enemy->IsMonster() && skill->formula != 0)
-    {
-        if(level_diff >= 5)
-        {
-            skillpower += Stats->Attack_Power * (level_diff / 5) + (level_diff*2);
-        }
-        else if (level_diff < 5 && level_diff > 0)
-        {
-            skillpower += Stats->Attack_Power - Stats->Attack_Power * (level_diff / 5);
-        }
-        else if (level_diff <= 0)
-        {
-            skillpower += Stats->Attack_Power - (level_diff / 2);
-        }
-    }
-    else if(Enemy->IsPlayer())
-    {
-        if(level_diff >= 1)
-        {
-            skillpower += Stats->Attack_Power * (level_diff / 5) + (level_diff*2);
-        }
-        else
-        {
-            skillpower += Stats->Attack_Power - (level_diff / 2);
-        }
-
-    }
-    switch(skill->formula)//Magical Or Weapon Type Skill?
-    {
-        case 1://Weapon type dmg
-        {
-            skillpower += skill->atkpower +(long int)floor((double)GetSen( )/2);
-            skillpower += skillpower  *GetSen( ) / 10000;
-            skillpower -= skillpower * Stats->Defense / 10000;
-            skillpower -= Stats->Defense * 5 / 100;
-            Log(MSG_INFO,"%i cast Weapon Dmg Skill with %i sen, Attack power %u, skillpower %li, Deff %u, level diff %li, to %i",clientid,GetSen( ),skill->atkpower,skillpower,Enemy->Stats->Defense,level_diff,Enemy->clientid);
+            //skillpower = skill->atkpower + skill->atkpower;
+			skillpower = (skill->atkpower * 0.6) + (Stats->Attack_Power * 0.5) / 2 ;
+			unsigned int totalpower = skillpower + Enemy->Stats->Defense;
+            double hitmod = skillpower *100 / totalpower;								//percentage of skillpower to use
+            skillpower = (unsigned int)floor((double)(skillpower * hitmod / 100));
         }
         break;
-        case 2://Magical type dmg
+		case 2: case 5: //Magical type dmg
         {
-            skillpower += skill->atkpower +(long int)floor((double)GetInt( )/2);
-            skillpower += skillpower*GetInt( ) / 10000;
-            skillpower -= skillpower*Stats->Magic_Defense / 10000;
-            skillpower -= Stats->Magic_Defense * 5 / 100;
-            Log(MSG_INFO,"%i cast Magical Dmg Skill with %i int, Attack power %u, skillpower %li, MDeff %u, level diff %li, to %i",clientid,GetInt( ),skill->atkpower,skillpower,Enemy->Stats->Magic_Defense,level_diff,Enemy->clientid);
+            //skillpower = skill->atkpower + skill->atkpower; 
+			skillpower = (skill->atkpower * 0.6) + (Stats->Attack_Power * 0.5) / 2 ;
+			unsigned int totalpower = skillpower + Enemy->Stats->Magic_Defense;
+            double hitmod = skillpower *100 / totalpower;								//percentage of skillpower to use
+            skillpower = (unsigned int)floor((double)(skillpower * hitmod / 100));
         }
         break;
+		case 3: //GM skill "kill (anti crime)" is the eonly case I know of that is type 3
+		{
+			//don't know what this skill actually does yet so this will be filled in later
+		}
+		break;
         default:
         {
-            skillpower += 5;
+            skillpower = 0;
             Log(MSG_INFO,"%i cast Unknown Formula Skill (%i), Attack power %u, skillpower %li, Deff %u,MDeff %u, level diff %li, to %i",clientid,skill->formula,skill->atkpower,skillpower,Enemy->Stats->Defense,Enemy->Stats->Magic_Defense,level_diff,Enemy->clientid);
         }
         break;
     }
-    //END Skill power calculations LMA/Tomiz : New Way
 
     //Tell enemy he's attacked & add damage & send the dmg packet
     Log(MSG_INFO,"Atk Skill damage %li, Enemy HP before %li",skillpower,Enemy->Stats->HP);

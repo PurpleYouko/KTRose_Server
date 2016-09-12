@@ -98,7 +98,7 @@ CPacket CWorldServer::AddItemData( CItem item, CPacket pak )
 		ADDBYTE	   ( pak, item.isCreated );
 		ADDWORD    ( pak, item.stats );
 		ADDBYTE    ( pak, item.durability );
-		ADDWORD    ( pak, item.lifespan );
+		ADDWORD    ( pak, item.lifespan * 10 );	//PY Client has a range up to 1000 but server max is 100
 		ADDBYTE	   ( pak, item.socketed );
 		ADDBYTE    ( pak, item.appraised );
 		ADDBYTE    ( pak, item.refine );
