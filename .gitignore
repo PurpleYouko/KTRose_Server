@@ -27,7 +27,7 @@
 #.lib  We need the libs too
 
 # Executables
-*.exe
+# *.exe
 *.out
 *.app
 
