@@ -112,7 +112,8 @@ enum msg_type {
 	MSG_GMACTION,
 	MSG_START,
 	MSG_QUERY,
-	MSG_CONSOLE
+	MSG_CONSOLE,
+	MSG_QUESTDEBUG
 };
 
 // Logging function

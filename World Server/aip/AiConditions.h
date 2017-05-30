@@ -281,6 +281,13 @@ struct STR_AI_COND_030
 	dword Timer;	//Pos: 0x00, LMA: timer.
 };
 
-//LMA: Unknown and empty :)
-struct STR_AI_COND_031 {
+//PY custom AIP stuff for project 137
+struct STR_AI_COND_031 
+{
+	//Count number of monsters of type X within range Y
+	word iMonType;			//Pos: 0x00
+	dword iDistance;		//Pos: 0x02
+ 	word iMonCount;			//Pos: 0x06
+	byte btOp;				//Pos: 0x08
 };
+

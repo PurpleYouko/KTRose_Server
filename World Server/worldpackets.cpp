@@ -738,18 +738,18 @@ bool CWorldServer::pakSpawnNPC( CPlayer* thisclient, CNPC* thisnpc )
 {
 	BEGINPACKET( pak, 0x791 );
     ADDWORD( pak, thisnpc->clientid );
-	ADDFLOAT( pak, thisnpc->pos.x*100 );
-    ADDFLOAT( pak, thisnpc->pos.y*100 );
-    ADDFLOAT( pak, thisnpc->pos.x*100 );
-    ADDFLOAT( pak, thisnpc->pos.y*100 );
-    ADDWORD( pak, 0x0000 );
-	ADDWORD( pak, 0x0000 );
-	ADDBYTE( pak, 0x00 );
-	ADDWORD( pak, 0x03e8 );
-	ADDWORD( pak, 0x0000 );
-	ADDWORD( pak, 0x0001 );					
-	ADDWORD( pak, 0x0000 );//Buffs
-	ADDWORD( pak, 0x0000 );//Buffs
+	ADDFLOAT( pak, thisnpc->pos.x*100 );		//current X
+    ADDFLOAT( pak, thisnpc->pos.y*100 );		//current Y
+    ADDFLOAT( pak, thisnpc->pos.x*100 );		//Move to X
+    ADDFLOAT( pak, thisnpc->pos.y*100 );		//Move to Y
+    ADDWORD( pak, 0x0000 );						//WORD Command. CMD_STOP 0000, CMD_MOVE 0001, CMD_ATTACK 0002, CMD_DIE 0003, CMD_PICK_ITEM 0004 etc, see CObjAI.h in client	
+	ADDWORD( pak, 0x0000 );						//WORD Target Object
+	ADDBYTE( pak, 0x00 );						//BYTE  Move Mode. 0:Walk, 1 run, 2: ride in my passenger Item 3: Riding in backseat of m_wTargetOBJ.	
+	ADDWORD( pak, 0x03e8 );						//int HP
+	ADDWORD( pak, 0x0000 );						//int Team Number
+	ADDWORD( pak, 0x0001 );						//
+	ADDWORD( pak, 0x0000 );//Buffs				
+	ADDWORD( pak, 0x0000 );//Buffs				
 	ADDWORD( pak, 0x0000 );//buffs
 	ADDWORD( pak, thisnpc->npctype );
 
@@ -3859,11 +3859,11 @@ bool CWorldServer::pakQuestTrigger( CPlayer* thisclient, CPacket* P )
 	}
 	if (action != 3) return false;
 	int success = thisclient->ExecuteQuestTrigger(hash);
-	//if( thisclient->questdebug ) Log(MSG_DEBUG, "Executed quest trigger with result %i", success);
+	if( thisclient->questdebug ) Log(MSG_DEBUG, "Executed quest trigger with result %i. Sending 0x0730 packet now", success);
 
 	BEGINPACKET ( pak, 0x730);
 	ADDBYTE ( pak, success);
-	ADDBYTE ( pak, 0);
+	ADDBYTE ( pak, slot);
 	ADDDWORD( pak, hash);
 	thisclient->client->SendPacket(&pak);
 	thisclient->savequests(thisclient);

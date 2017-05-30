@@ -2103,6 +2103,8 @@ int CPlayer::ExecuteQuestTrigger(dword hash,bool send_packet, UINT index)
 	CQuestTrigger* trigger = NULL;
     CQuestTrigger* nexttrigger = NULL;
     CheckQuest = -1;
+	if (GServer->questdebug)
+
     for(unsigned j=0; j < GServer->TriggerList.size(); j++)
     {
         if (GServer->TriggerList.at(j)->TriggerHash == hash)
@@ -2115,14 +2117,16 @@ int CPlayer::ExecuteQuestTrigger(dword hash,bool send_packet, UINT index)
     if (trigger == NULL) return QUEST_FAILURE;
 
     int success = QUEST_SUCCESS;
-    if(Session->codedebug)GServer->SendPM(this, "Trigger executed %s[%i]", trigger->TriggerName, trigger->CheckNext);
+	if (this->questdebug)
+		Log(MSG_QUESTDEBUG, "ExecuteQuestTrigger:: Trigger executed %s[%i]", trigger->TriggerName, trigger->CheckNext);
     for (dword i = 0; i < trigger->ConditionCount; i++)
     {
         int command = trigger->Conditions[i]->opcode;
 
         if (command > 30 || command < 0) continue;
         success = (*GServer->qstCondFunc[command])(GServer, this, trigger->Conditions[i]->data);
-        if(Session->codedebug)GServer->SendPM(this, "Condition %03u returned %d", command, success);
+        if (this->questdebug)
+			Log(MSG_QUESTDEBUG, "ExecuteQuestTrigger:: Condition %03u returned %d", command, success);
         if (success == QUEST_FAILURE)
 	    {
             if (!trigger->CheckNext)
@@ -2133,11 +2137,14 @@ int CPlayer::ExecuteQuestTrigger(dword hash,bool send_packet, UINT index)
     for (dword i = 0; i < trigger->ActionCount; i++)
     {
         int command = trigger->Actions[i]->opcode;
-        if(Session->codedebug)GServer->SendPM(this, "command %03u", command);
+        if (this->questdebug)
+			Log(MSG_QUESTDEBUG, "ExecuteQuestTrigger:: command %03u", command);
         if (command > 35 || command < 0) continue;
-        if(Session->codedebug)GServer->SendPM(this, "Still good after command value check");
+        if (this->questdebug)
+			Log(MSG_QUESTDEBUG, "ExecuteQuestTrigger:: Still good after command value check");
         success = (*GServer->qstRewdFunc[command])(GServer, this, trigger->Actions[i]->data);
-        if(Session->codedebug)GServer->SendPM(this, "reward %03u returned %d", command, success);
+        if (this->questdebug)
+			Log(MSG_QUESTDEBUG, "ExecuteQuestTrigger:: reward %03u returned %d", command, success);
     }
     return success;
 }
@@ -2152,7 +2159,8 @@ SQuest* CPlayer::GetActiveQuest( )
 }
 
 void CPlayer::SetQuestVar(short nVarType, short nVarNO, short nValue){
-  switch(nVarType){
+  switch(nVarType)
+  {
     case 0:
     {
       SQuest* activeQuest = GetActiveQuest();
@@ -2195,8 +2203,10 @@ void CPlayer::SetQuestVar(short nVarType, short nVarNO, short nValue){
   }
 }
 
-int CPlayer::GetQuestVar(short nVarType, short nVarNO){
-  switch(nVarType){
+int CPlayer::GetQuestVar(short nVarType, short nVarNO)
+{
+  switch(nVarType)
+  {
     case 0:
     {
       SQuest* activeQuest = GetActiveQuest();

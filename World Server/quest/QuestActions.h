@@ -86,15 +86,18 @@ struct STR_REWD_004 {
 	STR_QUEST_DATA* CheckData;
 };
 
-struct STR_REWD_005 {
+struct STR_REWD_005 
+{
 	byte btTarget;
-	union {
+	union 
+	{
 		byte btEquation;
 		word nEquation;
 	};
 	int iValue;
 	dword iItemSN;
-	union {
+	union 
+	{
 		byte btPartyOpt;
 		word nPartyOpt;
 	};
@@ -248,8 +251,9 @@ struct STR_REWD_028 {
 //LMA: used now.
 struct STR_REWD_029 
 {
-    word unk1;
-    word unk2;
+    unsigned int	uiSize;
+	int				iType;
+	short	strLen;
     string LuaName;
 };
 

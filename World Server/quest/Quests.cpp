@@ -1054,8 +1054,9 @@ void CWorldServer::ExportQSDDataA(byte* dataorg,int size,int opcode)
     char buffer[100];
     UINT itemtype=0;
     UINT itemnum=0;
-
-
+	return;
+	//SOOO Unnecessary. Commenting out the whole bloody lot
+	/*
     //Update quest
     if(opcode==0)
     {
@@ -1506,5 +1507,6 @@ void CWorldServer::ExportQSDDataA(byte* dataorg,int size,int opcode)
 
 
     return;
+	*/
 }
 

@@ -59,7 +59,9 @@ bool CWorldServer::GiveExp( CMonster* thismon, UINT special_lvl, UINT special_ex
                     // Give Quest Item
                     if( thisclient->quest.quests[q].QuestID != 0 )
                     {
-                        BEGINPACKET( pak, 0x731 )
+                        if (thisclient->questdebug)
+                            Log(MSG_QUESTDEBUG, "GiveEXP():: Die quest present in quest list for monster %i, sending 0x731 packet)",thismon->montype);
+						BEGINPACKET( pak, 0x731 )
                         ADDWORD    ( pak, thismon->montype );
                         thisclient->client->SendPacket( &pak );
                         break;

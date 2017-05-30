@@ -493,8 +493,8 @@ PVOID MapProcess( PVOID TS )
 
                          //old code:
                          //CMonster* NPCmonster = new (nothrow) CMonster( npc->pos, npc->npctype, map->id, 0, 0  );
-                         NPCmonster->aip_npctype=npc->npctype;
-                         NPCmonster->aip_clientid=npc->clientid;
+                         NPCmonster->aip_npctype = npc->npctype;
+                         NPCmonster->aip_clientid = npc->clientid;
                          NPCmonster->thisnpc = thisnpc;
 
                          int lma_previous_eventID = npc->thisnpc->eventid;

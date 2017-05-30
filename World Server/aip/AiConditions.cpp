@@ -880,7 +880,7 @@ AICOND(028)
 	//Get_AiVAR
 	GETAICONDDATA(028);
 	CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-	if(data->nVarIDX >19)return AI_FAILURE;
+	if(data->nVarIDX >19) return AI_FAILURE;
     UINT tempval = thisMonster->AIVar[data->nVarIDX];
 	switch(data->btOp)
 	{
@@ -965,8 +965,42 @@ AICOND(030)
 //from here on this is 100% server sided. AIP scripts with these elements in should not be uploaded to the client
 
 
-//LMA: Unknown and emtpy...
+//Count the number of monsters of type X within range Y
 AICOND(031)
 {
-	return AI_SUCCESS;
+	GETAICONDDATA(031);
+
+	short chrCount = 0;
+	dword eCount = 0;
+	int nearestDistance = 9999999;
+	int searchDistance = data->iDistance;// * 10;
+	dword MonType = data->iMonType;
+
+	CMap* map = GServer->MapList.Index[entity->Position->Map];
+	dword entityCount = map->MonsterList.size();
+    
+    for(UINT j=0;j<map->MonsterList.size();j++)
+    {
+        CMonster* other = map->MonsterList.at(j);
+		if(other == NULL) continue;
+		if(other == entity) continue;
+		if(other->montype == MonType)
+		{
+			int iDistance = (int)GServer->distance( other->Position->current, entity->Position->current );
+			if(iDistance > searchDistance) continue;
+			eCount++;
+			if(eCount >= entityCount) break;
+		}
+    }
+	if (data->btOp == 1)
+	{
+		if(eCount < data->iMonCount) 
+			return AI_SUCCESS;
+	}
+	else
+	{
+		if(eCount >= data->iMonCount) 
+			return AI_SUCCESS;
+	}
+	return AI_FAILURE;
 }

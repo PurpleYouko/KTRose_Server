@@ -141,6 +141,10 @@ void Log( enum msg_type flag, const char *Format, ... )
 			textcolor(MAGENTA);
 			printf("[GM ACTION]: ");
 			break;
+		case MSG_QUESTDEBUG:
+            textcolor(LIGHTBLUE);
+            printf("[QUEST DEBUG]: ");
+            break;
         case MSG_START:
             textcolor(MAGENTA);
             vprintf( Format, ap );

@@ -781,7 +781,7 @@ public:
 	BYTE    itemtype;
 	WORD    itemnum;
 	BYTE	isCreated;
-	unsigned short    gem;
+	short    gem;
     BYTE    refine;
     short    lifespan;
     UINT    durability;

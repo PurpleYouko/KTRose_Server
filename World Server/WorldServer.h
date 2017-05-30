@@ -730,6 +730,9 @@ class CWorldServer : public CServerSocket
         //bool handleCommand( char* );		//PY had to comment this out to stop a linker error
         bool pakConsoleAnn( char* from, char* message );
 
+		//Quest Debugging
+		bool questdebug;                //universal Quest Debugging mode. Activate with GM command /dquest
+
 };
 extern class CWorldServer* GServer;
 
