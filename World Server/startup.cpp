@@ -1195,6 +1195,8 @@ bool CWorldServer::LoadNPCs( )
     thisnpc->event=0;
     thisnpc->thisnpc = GetNPCDataByID( thisnpc->npctype );
     thisnpc->thisnpc->eventid=0;
+	thisnpc->buffbot = false;
+	thisnpc->buffpower = 0;
 
     //LMA: check if out of memory.
     if (thisnpc->posMap>=MapList.max)
@@ -1222,7 +1224,7 @@ bool CWorldServer::LoadNPCsSpecial( )
 {
     Log( MSG_LOAD, "NPC Special           " );
     MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT type,map,dir,x,y,dialogid,eventid,tempdialogid,name,isactive FROM list_npcs_special where isactive='1' ");
+    MYSQL_RES *result = DB->QStore("SELECT type,map,dir,x,y,dialogid,eventid,tempdialogid,name,isactive,buffbot,buffpower FROM list_npcs_special where isactive='1' ");
     if(result==NULL) return false;
     while(row = mysql_fetch_row(result))
     {
@@ -1248,6 +1250,8 @@ bool CWorldServer::LoadNPCsSpecial( )
         thisnpc->pos.x = (float)atof(row[3]);
         thisnpc->pos.y = (float)atof(row[4]);
         thisnpc->thisnpc = GetNPCDataByID( thisnpc->npctype );
+		thisnpc->buffbot = atoi(row[10]);
+		thisnpc->buffpower = atoi(row[11]);
         if( thisnpc->thisnpc == NULL)
         {
            Log(MSG_LOAD,"The NPC %i has not been found!, it won't be displayed",thisnpc->npctype);
@@ -2528,7 +2532,7 @@ bool CWorldServer::LoadStatLookup( )
 }
 //PY end
 
-#ifdef PYCUSTOM
+//#ifdef PYCUSTOM
 bool CWorldServer::LoadCustomTeleGate()
 {
     Log( MSG_LOAD, "Loading Custom Telegate data" );
@@ -2624,7 +2628,7 @@ bool CWorldServer::LoadCustomEvents( )
     Log( MSG_LOAD, "Custom Events data loaded" );
     return true;
 }
-#endif
+//#endif
 
 //LMA: Loading breaks, chests and blue crafts from list_break.stb
 bool CWorldServer::LoadBreakChestBlueList()

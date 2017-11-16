@@ -861,6 +861,8 @@ struct CNPC
 	unsigned dialog;
 	long int event;
 	clock_t lastAiUpdate;   //LMA: AIP.
+	bool buffbot;
+	unsigned int buffpower;
 };
 
 // Item data object

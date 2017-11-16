@@ -238,7 +238,10 @@ class CPlayer: public CCharacter
 	vector<DWORD>				VisibleNPCs;
 
     // Functions
-    bool CheckPlayerLevelUP( );
+    bool CheckEvents( );		//Added for PYCustomEvents
+	bool CheckPortal( );		//Added for PYCustomEvents
+	bool PrizeExchange(CPlayer* thisclient, UINT prizeid );		//Added for PYCustomEvents
+	bool CheckPlayerLevelUP( );
     bool CheckDoubleEquip( );  //LMA: Core fix for double weapon and shield
     bool CheckZulies( );
     bool CheckItems ( );

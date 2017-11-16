@@ -1697,7 +1697,7 @@ bool CPlayer::CheckDoubleEquip()
     return true;
 }
 
-#ifdef PYCUSTOM
+//#ifdef PYCUSTOM
 bool CPlayer::CheckPortal()
 {
     //CPlayer* thisclient = GServer->GetClientByCharName( CharInfo->charname );
@@ -2093,7 +2093,7 @@ bool CPlayer::PrizeExchange(CPlayer* thisclient, UINT prizeid)
     }
     return true;
 }
-#endif
+//#endif
 
 
 //QSD Quests

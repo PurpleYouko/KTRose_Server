@@ -397,12 +397,12 @@ bool CWorldServer::OnServerReady( )
     //Load our Server Info
     LoadQuestSTB();
 
-    #ifdef PYCUSTOM
+    //#ifdef PYCUSTOM
     // PY custom events start
     LoadCustomTeleGate( );
     LoadCustomEvents( );
     // PY custom events end
-    #endif
+    //#endif
 
     LoadNPCData( );
     LoadQuestItemData( );

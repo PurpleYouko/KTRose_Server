@@ -52,6 +52,11 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         }
         return true;
     }
+	if (strcmp(command, "buffme")==0)
+    {
+		pakFairyBuff(thisclient);
+		return true;
+	}
     
 	// all commands beyond here require IsGM or IsDev to be active in the character record
 	if (thisclient->CharInfo->isGM == 0 && thisclient->CharInfo->isDev == 0)
@@ -725,12 +730,14 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
             Log(MSG_INFO,"Quest Debug deactivated");
             sprintf(line0, "Quest Debug deactivated");
             thisclient->questdebug = false;
+			GServer->questdebug = false;
         }
         else
         {
             Log(MSG_INFO,"Quest Debug activated");
             sprintf(line0, "Quest Debug activated");
             thisclient->questdebug = true;
+			GServer->questdebug = true;
         }
 
         SendPM(thisclient, line0 );
@@ -2678,16 +2685,16 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
     }
 	if (strcmp(command, "prize")==0)
     {
-        #ifdef PYCUSTOM
+        //#ifdef PYCUSTOM
          if ((tmp = strtok(NULL, " "))==NULL)return true;
          {
              UINT prizeid = atoi(tmp);
              thisclient->PrizeExchange(thisclient, prizeid);
              return true;
          }
-         #else
-         SendPM(thisclient,"PY custom events are not in this build. Check source code.");
-         #endif
+         //#else
+         //SendPM(thisclient,"PY custom events are not in this build. Check source code.");
+         //#endif
 		 return true;
     }
     if(strcmp(command, "p")==0)  //*** READ THE PACKET.TXT AND SEND IT
@@ -3029,21 +3036,21 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
              LoadConfigurations( "commands.ini" );
          else if(strcmp(tmp, "cquests")==0)
          {
-             #ifdef PYCUSTOM
+            // #ifdef PYCUSTOM
              LoadCustomEvents( );
              LoadCustomTeleGate( );
-             #else
-             SendPM(thisclient,"the PY custom events are not enabled in this build, check code.");
-             #endif
+            // #else
+            // SendPM(thisclient,"the PY custom events are not enabled in this build, check code.");
+             //#endif
          }
          else if(strcmp(tmp, "events")==0)
          {
-             #ifdef PYCUSTOM
+             //#ifdef PYCUSTOM
              GServer->LoadCustomEvents( );
              GServer->LoadCustomTeleGate( );
-             #else
-             SendPM(thisclient,"the PY custom events are not enabled in this build, check code.");
-             #endif
+             //#else
+             //SendPM(thisclient,"the PY custom events are not enabled in this build, check code.");
+             //#endif
          }
          else if(strcmp(tmp, "quests")==0)
          {
@@ -6164,6 +6171,46 @@ bool CWorldServer::pakGMGiveBuff(CPlayer* thisClient, CPlayer* targetClient, int
     GServer->SendToVisible( &pak, targetClient );
     return true;
 }
+
+// Buff fairy function. Like GM buffs but not really......
+bool CWorldServer::pakFairyBuff(CPlayer* Target)
+{
+	//so we called the buffme command. Now let's see if we are anywhere near a buff bot
+	//first what map are we in?
+	CMap* thisMap = GServer->MapList.Index[Target->Position->Map];
+	//so now we know the map. let's search for buffbots in this map
+	//initialize some stuff
+	UINT buffpower = 0;
+	for(int j=0;j<thisMap->NPCList.size();j++)
+	{
+		CNPC* npc = thisMap->NPCList.at(j);
+		if(npc->buffbot == true && npc->buffpower > 999)	//found a buffbot in this map. Strangely kept finding others besides teh buff fairy so added the second condition
+		{
+			Log(MSG_DEBUG,"found a buffbot in this map NPC id %i", npc->npctype);
+			float dx = Target->Position->current.x - (float)(npc->pos.x);
+			float dy = Target->Position->current.y - (float)(npc->pos.y);
+			float distance = sqrt((dx*dx) + (dy*dy));
+			if (distance < 20)	//it's within 20 distance of me so I can get the buff
+			{
+				buffpower = npc->buffpower;
+			}
+		}
+	}
+	if(buffpower == 0)
+	{		//buffpower is still zero so we didn't find a buffbot in range
+		SendPM(Target,"Sorry! there are no buff bots in range.");
+	}
+	else
+	{		//Got buff bot so do de buffs
+		Target->GiveBuffsFromBot( Target, 3202, buffpower );
+		Target->GiveBuffsFromBot( Target, 3203, buffpower );
+		Target->GiveBuffsFromBot( Target, 3204, buffpower );
+		Target->GiveBuffsFromBot( Target, 3205, buffpower );
+		SendPM(Target,"Congratulations! You received buffs from the buff fairy with buffpower %i", buffpower);
+	}
+	return true;
+}
+
 
 // GM Give yourself all stats maxed
 bool CWorldServer::pakGMMaxStats( CPlayer* thisclient )

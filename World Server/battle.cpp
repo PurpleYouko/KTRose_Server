@@ -1684,9 +1684,64 @@ void CCharacter::UseBuffSkill( CCharacter* Target, CSkills* skill )
         thisclient->client->SendPacket( &pak );
 	}
 	//End of Patch.
-
-
 	return;
+}
+
+// this function runs from the /buffme command via gmcmds.cpp
+void CCharacter::GiveBuffsFromBot( CCharacter* Target, UINT skillid, UINT skillpower )
+{
+	Log(MSG_DEBUG,"buffme called. giving skill id %i",skillid);
+	CSkills* thisskill = GServer->GetSkillByID( skillid );
+	GServer->AddBuffs( thisskill, Target, skillpower );	//apply the buffs
+    BEGINPACKET( pak, 0x7b5 );
+    ADDWORD    ( pak, Target->clientid );
+    ADDWORD    ( pak, Target->clientid );
+    ADDWORD    ( pak, thisskill->id );
+    ADDWORD    ( pak, 1 );
+    ADDBYTE    ( pak, thisskill->nbuffs );
+    GServer->SendToVisible( &pak, Target );
+	//need a CPlayer object to set the stats so we go and find it
+	CPlayer* thisclient = GServer->GetClientByID(Target->clientid,Target->Position->Map);
+	thisclient->SetStats();	//this actually sends the updated stats to the client
+}
+
+// use buff skill from QSD
+void CCharacter::UseBuffSkillQSD( CCharacter* Target, CSkills* skill, bool deBuff )
+{
+    //how about a proximity check to a specified NPC?
+	POSITION NPCPosition;  //set NPC as Idiosel the teleporter in Zant
+	NPCPosition.current.x = 5244.93;
+	NPCPosition.current.y = 5220.95;
+	float dx = Target->Position->current.x - (float)(NPCPosition.current.x);
+    float dy = Target->Position->current.y - (float)(NPCPosition.current.y);
+	float distance = sqrt((dx*dx) + (dy*dy));
+	if (distance > 50)
+	{
+		Log(MSG_DEBUG,"buffme called but too far from Idiosel");
+		return;	//don't apply the buff
+	}
+	bool bflag = false;
+    bflag = GServer->AddBuffs( skill, Target, 5000 );
+    if(skill->nbuffs > 0 && bflag == true)
+    {
+        BEGINPACKET( pak, 0x7b5 );
+        ADDWORD    ( pak, Target->clientid );
+        ADDWORD    ( pak, Target->clientid );
+        ADDWORD    ( pak, skill->id );
+        ADDWORD    ( pak, 1 );
+        ADDBYTE    ( pak, skill->nbuffs );
+        GServer->SendToVisible( &pak, Target );
+        //Log(MSG_DEBUG,"Buff Skill. buffs applied 1");
+    }
+    if (deBuff) return;
+    BEGINPACKET( pak, 0x7b9);
+    ADDWORD    ( pak, Target->clientid);
+    ADDWORD    ( pak, skill->id);
+    ADDWORD    ( pak, 1);
+	GServer->SendToVisible( &pak, this );
+	//buffs applied. Now we need to recalculate all the stats and we need a CPlayer object for that
+	CPlayer* thisclient = GServer->GetClientByID(Target->clientid,Target->Position->Map);
+	thisclient->SetStats();
 }
 
 // use Debuff skill

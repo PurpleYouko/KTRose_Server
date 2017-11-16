@@ -135,7 +135,7 @@ bool CClientSocket::ReceiveData( )
     if ( fh != NULL )
     {
         //fprintf( fh, "(SID:%08u) IN %04x: ", sock, pak->Command );
-        fprintf( fh, "%s- %s IN  %04x: ",timestamp, ThisServer.c_str(), pak->Command );
+        fprintf( fh, "%s- %s IN  %04x %04x %04x : ",timestamp, ThisServer.c_str(), pak->Size, pak->Command, pak->Unused);
         for ( int i=0; i<pak->Size-6; ++i )
             fprintf( fh, "%02x ", (unsigned char)pak->Buffer[i] );
         fprintf( fh, "\n" );
@@ -213,7 +213,7 @@ void CClientSocket::SendPacket( CPacket *P )
         if ( fh != NULL )
         {
             //fprintf( fh, "(SID:%08u) OUT %04x: ", sock, P->Command );
-            fprintf( fh, "%s- %s OUT %04x: ",timestamp, ThisServer.c_str(), P->Command );
+            fprintf( fh, "%s- %s OUT %04x %04x %04x : ",timestamp, ThisServer.c_str(), P->Size, P->Command, P->Unused );
             for ( int i=0; i<P->Size-6; ++i )
                 fprintf( fh, "%02x ", (unsigned char)P->Buffer[i] );
             fprintf( fh, "\n" );

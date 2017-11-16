@@ -83,6 +83,8 @@ class CCharacter
         bool AoeDebuff ( CSkills* skill, CCharacter* Enemy=NULL ); //netwolf
         void UseDebuffSkill ( CCharacter* Enemy, CSkills* skill );//netwolf
         void UseBuffSkill( CCharacter* Target, CSkills* skill );
+		void UseBuffSkillQSD( CCharacter* Target, CSkills* skill, bool deBuff = false );
+		void GiveBuffsFromBot( CCharacter* Target, UINT skillid, UINT skillpower );		//new buffme code added by PY
         void UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff= false );
         bool UseSkill( CSkills* skill, CCharacter *Target = NULL ); //for gm command
         bool TakeExp( CCharacter *Target ); //taking exp from a dead player.

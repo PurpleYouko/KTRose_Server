@@ -698,10 +698,20 @@ QUESTREWD(005)
             }
         }
         break;
-		case 3://Recieve Buff. start battle so that AIP can actually do the buffing based on RefVar values
+		//PY: This seems a little overcomplicated. we can just send the request directly to AddBuffs() or UseBuffSkill()
+		/*case 3://Recieve Buff. start battle so that AIP can actually do the buffing based on RefVar values
 		{
 		    CCharacter* monster = GServer->GetMonsterByID(client->NPCvar,client->Position->Map);
 		    monster->StartAction( client, SKILL_ATTACK, nSkill );
+			
+		}
+		break;
+		*/
+		case 3:
+		{
+			//need a CCharacter object first
+			CSkills* thisskill = GServer->GetSkillByID( nSkill );
+			client->UseBuffSkillQSD(client, thisskill);
 		}
 		break;
 		default:

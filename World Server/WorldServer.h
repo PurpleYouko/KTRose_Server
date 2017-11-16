@@ -441,6 +441,7 @@ class CWorldServer : public CServerSocket
         bool pakGMBuff(CPlayer* thisClient, int strength); // by Drakia
         bool pakGMDebuff(CPlayer* thisClient); // by Drakia
         bool pakGMGiveBuff(CPlayer* thisClient, CPlayer* targetClient, int skillID, int strength); // by Drakia
+		bool pakFairyBuff(CPlayer* Target); //by PY
         bool pakGMMaxStats(CPlayer* thisClient);
         bool pakGMGMSkills ( CPlayer* thisclient, char* name);
 
@@ -476,10 +477,10 @@ class CWorldServer : public CServerSocket
         bool LoadTeleGateData( );
         bool LoadWayPoints( );      //PY load waypoints for TD
 
-        #ifdef PYCUSTOM
+        //#ifdef PYCUSTOM
         bool LoadCustomTeleGate( );
         bool LoadCustomEvents( );
-        #endif
+        //#endif
 
         //bool LoadMonsterSpawn( );
         bool LoadMobGroups( );
