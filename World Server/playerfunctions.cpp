@@ -2103,7 +2103,7 @@ int CPlayer::ExecuteQuestTrigger(dword hash,bool send_packet, UINT index)
 	CQuestTrigger* trigger = NULL;
     CQuestTrigger* nexttrigger = NULL;
     CheckQuest = -1;
-	if (GServer->questdebug)
+	//if (GServer->questdebug)
 
     for(unsigned j=0; j < GServer->TriggerList.size(); j++)
     {
