@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Aug 08, 2016 at 12:19 PM
+-- Generation Time: Jan 22, 2018 at 08:26 AM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.3
 
@@ -42,4 +42,3 @@ CREATE TABLE IF NOT EXISTS `wishlist` (
 -- 
 -- Dumping data for table `wishlist`
 -- 
-
