@@ -224,11 +224,37 @@ bool CCharServer::pakRequestWorld( CCharClient* thisclient, CPacket* P )
 	memset( &thisclient->charname, '\0', 17 );
 	memcpy( thisclient->charname, &P->Buffer[3], (P->Size-6-4)>16?16:(P->Size-6-4) );
 
+	unsigned int charnum=0;
+	CCharacter chars[5];
+	int btCharNO = P->Buffer[0];
+	result = DB->QStore("SELECT char_name FROM characters WHERE account_name='%s'", thisclient->username);
+	if(result==NULL) return false;
+	while (row = mysql_fetch_row(result))
+    {
+        memset( &chars[charnum].char_name, '\0', 17 );
+		strcpy( chars[charnum].char_name , row[0] );
+		charnum++;
+	}
+	Log(MSG_WARNING,"Characters in this account %s, %s, %s, %s, %s",chars[0].char_name, chars[1].char_name, chars[2].char_name, chars[3].char_name, chars[4].char_name);
+	Log(MSG_WARNING,"Selected Character from client %s",chars[btCharNO].char_name);
+	if ( strcmp(thisclient->charname, chars[btCharNO].char_name) != 0 )
+	{
+		Log(MSG_WARNING,"Selected Character is invalid. Hack detected");
+		thisclient->accesslevel = -1;
+		DB->QExecute( "UPDATE accounts SET accesslevel='0' WHERE id=%i", thisclient->userid);
+		thisclient->isActive = false;
+		return false;
+	}
+
+
+
     if(!CheckEscapeMySQL(thisclient->charname,17,true))
     {
         Log(MSG_WARNING,"A charname contains incorrect caracters or incorrect size (see warnings above)");
         return false;
     }
+
+	DB->QFree( );
 
 	Log( MSG_INFO,"User %s(%i) selected char '%s'", thisclient->username, thisclient->userid, thisclient->charname);
 	if(!DB->QExecute("UPDATE accounts SET lastchar='%s' WHERE id=%i", thisclient->charname, thisclient->userid))
