@@ -224,7 +224,8 @@ bool CCharServer::pakRequestWorld( CCharClient* thisclient, CPacket* P )
 	memset( &thisclient->charname, '\0', 17 );
 	memcpy( thisclient->charname, &P->Buffer[3], (P->Size-6-4)>16?16:(P->Size-6-4) );
 
-	unsigned int charnum=0;
+	//PY Added code to validate character names sent in from client
+	unsigned int charnum = 0;
 	CCharacter chars[5];
 	int btCharNO = P->Buffer[0];
 	result = DB->QStore("SELECT char_name FROM characters WHERE account_name='%s'", thisclient->username);
@@ -235,17 +236,17 @@ bool CCharServer::pakRequestWorld( CCharClient* thisclient, CPacket* P )
 		strcpy( chars[charnum].char_name , row[0] );
 		charnum++;
 	}
-	Log(MSG_WARNING,"Characters in this account %s, %s, %s, %s, %s",chars[0].char_name, chars[1].char_name, chars[2].char_name, chars[3].char_name, chars[4].char_name);
-	Log(MSG_WARNING,"Selected Character from client %s",chars[btCharNO].char_name);
+	Log(MSG_WARNING,"Characters in this account %s, %s, %s, %s, %s",chars[0].char_name, chars[1].char_name, chars[2].char_name, chars[3].char_name, chars[4].char_name); //displays all charcters in account
+	Log(MSG_WARNING,"Selected Character from client %s",chars[btCharNO].char_name);	//displays character name sent in from the client on the 0x0715 packet
 	if ( strcmp(thisclient->charname, chars[btCharNO].char_name) != 0 )
 	{
-		Log(MSG_WARNING,"Selected Character is invalid. Hack detected");
+		Log(MSG_WARNING,"Selected Character is invalid. Hack detected");	//they don't match
 		thisclient->accesslevel = -1;
-		DB->QExecute( "UPDATE accounts SET accesslevel='0' WHERE id=%i", thisclient->userid);
+		DB->QExecute( "UPDATE accounts SET accesslevel='0' WHERE id=%i", thisclient->userid);	//ban the player
 		thisclient->isActive = false;
 		return false;
 	}
-
+	//PY anti-hack end
 
 
     if(!CheckEscapeMySQL(thisclient->charname,17,true))
